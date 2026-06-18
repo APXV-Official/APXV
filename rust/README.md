@@ -1,11 +1,11 @@
-# APX v1 — Rust ZK Circuits (Step 5)
+# APXV1 — Rust ZK Circuits (Step 5)
 
-This directory contains the three small, original Rust circuits for the APX v1 minimal reference implementation.
+This directory contains the three small, original Rust circuits for the APXV1 reference implementation.
 
 ## Scope (Locked)
 
 - Exactly **three** small circuits.
-- Written fresh for APX v1.
+- Written fresh for APXV1.
 - **Reference only**: The circuits in `peet-proof-system/src/circuits/` were studied for patterns (arkworks 0.4 + BN254 + Groth16 structure, ConstraintSynthesizer usage, public vs witness allocation, basic constraint patterns). No code was copied.
 - These circuits are intentionally minimal to match the "3 of everything" tiny build.
 
@@ -45,7 +45,7 @@ The three circuit files are the core deliverable of Step 5.
 
 ---
 
-**All circuits in this directory are original work for APX v1.**
+**All circuits in this directory are original work for APXV1.**
 
 ---
 
@@ -56,7 +56,7 @@ In Step 7 we added the original integration binary `rust/src/main.rs` (Apache-2.
 ### Usage (after `cargo build`)
 
 ```bash
-# From the APX v1 root
+# From the APXV1 project root
 cargo run --manifest-path rust/Cargo.toml -- prove redaction --inputs <prepared_inputs.json>
 
 cargo run --manifest-path rust/Cargo.toml -- verify redaction --inputs <prepared_inputs.json>
@@ -66,6 +66,6 @@ cargo run --manifest-path rust/Cargo.toml -- verify redaction --inputs <prepared
 - Output includes `"status": "VERIFIED"` when successful.
 - Python scripts (`run_apx.py --attest` and `verify_attestation.py --zk`) call these commands via subprocess.
 
-This completes the "verifiable proof" requirement for the APX v1 tiny slice.
+This completes the "verifiable proof" requirement for the APXV1 reference pipeline.
 
 **Note:** For the absolute smallest scope we use `circuit_specific_setup` + immediate verify. Full trusted setup + serialized proof transport is deferred to a later slice.

@@ -1,12 +1,12 @@
-# APX v1 — Open Source Release
+# APXV1 — Open Source Release
 
-This document tracks OSS release readiness for APX v1.
+This document tracks OSS release readiness for APXV1 (*Attested Proof Execution Verified*, 1st generation).
 
 ## Positioning
 
 > Open-source, air-gapped governed agent runtime with cryptographic attestation.
 
-APX is a **platform foundation** for developers and companies to build local, privacy-preserving agent systems — not a certified compliance product.
+APXV1 is a **platform foundation** for developers and companies to build local, privacy-preserving agent systems — not a certified compliance product.
 
 ## Release Checklist
 

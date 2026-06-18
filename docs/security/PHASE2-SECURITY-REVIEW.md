@@ -1,4 +1,4 @@
-# APX v1 — Phase 2 Security Review & Threat Model
+# APXV1 — Phase 2 Security Review & Threat Model
 
 **Status:** Phase 2 Completion Document (Updated)  
 **Date:** 2026-06-17  

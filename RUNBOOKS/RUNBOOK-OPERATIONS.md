@@ -1,6 +1,6 @@
-# APX v1 — Runbook: Operations
+# APXV1 — Runbook: Operations
 
-**Purpose:** Day-to-day operations, monitoring, and maintenance of an APX v1 deployment.
+**Purpose:** Day-to-day operations, monitoring, and maintenance of an APXV1 deployment.
 
 ---
 
@@ -83,7 +83,7 @@ docker-compose restart apx-v1
 - For higher scale, consider:
   - Shared storage for `managed/`
   - Centralized log aggregation
-  - Multiple APX instances with coordinated governance rules
+  - Multiple APXV1 instances with coordinated governance rules
 
 ---
 

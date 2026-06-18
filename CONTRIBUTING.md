@@ -1,6 +1,6 @@
 # Contributing to APXV1
 
-Thank you for your interest in APXV1 (The APXV1 Project). This is an open-source, air-gapped governed agent runtime.
+Thank you for your interest in **APXV1** (*Attested Proof Execution Verified*, 1st generation). This is an open-source, air-gapped governed agent runtime.
 
 ## Getting Started
 

@@ -1,4 +1,4 @@
-# APX v1 — Cryptographic Assumptions Document
+# APXV1 — Cryptographic Assumptions Document
 
 **Status:** Phase 1 Criterion #5 — Living Document  
 **Date:** 2026-06-17  

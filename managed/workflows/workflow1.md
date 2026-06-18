@@ -1,10 +1,10 @@
-# APX v1 — Workflow 1: Rule-Governed Text Processing & Attestation
+# APXV1 — Workflow 1: Rule-Governed Text Processing & Attestation
 
 **Workflow ID:** APX-WF-001  
 **Version:** 1.0.0  
 **Effective Date:** 2026-05-31  
 **Depends On:** APX-RULE-001 (Controlled Redaction)  
-**Purpose:** Define the exact sequence any APX agent must follow when processing text under governance.
+**Purpose:** Define the exact sequence any APXV1-governed agent must follow when processing text under governance.
 
 ---
 
@@ -19,7 +19,7 @@ This workflow enforces a strict, auditable process for handling sensitive text:
 5. Record full processing metadata.
 6. Request cryptographic attestation for the entire operation.
 
-Agents **must** execute these steps in order. Skipping or reordering steps is not permitted in APX v1.
+Agents **must** execute these steps in order. Skipping or reordering steps is not permitted in APXV1.
 
 ---
 
@@ -54,7 +54,7 @@ Agents **must** execute these steps in order. Skipping or reordering steps is no
   - `agent_id` (to be filled by the executing agent)
 
 ### Step 5: Write Output Artifact
-- Use the APX artifact layer to write the result as a new governed artifact.
+- Use the APXV1 artifact layer to write the result as a new governed artifact.
 - The artifact must include both the redacted text and the full metadata block.
 - Return the artifact ID to the caller.
 
@@ -97,4 +97,4 @@ Agents **must** execute these steps in order. Skipping or reordering steps is no
 
 **End of Workflow APX-WF-001**
 
-This file, together with `rule1.md`, forms the active behavioral contract for text processing in APX v1.
+This file, together with `rule1.md`, forms the active behavioral contract for text processing in APXV1.

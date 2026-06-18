@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.3.0] - 2026-06-17
 
-First public open-source release (Apache 2.0).
+First public open-source release of **APXV1** (*Attested Proof Execution Verified*, 1st generation) — Apache 2.0.
 
 ### Added
 

@@ -29,7 +29,7 @@
 
 ## Public positioning
 
-> APXV1 is an open-source, air-gapped platform for building governed agent systems locally. Define rules in markdown, run agents under signed capabilities, and generate real Groth16 proofs. Bring your own agents and LLMs.
+> APXV1 (*Attested Proof Execution Verified*, 1st generation) is an open-source, air-gapped platform for building governed agent systems locally. Define rules in markdown, run agents under signed capabilities, and generate real Groth16 proofs. Bring your own agents and LLMs.
 
 ## Pre-push placeholders (replace before public launch)
 

@@ -1,6 +1,6 @@
 # Installing Rust (Required for ZK)
 
-APX uses Groth16 proofs. The Rust toolchain builds `apx-circuits` and runs trusted setup.
+APXV1 uses Groth16 proofs. The Rust toolchain builds `apx-circuits` and runs trusted setup.
 
 ## Windows
 
@@ -13,7 +13,7 @@ rustc --version
 cargo --version
 ```
 
-4. Build APX circuits (from project root):
+4. Build APXV1 circuits (from project root):
 
 ```powershell
 cd rust

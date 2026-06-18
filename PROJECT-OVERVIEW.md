@@ -1,16 +1,18 @@
 # APXV1 — Project Overview & Current Status
 
-**Last updated:** 2026-06-17  
-**Version:** 0.3.0 (tagged at release, not yet pushed)  
+**APXV1** — *Attested Proof Execution Verified* — **1st-generation** governed agent platform.
+
+**Last updated:** 2026-06-18  
+**Version:** 0.3.0  
 **License:** Apache 2.0
 
 Use this file as your “where am I?” map. For push gates, see [docs/PUBLISH-READINESS.md](docs/PUBLISH-READINESS.md).
 
 ---
 
-## What APX Is
+## What APXV1 Is
 
-**APX is a local, air-gapped platform for building governed agent systems.**
+**APXV1 is a local, air-gapped platform for building governed agent systems** — the first shipped generation of the APX engine (code modules still use the `APX` prefix internally).
 
 - Rules, workflows, and knowledge live in **markdown** under `managed/`
 - Agents run under a **signed capability policy** (what each agent may do)
@@ -33,7 +35,7 @@ Use this file as your “where am I?” map. For push gates, see [docs/PUBLISH-R
 | **Phase 2 — Governed core** | Complete ([PHASE2-STATUS.md](PHASE2-STATUS.md)) |
 | **Path C — OSS onboarding** | Complete (install, doctor, quickstart, Docker, examples, CI) |
 | **Release readiness** | **Technically ready** — manual steps remain before public push |
-| **Git** | `git init` done, **no commits, no push** (by design until you say go) |
+| **Git** | Pushed to `apxv1dev/APXV1` (private) |
 
 **Bottom line:** You have a working, verifiable, documentable OSS project. You are in **“hold for launch”** mode, not **“still building core”** mode.
 
@@ -88,7 +90,7 @@ Use this file as your “where am I?” map. For push gates, see [docs/PUBLISH-R
 |------|---------|
 | `LICENSE` | Apache 2.0 |
 | `CONTRIBUTING.md` | How to contribute |
-| `SECURITY.md` | Threat model (what APX does / does not protect) |
+| `SECURITY.md` | Threat model (what APXV1 does / does not protect) |
 | `CHANGELOG.md` | v0.3.0 release notes (update GitHub URLs before push) |
 | `.gitignore` | Runtime state, keys, `docs/resume/`, operator key hints |
 
@@ -103,7 +105,7 @@ Use this file as your “where am I?” map. For push gates, see [docs/PUBLISH-R
 |-----|--------------|
 | [README.md](README.md) | Public face of the project |
 | [docs/QUICKSTART.md](docs/QUICKSTART.md) | 15-minute getting started |
-| [docs/BUILDING.md](docs/BUILDING.md) | How to build agents, API, LLMs on APX |
+| [docs/BUILDING.md](docs/BUILDING.md) | How to build agents, API, LLMs on APXV1 |
 | [docs/LOCAL-API.md](docs/LOCAL-API.md) | API reference |
 | [docs/DOCKER.md](docs/DOCKER.md) | Company Docker deploy |
 | [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md) | ~2 min demo video script |
@@ -135,7 +137,7 @@ Use this file as your “where am I?” map. For push gates, see [docs/PUBLISH-R
 - [ ] **Record demo video** — follow [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md)
 - [x] **Create GitHub repo** — `https://github.com/apxv1dev/APXV1` (private; go public after inspection)
 - [x] **GitHub URLs** — `apxv1dev/APXV1` across docs and metadata
-- [ ] **Push + verify** — first commit, tag `v0.3.0`, push, confirm CI green
+- [x] **Push + verify** — commit, tag `v0.3.0`, pushed; confirm CI green
 
 ### After push (optional, same week)
 
@@ -167,16 +169,16 @@ Use this file as your “where am I?” map. For push gates, see [docs/PUBLISH-R
 
 **Portfolio today:** Strong — rare combo of ZK, governance, audit, local API, OSS packaging. Release + demo = credible public artifact; adoption is a bonus.
 
-**Business later:** Only if you **narrow to one vertical** (e.g. governed doc redaction for legal/health) and build product layer (UI, connectors, support) on top of APX as engine IP. v0.3.0 alone is not a revenue product; it is optionality and credibility.
+**Business later:** Only if you **narrow to one vertical** (e.g. governed doc redaction for legal/health) and build product layer (UI, connectors, support) on top of APXV1 as engine IP. v0.3.0 alone is not a revenue product; it is optionality and credibility.
 
 ---
 
 ## Git State (as of last update)
 
 ```
-Branch: master
-Commits: none yet
-Push: blocked until explicit go-ahead
+Branch: main
+Remote: apxv1dev/APXV1 (private)
+Tag: v0.3.0
 ```
 
 Rehearsal clone (disposable): `%TEMP%\apx-release-rehearsal`  

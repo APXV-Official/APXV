@@ -1,4 +1,4 @@
-# APX Phase 1 — Cryptographic Credibility Status
+# APXV1 Phase 1 — Cryptographic Credibility Status
 
 **Goal:** Real, independently verifiable proofs with honest setup assumptions.  
 **Circuit Version:** 1.1.0  

@@ -1,15 +1,15 @@
-# APX v1 — Independent Proof Verification (Phase 1)
+# APXV1 — Independent Proof Verification (Phase 1)
 
 **Status:** Active — Phase 1 Criterion #3
 
 ## What a Third Party Needs
 
-To verify an APX attestation **without trusting the operator** and **without re-proving**:
+To verify an APXV1 attestation **without trusting the operator** and **without re-proving**:
 
 1. The attested artifact JSON (contains `zk_proof_*` bundles)
 2. The `rust/keys/manifest.json` from the same circuit version (for VK integrity)
 3. Either:
-   - The APX Python verifier: `python -m scripts.verify_attestation --real-zk`
+   - The APXV1 Python verifier: `python -m scripts.verify_attestation --real-zk`
    - The standalone verifier: `python -m scripts.apx_verify_bundle <artifact.json>`
    - The compiled Rust binary: `apx-circuits verify <circuit> --proof <bundle.json>`
 
@@ -32,7 +32,7 @@ Each `zk_proof_*` entry in an attested artifact contains:
 
 ## Verification Steps
 
-### Option A — Full APX verifier (recommended)
+### Option A — Full APXV1 verifier (recommended)
 
 ```bash
 python -m scripts.verify_attestation --real-zk
@@ -62,7 +62,7 @@ apx-circuits verify redaction --proof proof_bundle.json
 
 ## VK Integrity (Wrong Key Detection)
 
-Before cryptographic verification, APX checks that the `vk_hex` in the proof bundle matches the authoritative VK on disk listed in `manifest.json`. This detects:
+Before cryptographic verification, APXV1 checks that the `vk_hex` in the proof bundle matches the authoritative VK on disk listed in `manifest.json`. This detects:
 
 - Stale proofs from an older circuit version
 - Tampered verification keys

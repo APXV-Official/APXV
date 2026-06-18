@@ -4,7 +4,7 @@ Record this after `install.ps1` / `install.sh` succeeds.
 
 ## 1. Intro (15s)
 
-> APX is a local platform for building governed agent systems. Rules stay in markdown, execution is audited, and Groth16 proofs show what policy was followed.
+> APXV1 — Attested Proof Execution Verified, 1st generation — is a local platform for building governed agent systems. Rules stay in markdown, execution is audited, and Groth16 proofs show what policy was followed.
 
 ## 2. Install (20s)
 
@@ -15,7 +15,7 @@ Show terminal:
 # or .\scripts\install.ps1
 ```
 
-Cut to: `APX install complete` + doctor HEALTHY.
+Cut to: `APXV1 install complete` + doctor HEALTHY.
 
 ## 3. Pipeline + proof (40s)
 

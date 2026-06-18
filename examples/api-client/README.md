@@ -1,6 +1,6 @@
 # API Client Example
 
-Python client for the local APX HTTP API.
+Python client for the local APXV1 HTTP API.
 
 ## Prerequisites
 

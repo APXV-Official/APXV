@@ -1,6 +1,6 @@
 # Docker Deployment
 
-Run APX as a local API service for team/company use.
+Run APXV1 as a local API service for team/company use.
 
 ## Quick start
 
@@ -9,7 +9,7 @@ docker compose up -d --build
 curl http://127.0.0.1:8741/health
 ```
 
-APX binds inside the container on `0.0.0.0:8741` (Docker-only via `APX_CONTAINER_BIND=1`). Host access is still localhost-only via compose port mapping.
+APXV1 binds inside the container on `0.0.0.0:8741` (Docker-only via `APX_CONTAINER_BIND=1`). Host access is still localhost-only via compose port mapping.
 
 ## First-time setup in container
 

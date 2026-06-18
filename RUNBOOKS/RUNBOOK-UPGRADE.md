@@ -1,6 +1,6 @@
-# APX v1 — Runbook: Upgrade & Rollback
+# APXV1 — Runbook: Upgrade & Rollback
 
-**Purpose:** Safe upgrade and rollback procedures for an APX v1 deployment.
+**Purpose:** Safe upgrade and rollback procedures for an APXV1 deployment.
 
 ---
 
@@ -84,7 +84,7 @@ If the upgrade causes issues:
 
 ## 5. Data Migration Notes
 
-- APX v1 currently uses file-based storage under `managed/`
+- APXV1 currently uses file-based storage under `managed/`
 - Most upgrades should not require data migration
 - If a future version introduces breaking changes to artifact or log formats, migration steps will be documented in the release notes
 

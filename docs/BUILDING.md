@@ -1,6 +1,6 @@
-# Building On APX
+# Building On APXV1
 
-APX is a **local platform** for devs and companies to build governed agent systems. You bring your agents, rules, and (optionally) LLMs. APX provides governance, audit, artifacts, and cryptographic attestation.
+APXV1 (*Attested Proof Execution Verified*, 1st generation) is a **local platform** for devs and companies to build governed agent systems. You bring your agents, rules, and (optionally) LLMs. APXV1 provides governance, audit, artifacts, and cryptographic attestation.
 
 ## Core Concepts
 
@@ -41,7 +41,7 @@ Run `python -m scripts.apx_serve`, then call `/pipeline/run` from any app on the
 
 ### 3. Add an LLM (optional)
 
-APX ships **without** a bundled model. You plug one in:
+APXV1 ships **without** a bundled model. You plug one in:
 
 1. Implement `LLMBackend` (see `agents/llm_backend.py`)
 2. Pass it to `LLMReasoner(runtime=runtime, backend=your_backend)`
@@ -74,7 +74,7 @@ python -m scripts.apx_ctl governance-apply --proposal-id <id>
 
 ## ZK Attestation (Required)
 
-Cryptographic proofs are part of the APX contract — not an optional extra.
+Cryptographic proofs are part of the APXV1 contract — not an optional extra.
 
 ```bash
 python -m scripts.setup_first_run          # includes ZK setup
@@ -89,13 +89,13 @@ Third parties verify proofs without re-running your system. See [docs/cryptograp
 1. Run `setup_first_run` on each instance
 2. Mount persistent volumes for `managed/` and `rust/keys/` (Docker)
 3. Back up regularly: `python -m scripts.apx_ctl backup-create`
-4. Restrict host filesystem access to APX directories
+4. Restrict host filesystem access to APXV1 directories
 5. Keep API on localhost unless you add your own network controls
-6. Read [SECURITY.md](../SECURITY.md) — understand what APX does and does not protect
+6. Read [SECURITY.md](../SECURITY.md) — understand what APXV1 does and does not protect
 
 ## What You Build
 
-Examples of systems on APX:
+Examples of systems on APXV1:
 
 - Local PII processing service with audit trail + proofs
 - Policy-governed document pipeline

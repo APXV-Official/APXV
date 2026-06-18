@@ -1,4 +1,4 @@
-# APX Phase 2 — Governed Core Hardening Status
+# APXV1 Phase 2 — Governed Core Hardening Status
 
 **Goal:** Deterministic governed execution path trustworthy for real internal use.  
 **Deployment model:** Local, self-hosted, air-gapped compatible  

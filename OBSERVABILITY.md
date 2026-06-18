@@ -1,8 +1,8 @@
-# APX v1 — Observability Guide (BYO / DIY)
+# APXV1 — Observability Guide (BYO / DIY)
 
-APX v1 is designed to be **privacy-respecting and minimal by default**. It does **not** include built-in metrics collection or external telemetry.
+APXV1 is designed to be **privacy-respecting and minimal by default**. It does **not** include built-in metrics collection or external telemetry.
 
-However, APX provides structured JSON logs that make it easy for users to integrate their own observability stack if desired.
+However, APXV1 provides structured JSON logs that make it easy for users to integrate their own observability stack if desired.
 
 ---
 
@@ -34,7 +34,7 @@ These logs are written to `managed/audit/*.log`.
 
 ## 2. Integrating with Common Observability Tools
 
-### Loki + Grafana (Recommended for APX)
+### Loki + Grafana (Recommended for APXV1)
 
 1. Point Loki to the `managed/audit/` directory (or forward the logs via Promtail).
 2. Use a simple Promtail scrape config to parse JSON lines.
@@ -63,7 +63,7 @@ These logs are written to `managed/audit/*.log`.
 
 ## 3. Optional Helper Module (DIY)
 
-For users who want a simpler starting point, APX includes an optional helper:
+For users who want a simpler starting point, APXV1 includes an optional helper:
 
 ```python
 from agents.observability import get_log_metrics, export_to_prometheus
@@ -85,10 +85,10 @@ This module is **completely optional** and not required for normal operation.
 
 ## 5. Recommendation
 
-For most users, the structured JSON logs + an external log aggregation tool (Loki, ELK, etc.) is sufficient and keeps APX lightweight.
+For most users, the structured JSON logs + an external log aggregation tool (Loki, ELK, etc.) is sufficient and keeps APXV1 lightweight.
 
 Only enable or build additional metrics if you have a specific operational need.
 
 ---
 
-*This approach keeps APX minimal while still supporting advanced observability for those who need it.*
+*This approach keeps APXV1 minimal while still supporting advanced observability for those who need it.*

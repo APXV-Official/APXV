@@ -1,16 +1,16 @@
-# APX v1 — Trusted Setup Process (Phase 1)
+# APXV1 — Trusted Setup Process (Phase 1)
 
 **Status:** Active — Phase 1 Criterion #1  
 **Circuit Version:** 1.1.0
 
 ## Overview
 
-APX uses Groth16 over BN254 (arkworks 0.4). Each circuit requires a **one-time trusted setup** that produces a ProvingKey (PK) and VerifyingKey (VK). These keys are persisted and reused for all subsequent proofs.
+APXV1 uses Groth16 over BN254 (arkworks 0.4). Each circuit requires a **one-time trusted setup** that produces a ProvingKey (PK) and VerifyingKey (VK). These keys are persisted and reused for all subsequent proofs.
 
 ## When Setup Is Required
 
 Run setup when:
-- First deploying APX v1
+- First deploying APXV1
 - Circuit code changes (version bump in `rust/circuits/*.rs`)
 - Keys are missing from `rust/keys/`
 - Verification fails with VK mismatch errors

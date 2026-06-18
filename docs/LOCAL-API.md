@@ -1,4 +1,4 @@
-# APX v1 — Local API Server
+# APXV1 — Local API Server
 
 **Deployment:** Localhost only, air-gapped compatible  
 **Dependencies:** Python stdlib only (no FastAPI, no cloud)

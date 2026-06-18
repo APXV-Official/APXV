@@ -1,4 +1,4 @@
-# APX v1 — Knowledge 1: Redaction Examples, Edge Cases & Definitions
+# APXV1 — Knowledge 1: Redaction Examples, Edge Cases & Definitions
 
 **Knowledge ID:** APX-KB-001  
 **Version:** 1.0.0  
@@ -77,7 +77,7 @@ When applying this knowledge:
 
 ---
 
-## 5. Test Cases for Validation (APX v1 Baseline)
+## 5. Test Cases for Validation (APXV1 Baseline)
 
 These cases can be used to verify that an agent correctly implements the rule + workflow:
 
@@ -91,4 +91,4 @@ These cases can be used to verify that an agent correctly implements the rule + 
 
 **End of Knowledge APX-KB-001**
 
-This knowledge base, combined with rule1.md and workflow1.md, forms the complete active specification for redaction behavior in APX v1.
+This knowledge base, combined with rule1.md and workflow1.md, forms the complete active specification for redaction behavior in APXV1.

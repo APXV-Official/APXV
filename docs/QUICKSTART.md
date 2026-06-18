@@ -1,6 +1,6 @@
-# APX Quickstart (15 Minutes)
+# APXV1 Quickstart (15 Minutes)
 
-Get from zero to a verified governed pipeline.
+*Attested Proof Execution Verified* — 1st-generation platform. Get from zero to a verified governed pipeline.
 
 ## Prerequisites
 
@@ -67,7 +67,7 @@ export APX_API_KEY="<key-from-output>"
 ## Try the examples
 
 ```bash
-python examples/hello-agent/hello_agent.py "hello APX"
+python examples/hello-agent/hello_agent.py "hello APXV1"
 APX_API_KEY=<key> python examples/api-client/run_pipeline.py
 ```
 
@@ -85,4 +85,4 @@ See [DOCKER.md](DOCKER.md). Use **fresh volumes** — do not mount a dev `manage
 python -m scripts.apx_doctor
 ```
 
-See [SECURITY.md](../SECURITY.md) for what APX does and does not protect.
+See [SECURITY.md](../SECURITY.md) for what APXV1 does and does not protect.

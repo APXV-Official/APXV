@@ -2,8 +2,8 @@
 name = "apx-circuits"
 version = "0.1.0"
 edition = "2021"
-authors = ["APX v1"]
-description = "APX v1 — Minimal zero-knowledge circuits for redaction governance and attestation"
+authors = ["The APXV1 Project"]
+description = "APXV1 — Minimal zero-knowledge circuits for redaction governance and attestation"
 license = "Apache-2.0"
 readme = "README.md"
 

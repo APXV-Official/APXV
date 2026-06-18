@@ -1,7 +1,7 @@
-# APX — Market Landscape & Competitive Position
+# APXV1 — Market Landscape & Competitive Position
 
-**Last updated:** 2026-06-17  
-**Purpose:** Honest scan before OSS release — who overlaps, who beats APX on what, and how to position without overclaiming.
+**Last updated:** 2026-06-18  
+**Purpose:** Honest scan before OSS release — who overlaps, who beats APXV1 on what, and how to position without overclaiming.
 
 Related: [PROJECT-OVERVIEW.md](../PROJECT-OVERVIEW.md), [SECURITY.md](../SECURITY.md), [README.md](../README.md).
 
@@ -9,24 +9,24 @@ Related: [PROJECT-OVERVIEW.md](../PROJECT-OVERVIEW.md), [SECURITY.md](../SECURIT
 
 ## How to read this document
 
-APX is best understood as **integration of several mature problem areas**, not as a single feature racing one competitor.
+APXV1 is best understood as **integration of several mature problem areas**, not as a single feature racing one competitor.
 
 | Mental model | Accurate? |
 |--------------|-----------|
-| “Someone already shipped APX but better” | **No** — no public OSS found that combines the full APX stack |
-| “Specialists beat APX on individual layers” | **Yes** — governance wrappers, enterprise crypto-governance, zkML, framework ecosystems |
-| “APX is one of a kind as a whole” | **Yes** — local platform + markdown governance lifecycle + signed capabilities + artifact/audit chain + Groth16 rule-binding proofs |
-| “APX beats specialists at their own layer” | **No** — don’t claim that in README or talks |
+| “Someone already shipped APXV1 but better” | **No** — no public OSS found that combines the full APXV1 stack |
+| “Specialists beat APXV1 on individual layers” | **Yes** — governance wrappers, enterprise crypto-governance, zkML, framework ecosystems |
+| “APXV1 is one of a kind as a whole” | **Yes** — local platform + markdown governance lifecycle + signed capabilities + artifact/audit chain + Groth16 rule-binding proofs |
+| “APXV1 beats specialists at their own layer” | **No** — don’t claim that in README or talks |
 
-**One-line positioning:** APX is the **only integrated air-gapped governed-agent platform with ZK rule-binding proofs** found in this scan — but it is **not** the best policy wrapper, best enterprise attestation product, or best LLM framework.
+**One-line positioning:** APXV1 is the **only integrated air-gapped governed-agent platform with ZK rule-binding proofs** found in this scan — but it is **not** the best policy wrapper, best enterprise attestation product, or best LLM framework.
 
 ---
 
-## What APX is (for comparison)
+## What APXV1 is (for comparison)
 
-**APX — Attested Proof eXecution** (working expansion): a local, air-gapped platform where agents run under signed capabilities, governance specs live in markdown with an approval workflow, outputs are immutable artifacts, audit is chained, and Groth16 proofs bind execution to rule/workflow hashes.
+**APXV1 — Attested Proof Execution Verified** (1st generation): a local, air-gapped platform where agents run under signed capabilities, governance specs live in markdown with an approval workflow, outputs are immutable artifacts, audit is chained, and Groth16 proofs bind execution to rule/workflow hashes. (Code modules retain the `APX` prefix internally.)
 
-Four layers APX combines:
+Four layers APXV1 combines:
 
 1. **Agent governance** — policy, capabilities, audit
 2. **Cryptographic attestation** — prove what ran and under which rules
@@ -188,10 +188,10 @@ Most market players cover **one or two** of these. APX ships **all four in one r
 **Q: Are specialists better than APX at parts of what APX does?**  
 **A:** Yes. Microsoft AGT is stronger on **governance for popular frameworks**. Attested Intelligence is stronger on **enterprise cryptographic governance narrative**. LangChain is stronger on **agent orchestration ecosystem**. zkML projects are stronger on **proving model inference**.
 
-**Q: So APX is unique but made of parts others do better?**  
-**A:** That is the right gist. APX is **integration architecture** — like building a car from components where Bosch makes better brakes and Michelin makes better tires, but **your chassis + assembly** is what does not exist elsewhere in this form.
+**Q: So APXV1 is unique but made of parts others do better?**  
+**A:** That is the right gist. APXV1 is **integration architecture** — like building a car from components where Bosch makes better brakes and Michelin makes better tires, but **your chassis + assembly** is what does not exist elsewhere in this form.
 
-**Q: Is “Attested Proof eXecution” a crowded name/category?**  
+**Q: Is “Attested Proof Execution Verified” (APXV1) a crowded name/category?**  
 **A:** The **words** overlap (attestation, proof, execution are everywhere in 2026). The **product shape** does not. Position on **what the integrated system does**, not on owning the acronym.
 
 ---

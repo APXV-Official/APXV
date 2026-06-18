@@ -1,12 +1,12 @@
 # APXV1
 
-**The APXV1 Project** — *Attested Proof Execution Verified* — open-source, air-gapped platform for building governed agent systems.
+**APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
 Maintained by [@apxv1dev](https://github.com/apxv1dev) · [apxv1dev@protonmail.com](mailto:apxv1dev@protonmail.com)
 
-> **APXV1** is the first-generation APX platform (release **v0.3.0**). Not [apx.guide](https://apx.guide) / `apx-project` semantic-drift tooling.
+> Not [apx.guide](https://apx.guide) / `apx-project` semantic-drift tooling. Current release: **v0.3.0**.
 
-Run APX locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. **Build your own agents, workflows, and integrations** — as an individual developer or as a company team.
+Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. **Build your own agents, workflows, and integrations** — as an individual developer or as a company team.
 
 ## Who This Is For
 
@@ -14,7 +14,7 @@ Run APX locally. Your rules, data, artifacts, and cryptographic proofs stay on y
 - **Companies** prototyping self-hosted governance without cloud dependency
 - **Teams** that need auditable rule changes, immutable artifacts, and verifiable execution
 
-APX is a **foundation to build on** — not a finished end-user product.
+APXV1 is a **foundation to build on** — not a finished end-user product.
 
 ## What You Get
 
@@ -66,7 +66,7 @@ export APX_API_KEY="<key>"
 python -m scripts.apx_serve
 ```
 
-## Build On APX
+## Build On APXV1
 
 | Resource | Description |
 |----------|-------------|
@@ -97,7 +97,7 @@ curl http://127.0.0.1:8741/health
 | Doc | Purpose |
 |-----|---------|
 | [docs/QUICKSTART.md](docs/QUICKSTART.md) | 15-minute getting started |
-| [docs/BUILDING.md](docs/BUILDING.md) | How to build on APX |
+| [docs/BUILDING.md](docs/BUILDING.md) | How to build on APXV1 |
 | [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain setup |
 | [docs/DOCKER.md](docs/DOCKER.md) | Company Docker deploy |
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
@@ -127,7 +127,7 @@ APXV1 is open source (Apache 2.0). For bugs and how-to questions, use [GitHub Is
 Implementation, air-gapped deployment, custom agents, and team training may be available on a scoped basis for US organizations.
 
 - Paid work is **separate** from the open-source project and does not include an SLA unless agreed in writing
-- APX remains a **research foundation** — not a certified compliance product
+- APXV1 remains a **research foundation** — not a certified compliance product
 
 Contact: [@apxv1dev](https://github.com/apxv1dev) · [apxv1dev@protonmail.com](mailto:apxv1dev@protonmail.com) (commercial inquiries welcome via issue or email).
 

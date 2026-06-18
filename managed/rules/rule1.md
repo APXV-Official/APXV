@@ -1,4 +1,4 @@
-# APX v1 — Rule Set 1: Controlled Redaction
+# APXV1 — Rule Set 1: Controlled Redaction
 
 **Rule ID:** APX-RULE-001  
 **Version:** 1.0.0  
@@ -44,8 +44,8 @@ When processing any input text, the agent **must** apply the following redaction
 ## 3. Governance & Override
 
 - This rule set can only be modified by updating this markdown file and incrementing the version.
-- Agents must re-read this file on every execution (no caching of rules across runs in APX v1).
-- If a workflow or knowledge file conflicts with this rule set, **this rule set takes precedence** unless the workflow carries an explicit "RULE-OVERRIDE" marker (not supported in APX v1 baseline).
+- Agents must re-read this file on every execution (no caching of rules across runs in APXV1).
+- If a workflow or knowledge file conflicts with this rule set, **this rule set takes precedence** unless the workflow carries an explicit "RULE-OVERRIDE" marker (not supported in APXV1 baseline).
 
 ---
 
@@ -60,4 +60,4 @@ When generating cryptographic attestation for an output, the proof system should
 
 **End of Rule Set APX-RULE-001**
 
-This file is the active source of truth for redaction behavior in APX v1.
+This file is the active source of truth for redaction behavior in APXV1.

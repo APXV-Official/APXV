@@ -1,6 +1,6 @@
 # Air-Gapped Installation Guide
 
-APX is designed to run fully offline after initial download.
+APXV1 is designed to run fully offline after initial download.
 
 ## 1. Download (Online Machine)
 

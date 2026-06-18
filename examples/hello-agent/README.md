@@ -1,6 +1,6 @@
 # Hello Agent Example
 
-Minimal custom governed agent for APX v1.
+Minimal custom governed agent for APXV1.
 
 ## Prerequisites
 

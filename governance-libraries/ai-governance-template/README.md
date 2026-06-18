@@ -1,7 +1,7 @@
 # AI Governance Template
 
 **Purpose:**  
-A reusable governance library for controlling LLM-powered and tool-using agents within APX.
+A reusable governance library for controlling LLM-powered and tool-using agents within APXV1.
 
 This template provides a baseline set of rules, workflows, and knowledge artifacts designed to ensure that agentic components operate safely, accountably, and in compliance with defined policies.
 

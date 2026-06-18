@@ -1,6 +1,6 @@
-# APX v1 — Runbook: Incident Response
+# APXV1 — Runbook: Incident Response
 
-**Purpose:** Guide for detecting, responding to, and recovering from incidents involving an APX v1 deployment.
+**Purpose:** Guide for detecting, responding to, and recovering from incidents involving an APXV1 deployment.
 
 ---
 
