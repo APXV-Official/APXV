@@ -2,11 +2,9 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
-Maintained by [@apxv1dev](https://github.com/apxv1dev) · [apxv1dev@protonmail.com](mailto:apxv1dev@protonmail.com)
-
 > Not [apx.guide](https://apx.guide) / `apx-project` semantic-drift tooling. Current release: **v0.3.0**.
 
-Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. **Build your own agents, workflows, and integrations** — as an individual developer or as a company team.
+Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
 ## Who This Is For
 
@@ -38,7 +36,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-Working platform foundation: Phase 1 (cryptography) and Phase 2 (governed core) complete. Deterministic 3-agent pipeline + ZK attestation verified end-to-end. LLM support is via pluggable backends — see [examples/llm-ollama/](examples/llm-ollama/).
+Phase 1 (cryptography) and Phase 2 (governed core) are complete. The deterministic 3-agent reference pipeline and ZK attestation path are verified end-to-end. See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for component details.
 
 ## Quickstart
 
@@ -51,7 +49,7 @@ Working platform foundation: Phase 1 (cryptography) and Phase 2 (governed core) 
 
 Requires Python 3.9+ and Rust ([install guide](docs/INSTALL-RUST.md)).
 
-### Health check anytime
+### Health check
 
 ```bash
 python -m scripts.apx_doctor
@@ -70,7 +68,7 @@ python -m scripts.apx_serve
 
 | Resource | Description |
 |----------|-------------|
-| [docs/BUILDING.md](docs/BUILDING.md) | **Start here** — agents, API, LLMs, company deployment |
+| [docs/BUILDING.md](docs/BUILDING.md) | **Start here** — agents, API, LLMs, deployment |
 | [examples/hello-agent/](examples/hello-agent/) | Minimal custom governed agent |
 | [examples/api-client/](examples/api-client/) | Python API client |
 | [examples/llm-ollama/](examples/llm-ollama/) | Plug in a local Ollama LLM |
@@ -92,19 +90,20 @@ curl http://127.0.0.1:8741/health
 - **Governance & Control** — CapabilityChecker, AuditLogger, GovernanceRegistry
 - **Cryptographic Layer** — Groth16 proofs over BN254 (arkworks)
 
-## Operator Docs
+## Documentation
 
 | Doc | Purpose |
 |-----|---------|
-| [docs/QUICKSTART.md](docs/QUICKSTART.md) | 15-minute getting started |
-| [docs/BUILDING.md](docs/BUILDING.md) | How to build on APXV1 |
+| [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) | Repository layout and components |
+| [docs/QUICKSTART.md](docs/QUICKSTART.md) | Getting started |
+| [docs/BUILDING.md](docs/BUILDING.md) | Extension patterns |
 | [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain setup |
-| [docs/DOCKER.md](docs/DOCKER.md) | Company Docker deploy |
+| [docs/DOCKER.md](docs/DOCKER.md) | Container deployment |
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/LOCAL-API.md](docs/LOCAL-API.md) | API reference |
 | [SECURITY.md](SECURITY.md) | Threat model |
-| [docs/MARKET-LANDSCAPE.md](docs/MARKET-LANDSCAPE.md) | Market scan & positioning |
-| [docs/PUBLISH-READINESS.md](docs/PUBLISH-READINESS.md) | Pre-push checklist (maintainers) |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
+| [RUNBOOKS/](RUNBOOKS/) | Deployment and operations |
 
 ## Backup
 
@@ -114,22 +113,15 @@ python -m scripts.apx_ctl backup-create
 
 Back up `managed/` and `rust/keys/` regularly.
 
-## Community support
+## Support
 
-APXV1 is open source (Apache 2.0). For bugs and how-to questions, use [GitHub Issues](https://github.com/apxv1dev/APXV1/issues) and include output from `python -m scripts.apx_doctor`.
+APXV1 is open source (Apache 2.0).
 
-- **Best effort only** — no guaranteed response time for free support
-- Start with [docs/QUICKSTART.md](docs/QUICKSTART.md) and [docs/BUILDING.md](docs/BUILDING.md)
-- **Security:** see [SECURITY.md](SECURITY.md) — do not post vulnerabilities in public issues
+- **Bugs and how-to:** [GitHub Issues](https://github.com/apxv1dev/APXV1/issues) — include `python -m scripts.apx_doctor` output
+- **Security:** [SECURITY.md](SECURITY.md) — do not post vulnerabilities in public issues
+- **Contact:** [@apxv1dev](https://github.com/apxv1dev) · [apxv1dev@protonmail.com](mailto:apxv1dev@protonmail.com)
 
-## Professional services
-
-Implementation, air-gapped deployment, custom agents, and team training may be available on a scoped basis for US organizations.
-
-- Paid work is **separate** from the open-source project and does not include an SLA unless agreed in writing
-- APXV1 remains a **research foundation** — not a certified compliance product
-
-Contact: [@apxv1dev](https://github.com/apxv1dev) · [apxv1dev@protonmail.com](mailto:apxv1dev@protonmail.com) (commercial inquiries welcome via issue or email).
+Community support is best-effort. Start with [docs/QUICKSTART.md](docs/QUICKSTART.md) and [docs/BUILDING.md](docs/BUILDING.md).
 
 ## License
 

@@ -18,7 +18,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Pluggable `LLMBackend` interface and `examples/llm-ollama/`
 - Examples: `examples/hello-agent/`, `examples/api-client/`
 - Docker image and `docker-compose.yml` with baked ZK keys at build time
-- Documentation: `docs/QUICKSTART.md`, `docs/BUILDING.md`, `docs/INSTALL-RUST.md`, `docs/DOCKER.md`, `docs/DEMO-SCRIPT.md`
+- Documentation: `docs/QUICKSTART.md`, `docs/BUILDING.md`, `docs/INSTALL-RUST.md`, `docs/DOCKER.md`, operator runbooks
 - CI workflow: `.github/workflows/ci.yml` (pytest, Rust build, setup, doctor, integrity)
 - Legal and hygiene: `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, expanded `.gitignore`
 
@@ -38,6 +38,6 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 ### Security
 
 - Runtime secrets (API keys, signing keys, ZK `.pk`/`.vk`) excluded from version control via `.gitignore`
-- `docs/resume/` gitignored for local-only notes
+- Maintainer-only paths gitignored (`docs/internal/`, `docs/resume/`)
 
 [0.3.0]: https://github.com/apxv1dev/APXV1/releases/tag/v0.3.0
