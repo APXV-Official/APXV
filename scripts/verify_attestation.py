@@ -195,7 +195,7 @@ def verify_real_zk_independent(
         print("            (Using only the serialized proof + vk + public inputs)")
 
         cmd = [
-            "cargo", "run", "--manifest-path", str(manifest),
+            "cargo", "run", "--release", "--manifest-path", str(manifest),
             "--", "verify", circuit,
             "--proof", str(proof_file),
         ]

@@ -18,7 +18,7 @@ from agents.job_queue import JobQueue
 from agents.local_api import APXLocalServer, validate_localhost_bind
 from agents.pipeline_service import run_pipeline_quiet
 
-from tests.conftest import seed_test_instance
+from tests.helpers import seed_test_instance
 
 
 def test_api_key_hash_validation(tmp_path):

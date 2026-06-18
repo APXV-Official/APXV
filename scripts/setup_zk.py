@@ -43,7 +43,7 @@ def ensure_zk_setup(base_path: Path | None = None, force: bool = False) -> dict:
 
         print(f"[ZK Setup] Running one-time setup for circuit: {circuit}")
         result = subprocess.run(
-            ["cargo", "run", "--manifest-path", str(manifest), "--", "setup", circuit],
+            ["cargo", "run", "--release", "--manifest-path", str(manifest), "--", "setup", circuit],
             cwd=str(rust_dir),
             capture_output=True,
             text=True,

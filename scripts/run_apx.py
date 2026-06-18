@@ -145,7 +145,7 @@ def generate_zk_proof(
         print("     (First run will compile — can take 30-120s)")
 
         cmd = [
-            "cargo", "run", "--manifest-path", str(manifest),
+            "cargo", "run", "--release", "--manifest-path", str(manifest),
             "--", "prove", circuit, "--inputs", str(inputs_file)
         ]
 

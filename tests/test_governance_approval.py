@@ -13,7 +13,7 @@ from agents.governance_approval import GovernanceApprovalError, GovernanceApprov
 from agents.runtime import APXRuntime
 from agents.pipeline_service import run_pipeline_quiet
 
-from tests.conftest import seed_test_instance
+from tests.helpers import seed_test_instance
 
 
 @pytest.fixture
