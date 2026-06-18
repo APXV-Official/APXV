@@ -8,6 +8,12 @@
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
+## Demo
+
+End-to-end walkthrough on Windows: first-run setup, the 3-agent reference pipeline with attestation, independent Groth16 verification, and the [hello-agent](examples/hello-agent/) example.
+
+<video src="apxv1-demo.mp4" controls width="100%"></video>
+
 ## Who This Is For
 
 - **Developers** building privacy-preserving agent pipelines on local infrastructure
