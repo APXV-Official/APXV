@@ -89,4 +89,4 @@
 
 ---
 
-*Phase 2 security requirements addressed. See `PHASE2-STATUS.md` for exit criteria.*
+*Security review for the governed core in v0.3.0.*

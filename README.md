@@ -36,7 +36,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-Phase 1 (cryptography) and Phase 2 (governed core) are complete. The deterministic 3-agent reference pipeline and ZK attestation path are verified end-to-end. See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for component details.
+Cryptography, governed runtime, and onboarding paths are complete for **v0.3.0**. The deterministic 3-agent reference pipeline and ZK attestation path are verified end-to-end. See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for component details.
 
 ## Quickstart
 

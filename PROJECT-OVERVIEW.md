@@ -31,8 +31,8 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 
 | Milestone | Status |
 |-----------|--------|
-| Phase 1 — Cryptography | Complete ([PHASE1-STATUS.md](PHASE1-STATUS.md)) |
-| Phase 2 — Governed core | Complete ([PHASE2-STATUS.md](PHASE2-STATUS.md)) |
+| Cryptography & ZK attestation | Complete |
+| Governed runtime core | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
 | Current release | **v0.3.0** |
 
