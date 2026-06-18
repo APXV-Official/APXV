@@ -49,7 +49,7 @@ def run_full_pipeline(input_text: Optional[str] = None, runtime: Optional[APXRun
         )
 
     print("=" * 60)
-    print("APX v1 — Full Pipeline Execution")
+    print("APXV1 — Full Pipeline Execution")
     print("=" * 60)
 
     runtime = runtime or APXRuntime()
