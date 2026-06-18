@@ -12,7 +12,11 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 
 End-to-end walkthrough on Windows: first-run setup, the 3-agent reference pipeline with attestation, independent Groth16 verification, and the [hello-agent](examples/hello-agent/) example.
 
-<video src="apxv1-demo.mp4" controls width="100%"></video>
+<a href="https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4">
+  <img src="docs/assets/apxv1-demo-thumb.jpg" alt="APXV1 end-to-end demo — click to watch" width="800">
+</a>
+
+**▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)** (~2 min)
 
 ## Who This Is For
 

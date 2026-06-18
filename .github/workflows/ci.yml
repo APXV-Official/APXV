@@ -25,11 +25,11 @@ jobs:
         working-directory: rust
         run: cargo build --release
 
-      - name: Run tests
-        run: python -m pytest tests/ -q --tb=short
-
       - name: Setup first-run (with ZK)
         run: python -m scripts.setup_first_run
+
+      - name: Run tests
+        run: python -m pytest tests/ -q --tb=short
 
       - name: Doctor check
         run: python -m scripts.apx_doctor
