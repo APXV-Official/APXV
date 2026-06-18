@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# APX v1 — Cross-platform install + verify (Unix)
+# APXV1 — Cross-platform install + verify (Unix)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 echo "============================================================"
-echo "APX Install"
+echo "APXV1 Install"
 echo "============================================================"
 
 if ! command -v python3 >/dev/null 2>&1; then
@@ -38,7 +38,7 @@ echo "[5/5] Independent proof verification..."
 python3 -m scripts.verify_attestation --real-zk
 
 echo "============================================================"
-echo "APX install complete."
+echo "APXV1 install complete."
 echo "Next: python3 -m scripts.apx_serve"
 echo "Docs: docs/QUICKSTART.md"
 echo "============================================================"

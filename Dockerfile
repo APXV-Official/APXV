@@ -1,4 +1,4 @@
-# APX v1 — Multi-stage Docker build
+# APXV1 — Multi-stage Docker build
 # Builds the Rust prover/verifier and packages the Python governed runtime
 
 # ============================================

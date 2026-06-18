@@ -26,7 +26,7 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 - **Unaudited rule changes** (governance approval workflow required)
 - **Unsigned capability policy changes** (Ed25519-signed local policy)
 - **Accidental data egress via APXV1 itself** (localhost-only API, no built-in telemetry)
-- **Unverifiable processing claims** (optional Groth16 proofs bind execution to rule hashes)
+- **Unverifiable processing claims** (Groth16 proofs bind execution to rule hashes; use `run_apx --attest` and `verify_attestation --real-zk`)
 
 ### APXV1 Does NOT Protect Against
 

@@ -1,12 +1,13 @@
-# APXV1 — Phase 2 Security Review & Threat Model
+# APXV1 — Security Architecture
 
-**Status:** Phase 2 Completion Document (Updated)  
-**Date:** 2026-06-17  
+**Version:** 0.3.0  
 **Deployment:** Local, self-hosted, air-gapped compatible
+
+Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md).
 
 ---
 
-## 1. Components Reviewed
+## Components Reviewed
 
 - `agents/agent1.py`, `agent2.py`, `agent3.py` — deterministic pipeline agents
 - `agents/store.py` — SQLite + content-addressable artifact store
@@ -19,45 +20,45 @@
 
 ---
 
-## 2. Security Strengths (Phase 2)
+## Security Strengths
 
 - Immutable artifact storage with SQLite index + CAS blobs
 - Artifact hash chaining verified via `apx_ctl store-verify`
 - Cryptographically chained audit logs (system + per-agent)
-- Persistent capability policy on local disk (no in-memory-only grants in production path)
+- Ed25519-signed capability policy on local disk
 - Governance specification change tracking in SQLite
 - Unified runtime with integrity check (`apx_ctl integrity`)
 - No network dependencies — suitable for air-gapped deployment
-- ZK proof layer (Phase 1) remains independently verifiable
+- Groth16 attestation independently verifiable via `verify_attestation --real-zk`
 
 ---
 
-## 3. Residual Limitations
+## Known Limitations
 
-| Area | Limitation | Phase |
+| Area | Limitation | Notes |
 |------|------------|-------|
-| Capability policy | Local JSON file — not signed or HSM-protected | 3+ |
-| Governance approval | Changes logged but no multi-party approval workflow | 3+ |
-| Input validation | Basic regex redaction; no formal bounds checking | 3+ |
-| Agent isolation | Same process — no container sandbox yet | 3 |
-| Rate limiting | None | 4 |
-| Centralized monitoring | CLI only — no automated alerting | 4 |
+| Input validation | Pattern-based redaction | Not full DLP |
+| Agent isolation | Same process | No container sandbox per agent |
+| Rate limiting | None | Local API only |
+| Centralized monitoring | CLI / JSON logs | Bring your own observability stack |
 
 ---
 
-## 4. Threat Model (Air-Gapped Local Deployment)
+## Threat Model (Air-Gapped Local Deployment)
 
 ### Assets
+
 - Governance markdown (rules, workflows, knowledge)
 - SQLite store + CAS blobs
 - Audit logs and ZK proof artifacts
-- Capability policy file
+- Capability policy and signing keys
 - Rust proving keys (`rust/keys/`)
 
 ### Threat Actors
-- **Malicious local operator** — can edit capability policy or governance files
+
+- **Malicious local operator** — filesystem and key access
 - **Compromised agent code** — bug or tampered Python module
-- **Insider with filesystem access** — can attempt to tamper with logs or store
+- **Insider with filesystem access** — tampering with logs or store
 
 ### Mitigations
 
@@ -65,13 +66,13 @@
 |--------|------------|
 | Artifact tampering | CAS blobs + hash chain; integrity verification |
 | Audit log tampering | Cryptographic chaining; `audit-verify` |
-| Unauthorized agent actions | Persistent capability policy + audit of all checks |
-| Wrong VK / stale proofs | Phase 1 manifest VK integrity checks |
-| Policy tampering | Ed25519-signed capability policy; file permissions (OS-level) |
+| Unauthorized agent actions | Signed capability policy + audit of all checks |
+| Wrong VK / stale proofs | VK manifest integrity checks |
+| Policy tampering | Ed25519-signed capability policy; OS file permissions |
 
 ---
 
-## 5. Incident Response (Air-Gapped)
+## Incident Response (Air-Gapped)
 
 1. Run `python -m scripts.apx_ctl integrity`
 2. If failed, run `store-verify` and `audit-verify` separately
@@ -79,14 +80,12 @@
 4. Collect latest artifacts from `managed/store/blobs/`
 5. Export audit logs from `managed/audit/`
 
----
-
-## 6. Phase 2 Security Posture
-
-**Acceptable for:** trusted internal environments, air-gapped labs, demonstration deployments with sensitive-but-non-regulated data.
-
-**Not yet acceptable for:** multi-tenant SaaS, regulated production (HIPAA/PCI), internet-exposed deployments.
+See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md) for operator steps.
 
 ---
 
-*Security review for the governed core in v0.3.0.*
+## Deployment Posture (v0.3.0)
+
+**Appropriate for:** trusted internal environments, air-gapped labs, pilots with sensitive-but-non-regulated data.
+
+**Not appropriate for:** multi-tenant SaaS, regulated production (HIPAA/PCI), internet-exposed deployments without additional controls.

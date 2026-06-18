@@ -1,5 +1,5 @@
 """
-APX v1 — Hello Agent Example
+APXV1 — Hello Agent Example
 
 A minimal custom governed agent that:
 - Uses APXRuntime for capabilities, audit, and artifacts
@@ -22,7 +22,7 @@ from agents.runtime import APXRuntime
 
 
 class HelloAgent:
-    """Minimal example agent for building on APX."""
+    """Minimal example agent for building on APXV1."""
 
     def __init__(self, runtime: APXRuntime | None = None):
         self.agent_id = "APX-AGENT-LLM-001"
@@ -46,7 +46,7 @@ class HelloAgent:
             "agent_id": self.agent_id,
             "agent_name": self.agent_name,
             "input_message": message,
-            "output_message": f"Hello from APX — received {len(message)} characters",
+            "output_message": f"Hello from APXV1 — received {len(message)} characters",
             "processed_at": datetime.now(timezone.utc).isoformat(),
             "governed": True,
         }

@@ -1,10 +1,10 @@
-# APX v1 — Cross-platform install + verify (Windows PowerShell)
+# APXV1 — Cross-platform install + verify (Windows PowerShell)
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 Write-Host "============================================================"
-Write-Host "APX Install"
+Write-Host "APXV1 Install"
 Write-Host "============================================================"
 
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
@@ -34,7 +34,7 @@ Write-Host "[5/5] Independent proof verification..."
 python -m scripts.verify_attestation --real-zk
 
 Write-Host "============================================================"
-Write-Host "APX install complete."
+Write-Host "APXV1 install complete."
 Write-Host "Next: python -m scripts.apx_serve"
 Write-Host "Docs: docs/QUICKSTART.md"
 Write-Host "============================================================"

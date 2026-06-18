@@ -1,5 +1,5 @@
 """
-APX v1 — Ollama LLM Agent Example
+APXV1 — Ollama LLM Agent Example
 
 Shows how to plug a local LLM into APX using the LLMBackend interface.
 Requires Ollama running on localhost (ollama serve).

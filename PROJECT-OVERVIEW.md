@@ -122,6 +122,7 @@ Fresh installs and CI environments should report **HEALTHY** without this step.
 | [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain |
 | [docs/cryptography/](docs/cryptography/) | ZK setup and verification |
 | [SECURITY.md](SECURITY.md) | Threat model |
+| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [RUNBOOKS/](RUNBOOKS/) | Deployment and operations |

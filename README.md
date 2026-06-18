@@ -1,5 +1,7 @@
 # APXV1
 
+[![CI](https://github.com/apxv1dev/APXV1/actions/workflows/ci.yml/badge.svg)](https://github.com/apxv1dev/APXV1/actions/workflows/ci.yml)
+
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
 > Not [apx.guide](https://apx.guide) / `apx-project` semantic-drift tooling. Current release: **v0.3.0**.
@@ -85,10 +87,42 @@ curl http://127.0.0.1:8741/health
 
 ## Architecture
 
-- **Deterministic Core** — RuleGovernedRedactor, WorkflowOrchestrator, AttestationCoordinator
-- **Agentic Layer** — `LLMBackend` + `LLMReasoner` (pluggable), `ToolUser`, `AgenticContract`
-- **Governance & Control** — CapabilityChecker, AuditLogger, GovernanceRegistry
-- **Cryptographic Layer** — Groth16 proofs over BN254 (arkworks)
+```mermaid
+flowchart TB
+  subgraph governance [Governance]
+    Rules[rules / workflows / knowledge]
+    Approval[propose → approve → apply]
+  end
+
+  subgraph runtime [APXV1 Runtime]
+    API[Local API :8741]
+    Cap[Signed capabilities]
+    Agents[Your agents + reference pipeline]
+    Store[(SQLite + CAS artifacts)]
+    Audit[(Chained audit logs)]
+  end
+
+  subgraph crypto [Attestation]
+    ZK[Groth16 proofs — Rust circuits]
+    Verify[Independent verify]
+  end
+
+  Rules --> Agents
+  Approval --> Rules
+  Cap --> Agents
+  Agents --> Store
+  Agents --> Audit
+  Agents --> ZK
+  ZK --> Verify
+  API --> Agents
+```
+
+| Layer | Components |
+|-------|------------|
+| **Deterministic core** | RuleGovernedRedactor, WorkflowOrchestrator, AttestationCoordinator |
+| **Agentic layer** | `LLMBackend`, `LLMReasoner`, `ToolUser`, `AgenticContract` |
+| **Governance & control** | CapabilityChecker, AuditLogger, GovernanceRegistry |
+| **Cryptographic layer** | Groth16 proofs over BN254 (arkworks) |
 
 ## Documentation
 
@@ -102,6 +136,7 @@ curl http://127.0.0.1:8741/health
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/LOCAL-API.md](docs/LOCAL-API.md) | API reference |
 | [SECURITY.md](SECURITY.md) | Threat model |
+| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture (v0.3.0) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [RUNBOOKS/](RUNBOOKS/) | Deployment and operations |
 

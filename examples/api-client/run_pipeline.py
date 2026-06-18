@@ -1,5 +1,5 @@
 """
-APX v1 — API Client Example
+APXV1 — API Client Example
 
 Calls the local APX API to run the governed pipeline.
 Requires apx_serve to be running and a valid API key.
