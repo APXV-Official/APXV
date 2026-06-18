@@ -2,7 +2,7 @@
 name = "apx-circuits"
 version = "0.1.0"
 edition = "2021"
-authors = ["The APXV1 Project"]
+authors = ["apxv1dev"]
 description = "APXV1 — Minimal zero-knowledge circuits for redaction governance and attestation"
 license = "Apache-2.0"
 readme = "README.md"

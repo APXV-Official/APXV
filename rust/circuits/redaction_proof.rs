@@ -1,5 +1,5 @@
 // APX v1 — Redaction Proof Circuit
-// Copyright 2026
+// Copyright 2026 apxv1dev
 // Licensed under the Apache License, Version 2.0
 //
 // Public inputs:

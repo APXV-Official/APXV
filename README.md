@@ -125,4 +125,4 @@ Community support is best-effort. Start with [docs/QUICKSTART.md](docs/QUICKSTAR
 
 ## License
 
-Copyright © 2026 The APXV1 Project. Licensed under the [Apache License, Version 2.0](LICENSE).
+Copyright © 2026 [apxv1dev](https://github.com/apxv1dev). Licensed under the [Apache License, Version 2.0](LICENSE).
