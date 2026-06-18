@@ -1,0 +1,110 @@
+name: Bug report
+description: Something failed — install, doctor, pipeline, API, Docker, or ZK verify
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    value: |
+      Thanks for reporting. **Do not paste API keys, signing keys, or real PII.**
+
+      Before filing: [QUICKSTART.md](../docs/QUICKSTART.md) · [DOCKER.md](../docs/DOCKER.md) (use fresh volumes for clean deploys)
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Install / setup_first_run
+        - apx_doctor / integrity
+        - Pipeline (run_apx)
+        - ZK verify (verify_attestation --real-zk)
+        - Local API (apx_serve)
+        - Docker
+        - Custom agent / example
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "e.g. Windows 11, Ubuntu 22.04, macOS 14"
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "e.g. 3.11.8 — from `python --version`"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: rust
+    attributes:
+      label: Rust toolchain installed?
+      options:
+        - "Yes (cargo + rustc)"
+        - "No"
+        - "Unknown"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install_type
+    attributes:
+      label: Install type
+      description: Fresh clone with empty managed/ vs reusing an old dev managed/ folder often causes integrity failures
+      options:
+        - Fresh clone / clean managed
+        - Existing / dev managed folder (upgraded in place)
+        - Docker (fresh volumes)
+        - Docker (mounted existing managed/)
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: apx_doctor output
+      description: Run `python -m scripts.apx_doctor` (or `--json`) and paste output
+      render: shell
+      placeholder: |
+        Paste full doctor output here
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Extra logs (optional)
+      description: Integrity output, Docker logs, pytest failure, etc.
+      render: shell

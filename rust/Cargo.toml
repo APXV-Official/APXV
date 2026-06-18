@@ -1,0 +1,36 @@
+[package]
+name = "apx-circuits"
+version = "0.1.0"
+edition = "2021"
+authors = ["APX v1"]
+description = "APX v1 — Minimal zero-knowledge circuits for redaction governance and attestation"
+license = "Apache-2.0"
+readme = "README.md"
+
+[dependencies]
+# arkworks 0.4 stack for R1CS circuits over BN254 with Groth16
+ark-std = { version = "0.4", features = ["std", "getrandom"] }
+ark-ff = "0.4"
+ark-bn254 = "0.4"
+ark-groth16 = "0.4"
+ark-relations = "0.4"
+ark-r1cs-std = "0.4"
+
+# ark-snark provides the SNARK trait (circuit_specific_setup, prove, verify, etc.).
+# This is required in arkworks 0.4 even when using ark-groth16; the trait is not
+# re-exported through groth16 alone. This is part of making the cryptographic
+# foundation explicit and auditable (per Phase 1 of APX-PRODUCTION-BUILD-PLAN.md).
+ark-snark = "0.4"
+
+# Minimal support for CLI + JSON I/O in the tiny integration binary
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+hex = "0.4"
+
+# Cryptographic serialization (REQUIRED for real, independently verifiable proofs)
+# This enables Proof and VerifyingKey to be serialized/deserialized so they
+# can be written to disk and verified later by a completely separate process.
+ark-serialize = { version = "0.4", features = ["derive"] }
+
+[profile.release]
+opt-level = 3

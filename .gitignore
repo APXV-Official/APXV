@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Rust
+rust/target/
+
+# ZK trusted-setup keys (generated per deployment)
+rust/keys/*.pk
+rust/keys/*.vk
+
+# Runtime state — generated locally, never commit
+managed/artifacts/
+managed/store/
+managed/audit/
+managed/backups/
+managed/config/api_keys.json
+managed/config/OPERATOR-KEY*.txt
+managed/config/capability_signing.key
+managed/config/capability_signing.json
+managed/config/capabilities.json
+managed/config/capabilities.json.legacy
+managed/config/governance_signing.key
+managed/config/governance_signing.json
+managed/config/server.json
+managed/config/runtime.json
+managed/config/capability_policy_history/
+
+# Personal resume notes (not for public repo)
+docs/resume/
+
+# Internal commercial / private ops (do not publish)
+docs/internal/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.log

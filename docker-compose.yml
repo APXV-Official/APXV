@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  apx-v1:
+    build: .
+    image: apx-v1:latest
+    container_name: apx-v1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8741:8741"
+    volumes:
+      - ./managed:/app/managed
+      - ./rust/keys:/app/rust/keys
+    environment:
+      - APX_BASE_PATH=/app
+      - APX_CONTAINER_BIND=1
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8741/health', timeout=5)",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

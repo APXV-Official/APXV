@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "apx-v1"
+version = "0.3.0"
+description = "APXV1 — Air-gapped governed agent platform with cryptographic attestation (Attested Proof Execution Verified)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache-2.0"}
+authors = [
+  {name = "The APXV1 Project"}
+]
+dependencies = [
+    "cryptography>=41.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/apxv1dev/APXV1"
+Documentation = "https://github.com/apxv1dev/APXV1/blob/main/docs/QUICKSTART.md"
+Repository = "https://github.com/apxv1dev/APXV1"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=23.0",
+    "mypy>=1.0",
+]
+
+[project.scripts]
+run-apx = "scripts.run_apx:main"
+setup-zk = "scripts.setup_zk:main"
+setup-first-run = "scripts.setup_first_run:main"
+apx-doctor = "scripts.apx_doctor:main"
+verify-attestation = "scripts.verify_attestation:main"
+apx-verify-bundle = "scripts.apx_verify_bundle:main"
+apx-ctl = "scripts.apx_ctl:main"
+apx-serve = "scripts.apx_serve:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agents*", "scripts*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt"]

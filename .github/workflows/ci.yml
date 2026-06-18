@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install package
+        run: pip install -e ".[dev]"
+
+      - name: Build Rust prover
+        working-directory: rust
+        run: cargo build --release
+
+      - name: Run tests
+        run: python -m pytest tests/ -q --tb=short
+
+      - name: Setup first-run (with ZK)
+        run: python -m scripts.setup_first_run
+
+      - name: Doctor check
+        run: python -m scripts.apx_doctor
+
+      - name: Integrity check
+        run: python -m scripts.apx_ctl integrity
