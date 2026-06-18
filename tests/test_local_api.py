@@ -18,6 +18,8 @@ from agents.job_queue import JobQueue
 from agents.local_api import APXLocalServer, validate_localhost_bind
 from agents.pipeline_service import run_pipeline_quiet
 
+from tests.conftest import seed_test_instance
+
 
 def test_api_key_hash_validation(tmp_path):
     config = tmp_path / "api_keys.json"
@@ -62,30 +64,17 @@ def _request(url: str, method: str = "GET", data: dict | None = None, headers: d
 
 @pytest.fixture
 def api_server(tmp_path):
-    managed = tmp_path / "managed"
-    for sub in ("config", "store", "audit", "rules", "workflows", "knowledge", "artifacts"):
-        (managed / sub).mkdir(parents=True)
-
-    for src, dst in [
-        (ROOT / "managed" / "rules" / "rule1.md", managed / "rules" / "rule1.md"),
-        (ROOT / "managed" / "workflows" / "workflow1.md", managed / "workflows" / "workflow1.md"),
-        (ROOT / "managed" / "knowledge" / "knowledge1.md", managed / "knowledge" / "knowledge1.md"),
-    ]:
-        dst.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
-
-    legacy_policy = ROOT / "managed" / "config" / "capabilities.json.legacy"
-    if legacy_policy.exists():
-        (managed / "config" / "capabilities.json").write_text(
-            legacy_policy.read_text(encoding="utf-8"), encoding="utf-8"
-        )
-
+    api_key = seed_test_instance(tmp_path)
     server = APXLocalServer(base_path=tmp_path)
+    if not api_key:
+        auth = APIKeyAuth(tmp_path / "managed" / "config" / "api_keys.json")
+        api_key = auth.create_key("pytest-operator", description="API test fixture key")
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     time.sleep(0.3)
     host, port = server.address
     base = f"http://{host}:{port}"
-    yield base, server.generated_key or "test"
+    yield base, api_key
     server.worker.stop()
     server.httpd.shutdown()
 

@@ -13,27 +13,12 @@ from agents.governance_approval import GovernanceApprovalError, GovernanceApprov
 from agents.runtime import APXRuntime
 from agents.pipeline_service import run_pipeline_quiet
 
-
-def _seed_managed_tree(target: Path) -> None:
-    managed = target / "managed"
-    for sub in ("config", "store", "audit", "rules", "workflows", "knowledge", "artifacts", "governance"):
-        (managed / sub).mkdir(parents=True, exist_ok=True)
-
-    for rel in ("rules/rule1.md", "workflows/workflow1.md", "knowledge/knowledge1.md"):
-        src = ROOT / "managed" / rel
-        dst = managed / rel
-        dst.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
-
-    legacy = ROOT / "managed" / "config" / "capabilities.json.legacy"
-    if legacy.exists():
-        (managed / "config" / "capabilities.json").write_text(
-            legacy.read_text(encoding="utf-8"), encoding="utf-8"
-        )
+from tests.conftest import seed_test_instance
 
 
 @pytest.fixture
 def governed_env(tmp_path):
-    _seed_managed_tree(tmp_path)
+    seed_test_instance(tmp_path)
     runtime = APXRuntime(base_path=tmp_path)
     return tmp_path, runtime
 

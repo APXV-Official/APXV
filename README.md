@@ -4,7 +4,7 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
-> Not [apx.guide](https://apx.guide) / `apx-project` semantic-drift tooling. Current release: **v0.3.0**.
+> Current release: **v0.3.0**.
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
