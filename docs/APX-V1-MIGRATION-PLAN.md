@@ -1,6 +1,6 @@
 # APXV1 v1.0.0 Migration Plan
 
-**Status:** Active — Phase 0 complete; ready for Phase 1  
+**Status:** Active — Phase 1 complete; ready for Phase 2  
 **Branch:** `apx-v1-migration` (local; push only when ready)  
 **Canonical workspace:** `C:\APXV1`  
 **Date:** June 2026
@@ -251,7 +251,7 @@ Every phase:
 | Phase | Started | Completed | Notes |
 |-------|---------|-----------|-------|
 | 0 | 2026-06-20 | 2026-06-20 | Baseline + plan + branch |
-| 1 | | | |
+| 1 | 2026-06-20 | 2026-06-20 | RedactionEngine v3 in agents/redaction/ |
 | 2 | | | |
 | 3 | | | |
 | 4 | | | |

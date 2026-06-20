@@ -25,7 +25,7 @@ cargo test --manifest-path rust/Cargo.toml
 
 | Suite | Expected | Actual | Date |
 |-------|----------|--------|------|
-| pytest | 51 passed | **51 passed** | 2026-06-20 |
+| pytest | 51 passed | **64 passed** (post Phase 1) | 2026-06-20 |
 | rust (apx-circuits) | builds clean | **0 tests** (no unit tests in crate yet); `cargo test` ok | 2026-06-20 |
 
 ## Notes

@@ -134,6 +134,8 @@ class RuleGovernedRedactor:
             "total_redactions": redaction_result["total_redactions"],
             "redaction_summary": redaction_result.get("redaction_summary", ""),
             "redaction_engine_version": redaction_result.get("engine_version"),
+            "entities": redaction_result.get("entities", []),
+            "entity_count": redaction_result.get("entity_count", 0),
             "rule_id": self.rule_set["id"],
             "rule_version": self.rule_set["version"],
             "rule_file_hash": self.rule_set["file_hash"],
