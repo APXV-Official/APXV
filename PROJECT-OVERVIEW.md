@@ -38,7 +38,6 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 | Privacy migration (redaction, E2EE, dual ZK) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
 | Current release | **v1.0.1** |
-| Public launch target | **v1.1.0** — ceremony transparency + voice suite ([checklist](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md)) |
 
 The reference 3-agent pipeline (redact → orchestrate → attest) and dual-track Groth16 verification path are implemented and covered by **295+ automated tests**.
 
@@ -132,10 +131,7 @@ Fresh installs and CI environments should report **HEALTHY** without this step.
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain |
 | [docs/cryptography/](docs/cryptography/) | ZK setup and verification |
-| [docs/APX-V1-MIGRATION-PLAN.md](docs/APX-V1-MIGRATION-PLAN.md) | Migration record (v1.0.0 → v1.1) |
-| [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md) | v1.1 public launch gates |
-| [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md) | ZK ceremony tiers + transcript |
-| [docs/DEMO-SCRIPT-V1.1.md](docs/DEMO-SCRIPT-V1.1.md) | Public launch demo script |
+| [docs/APX-V1-MIGRATION-PLAN.md](docs/APX-V1-MIGRATION-PLAN.md) | Migration record (v1.0.0 → v1.0.1) |
 | [SECURITY.md](SECURITY.md) | Threat model |
 | [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |

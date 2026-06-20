@@ -101,29 +101,6 @@ def run_doctor(base_path: Path, *, check_llm: bool = False) -> dict:
         }
     )
 
-    from scripts.ceremony_transcript import transcript_path, verify_transcript
-
-    ceremony_file = transcript_path(base_path)
-    if ceremony_file.exists():
-        ceremony = verify_transcript(base_path)
-        checks.append(
-            {
-                "name": "ceremony_transcript",
-                "ok": ceremony["valid"],
-                "detail": ceremony,
-                "required": "signed VK lineage (v1.1)",
-            }
-        )
-    else:
-        checks.append(
-            {
-                "name": "ceremony_transcript",
-                "ok": True,
-                "detail": "not present — run: python -m scripts.ceremony_transcript --write",
-                "required": "optional until v1.1 launch",
-            }
-        )
-
     policy_path = base_path / "managed" / "config" / "capabilities.json"
     if not policy_path.exists():
         checks.append(
