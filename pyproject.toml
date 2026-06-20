@@ -38,6 +38,18 @@ apx-verify-bundle = "scripts.apx_verify_bundle:main"
 apx-ctl = "scripts.apx_ctl:main"
 apx-serve = "scripts.apx_serve:main"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [
+    "PEET SDK v1.0.0",
+    "peet-proof-system",
+    "website-local",
+    "agent-tools",
+    "terminals",
+    ".git",
+    "rust/target",
+]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["agents*", "scripts*"]

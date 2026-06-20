@@ -44,6 +44,20 @@ docs/resume/
 # Internal commercial / private ops (do not publish)
 docs/internal/
 
+# Local marketing site (iterate before deploy — do not publish)
+website-local/
+
+# Legacy PEET reference trees (local porting source — never publish)
+PEET SDK v1.0.0/
+peet-proof-system/
+
+# E2EE keypair (generated at runtime — never commit)
+managed/config/e2ee-keypair.json
+
+# Agent / IDE session artifacts
+agent-tools/
+terminals/
+
 # OS / editor
 .DS_Store
 Thumbs.db
