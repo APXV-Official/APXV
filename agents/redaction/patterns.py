@@ -39,6 +39,48 @@ DISABLED_PATTERN_TYPES = frozenset(
 # Keyword-anchored name patterns always compile and run.
 NAME_PATTERN_TYPES = frozenset()
 
+# Lower value = runs earlier (more specific patterns beat broad fallbacks).
+EXECUTION_PRIORITY: dict[str, int] = {
+    "email_address": 2,
+    "web_url": 3,
+    "fax_number": 4,
+    "credit_card_dashed": 6,
+    "credit_card": 7,
+    "credit_card_generic": 8,
+    "cc_fragment": 9,
+    "city_state_zip_pattern": 10,
+    "city_state_pattern": 11,
+    "po_box": 12,
+    "uppercase_name": 12,
+    "person_full_name": 13,
+    "full_name": 14,
+    "age_sex_combo": 16,
+    "month_abbrev_in_context": 16,
+    "date_spelled_month_with_year": 17,
+    "date_spelled_month_day_first": 18,
+    "date_spelled_month_noyear": 19,
+    "any_date_slash": 20,
+    "any_date_dash": 21,
+    "partial_dob": 22,
+    "date_of_birth": 23,
+    "birth_year": 25,
+    "name_with_credential": 26,
+    "lowercase_name_credential": 27,
+    "ssn": 23,
+    "ssn_fragment": 24,
+    "ssn_last4": 25,
+    "standalone_alphanumeric_id": 28,
+    "device_serial_number": 29,
+    "city_county_names": 30,
+    "phone_number": 40,
+    "bare_domain_url": 45,
+    "date_dash_mdy": 48,
+    "bank_account": 55,
+    "age_pattern": 56,
+    "age_prefix": 57,
+    "age_compressed": 58,
+}
+
 
 def compile_patterns(
     definitions: Sequence[dict] = ALL_PATTERN_DEFINITIONS,
@@ -71,4 +113,5 @@ def compile_patterns(
                 enabled=True,
             )
         )
+    compiled.sort(key=lambda p: (EXECUTION_PRIORITY.get(p.type, 25), p.type))
     return compiled

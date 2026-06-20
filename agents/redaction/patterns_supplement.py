@@ -70,7 +70,7 @@ SUPPLEMENTAL_PATTERN_DEFINITIONS: List[Dict[str, Any]] = [
         "category": "Personal Information",
         "type": "uppercase_name",
         "regex": r"""\b((?:name|patient|provider|author|signed|dictated|attending|by|from|to)[\s:]+)([A-Z]{4,}(?:\s+[A-Z]{2,})*)\b""",
-        "flags": re.IGNORECASE,
+        "flags": 0,
         "replacement": r"\1[REDACTED-NAME]",
         "description": "Keyword-anchored all-caps names",
         "severity": "critical",
@@ -119,7 +119,7 @@ SUPPLEMENTAL_PATTERN_DEFINITIONS: List[Dict[str, Any]] = [
     {
         "category": "Technical Information",
         "type": "drivers_license",
-        "regex": r"""\b(?:driver(?:'s)?\s*licen[cs]e|DL|licen[cs]e\s*(?:#|no\.?|number)?)[\s:#]*[A-Z]{1,2}[-\s]?\d{5,12}\b""",
+        "regex": r"""\b(?:driver'?s?\s+license|DL|drivers?\s+lic)[\s#:]+([A-Z]{2}-[A-Z]\d{4,8}|[A-Z]\d{6,8}|[A-Z]{1,2}\d{5,7})\b""",
         "flags": re.IGNORECASE,
         "replacement": "[REDACTED-DL]",
         "description": "Driver license numbers",

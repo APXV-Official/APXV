@@ -139,7 +139,7 @@ PATTERN_DEFINITIONS: List[Dict[str, Any]] = [
     {
         "category": 'Financial Information',
         "type": 'ssn_fragment',
-        "regex": r"""\b(?:SSN|Social Security|social security)?\s*(?:ending|last\s*(?:4\s*)?digits?|ends?(?:\s*in)?)\s*(\d{4})\b""",
+        "regex": r"""\b(?:SSN|Social Security|social security)?\s*(?:ending(?:\s+in)?|last\s*(?:4\s*)?digits?|ends?(?:\s*in)?)\s*(\d{4})\b""",
         "flags": re.IGNORECASE,
         "replacement": '[REDACTED-SSN4]',
         "description": 'SSN Last 4 Digits fragments (SSN ending 3456, last 4 digits 7890)',

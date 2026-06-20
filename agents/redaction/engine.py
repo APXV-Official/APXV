@@ -259,6 +259,40 @@ class APXRedactionEngine:
             prefix = text[max(0, start - 4) : start]
             if re.search(r"\d{1,2}\.$", prefix):
                 return False
+        if pattern.type == "phone_number":
+            prefix = text[max(0, start - 20) : start].lower()
+            if re.search(r"(?:fax|facsimile|f:)\s*$", prefix):
+                return False
+        if pattern.type == "bare_domain_url":
+            prefix = text[max(0, start - 12) : start]
+            if prefix.endswith("@") or "://" in prefix or prefix.endswith("www."):
+                return False
+        if pattern.type == "date_of_birth":
+            context = text[max(0, start - 16) : start + len(matched)].lower()
+            contextual = bool(re.search(r"\b(?:dob|born|birth)\b", context))
+            if re.search(r"\d{1,2}/\d{1,2}/\d{2,4}", matched) and not contextual:
+                return False
+            if re.search(r"\d{4}-\d{1,2}-\d{1,2}", matched) and not contextual:
+                return False
+        if pattern.type in {"any_date_slash", "any_date_dash"}:
+            prefix = text[max(0, start - 12) : start].lower()
+            if re.search(r"\b(?:dob|born|birth|partial)\s*:?\s*$", prefix):
+                return False
+        if pattern.type == "date_spelled_month_noyear":
+            prefix = text[max(0, start - 16) : start].lower()
+            if re.search(r"\b(?:dob|born|birth|partial)\b", prefix):
+                return False
+        if pattern.type == "bank_account":
+            if _luhn_valid(_digits_only(matched)):
+                uncertain.append(
+                    {
+                        "category": "CC",
+                        "text": matched,
+                        "reason": "luhn_valid_credit_card",
+                        "type": pattern.type,
+                    }
+                )
+                return False
         if pattern.type in {"credit_card", "credit_card_generic", "credit_card_dashed"}:
             if not _luhn_valid(_digits_only(matched)):
                 uncertain.append(
