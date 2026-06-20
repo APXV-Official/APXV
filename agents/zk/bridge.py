@@ -16,7 +16,7 @@ from .entity_commitment import (
     field_to_decimal,
 )
 from .merkle_tree import BATCH_SIZE, build_batch_merkle_witness, build_poseidon_merkle_tree
-from .poseidon_client import PoseidonClient
+from .poseidon_client import PoseidonClient, build_apx_zk_command
 
 ENTITY_VERSION = "1.0.0"
 PRIMARY_ENTITY_CIRCUITS = ("redaction-v1", "core-redaction", "batch-merkle")
@@ -103,15 +103,13 @@ class EntityZKBridge:
         with tempfile.TemporaryDirectory() as tmp:
             inputs_path = Path(tmp) / f"{circuit}_inputs.json"
             inputs_path.write_text(json.dumps(inputs, indent=2), encoding="utf-8")
-            cmd = [
-                "cargo", "run", "--release", "--quiet",
-                "--manifest-path", str(self.manifest),
-                "-p", "apx-zk",
-                "--", "prove", circuit, "--inputs", str(inputs_path),
-            ]
+            cmd, cwd = build_apx_zk_command(
+                self.base_path,
+                "prove", circuit, "--inputs", str(inputs_path),
+            )
             result = subprocess.run(
                 cmd,
-                cwd=str(self.crate_dir),
+                cwd=cwd,
                 capture_output=True,
                 text=True,
                 timeout=600,

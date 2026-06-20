@@ -10,37 +10,45 @@ from typing import List, Optional, Union
 Number = Union[int, str]
 
 
+def resolve_apx_zk_binary(base_path: Path) -> Optional[Path]:
+    """Locate a pre-built apx-zk binary (avoids cargo rebuild locking .exe on Windows)."""
+    override = os.environ.get("APX_ZK_BIN")
+    if override:
+        path = Path(override)
+        return path if path.exists() else None
+    rust_dir = base_path / "rust"
+    for name in ("apx-zk.exe", "apx-zk"):
+        candidate = rust_dir / "target" / "release" / name
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def build_apx_zk_command(base_path: Path, *args: str) -> tuple[list[str], str]:
+    """Build subprocess argv for apx-zk; prefer release binary over cargo run."""
+    rust_dir = base_path / "rust"
+    crate_dir = rust_dir / "apx-zk"
+    manifest = rust_dir / "Cargo.toml"
+    binary = resolve_apx_zk_binary(base_path)
+    if binary:
+        return [str(binary), *args], str(crate_dir)
+    return [
+        "cargo", "run", "--release", "--quiet",
+        "--manifest-path", str(manifest),
+        "-p", "apx-zk", "--", *args,
+    ], str(crate_dir)
+
+
 class PoseidonClient:
     def __init__(self, base_path: Optional[Path] = None) -> None:
         self.base_path = base_path or Path(__file__).parent.parent.parent
         self.rust_dir = self.base_path / "rust"
         self.crate_dir = self.rust_dir / "apx-zk"
         self.manifest = self.rust_dir / "Cargo.toml"
-        self._binary = self._resolve_binary()
-
-    def _resolve_binary(self) -> Optional[Path]:
-        override = os.environ.get("APX_ZK_BIN")
-        if override:
-            return Path(override)
-        release = self.rust_dir / "target" / "release" / "apx-zk.exe"
-        if release.exists():
-            return release
-        release_unix = self.rust_dir / "target" / "release" / "apx-zk"
-        if release_unix.exists():
-            return release_unix
-        return None
+        self._binary = resolve_apx_zk_binary(self.base_path)
 
     def _run(self, *args: str) -> str:
-        if self._binary and self._binary.exists():
-            cmd = [str(self._binary), *args]
-            cwd = str(self.crate_dir)
-        else:
-            cmd = [
-                "cargo", "run", "--release", "--quiet",
-                "--manifest-path", str(self.manifest),
-                "-p", "apx-zk", "--", *args,
-            ]
-            cwd = str(self.crate_dir)
+        cmd, cwd = build_apx_zk_command(self.base_path, *args)
         result = subprocess.run(
             cmd,
             cwd=cwd,

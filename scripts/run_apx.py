@@ -210,6 +210,7 @@ def main():
 
     runtime = APXRuntime()
     attested = run_full_pipeline(input_text=input_text, runtime=runtime)
+    total_redactions = attested["proposed_artifact"]["output"]["total_redactions"]
 
     if with_proof:
         base = runtime.base_path
@@ -254,6 +255,11 @@ def main():
                   + ")")
         else:
             print("      - Entity proofs: one or more circuits failed — see artifact details")
+            for name, proof in entity_bundle.get("proofs", {}).items():
+                if not isinstance(proof, dict) or proof.get("verification_result") is True:
+                    continue
+                err = proof.get("error", proof.get("status", "unknown"))
+                print(f"        · {name}: {str(err)[:300]}")
 
         # Re-persist the artifact with the real cryptographic proofs attached.
         # Use a name that still matches the "attested_result_pipeline_*.json" discovery pattern
@@ -293,9 +299,11 @@ def main():
         "attestation_id": attested["attestation_id"],
         "final_status": attested["final_status"],
         "governance_decision": attested["governance_decision"]["decision"],
-        "total_redactions": attested["proposed_artifact"]["output"]["total_redactions"],
+        "total_redactions": total_redactions,
         "full_provenance_hash": attested["full_provenance_hash"][:32] + "...",
     }
+    if attested.get("proposed_artifact", {}).get("status") == "E2EE_ENCRYPTED":
+        summary["e2ee"] = True
     # Legacy key check retained for backward compatibility only
     if "zk_proof" in attested:
         summary["zk_verification"] = attested.get("zk_proof", {}).get("verification_result")

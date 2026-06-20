@@ -26,6 +26,19 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from agents.runtime import APXRuntime
 
 
+def attested_for_python_checks(attested_result: Dict[str, Any], base_path: Path) -> Dict[str, Any]:
+    """Decrypt proposed_artifact in-memory when E2EE is enabled (local key only)."""
+    proposed = attested_result.get("proposed_artifact", {})
+    if proposed.get("status") != "E2EE_ENCRYPTED":
+        return attested_result
+    if not attested_result.get("e2ee"):
+        return attested_result
+    from agents.encryption_engine import get_e2ee_instance
+
+    copy = json.loads(json.dumps(attested_result))
+    return get_e2ee_instance(base_path=base_path).decrypt_artifact_payload(copy)
+
+
 def verify_python_attestation(attested_result: Dict[str, Any]) -> Dict[str, Any]:
     """
     Perform a full Python-side verification of an APX v1 attested result.
@@ -271,17 +284,18 @@ def verify_entity_zk_independent(
         crate_dir = rust_dir / "apx-zk"
         manifest = rust_dir / "Cargo.toml"
 
-        cmd = [
-            "cargo", "run", "--release", "--manifest-path", str(manifest),
-            "-p", "apx-zk",
-            "--", "verify", circuit,
+        from agents.zk.poseidon_client import build_apx_zk_command
+
+        cmd, cwd = build_apx_zk_command(
+            base_path,
+            "verify", circuit,
             "--inputs", str(proof_file),
-        ]
+        )
 
         try:
             result = subprocess.run(
                 cmd,
-                cwd=str(crate_dir),
+                cwd=cwd,
                 capture_output=True,
                 text=True,
                 timeout=180,
@@ -316,6 +330,8 @@ def main():
     if "--zk" in sys.argv:
         use_real_zk = True
         sys.argv.remove("--zk")
+
+    base = Path(__file__).parent.parent
 
     if len(sys.argv) > 1:
         path = Path(sys.argv[1])
@@ -359,7 +375,14 @@ def main():
         wrapped = json.loads(latest.read_text(encoding="utf-8"))
         attested = wrapped.get("artifact", wrapped)
 
-    report = verify_python_attestation(attested)
+    python_attested = attested_for_python_checks(attested, base)
+    if (
+        attested.get("proposed_artifact", {}).get("status") == "E2EE_ENCRYPTED"
+        and python_attested is not attested
+    ):
+        print("Note: proposed_artifact is E2EE-encrypted — decrypting locally for Python-side checks.")
+
+    report = verify_python_attestation(python_attested)
 
     print("\n=== APX Python Attestation Verification Report (hash/provenance/governance) ===")
     print(json.dumps(report, indent=2))
@@ -371,8 +394,6 @@ def main():
         print("\n✗ Python-side verification failed. See checks above.")
 
     if use_real_zk:
-        base = Path(__file__).parent.parent
-
         print("\n" + "=" * 70)
         print("REAL CRYPTOGRAPHIC VERIFICATION (Independent Groth16 over BN254)")
         print("=" * 70)
@@ -417,7 +438,7 @@ def main():
 
     # Show the exact public inputs that were (or would be) used in the ZK circuits
     from .prepare_proof_inputs import prepare_circuit_inputs
-    inputs = prepare_circuit_inputs(attested)
+    inputs = prepare_circuit_inputs(python_attested)
     print("\n--- Public Inputs that must match the ZK proof (for all three circuits) ---")
     print(json.dumps(inputs, indent=2))
 
