@@ -15,6 +15,7 @@ from .entity_zk_manifest import (
     rebuild_manifest,
     update_manifest_for_circuit,
 )
+from .rust_bins import build_apx_zk_command
 
 
 def ensure_entity_zk_setup(base_path: Path | None = None, force: bool = False) -> dict:
@@ -40,14 +41,10 @@ def ensure_entity_zk_setup(base_path: Path | None = None, force: bool = False) -
             continue
 
         print(f"[Entity ZK Setup] Running one-time setup for circuit: {circuit}")
+        cmd, cwd = build_apx_zk_command(base, "setup", circuit)
         result = subprocess.run(
-            [
-                "cargo", "run", "--release",
-                "--manifest-path", str(manifest),
-                "-p", "apx-zk",
-                "--", "setup", circuit,
-            ],
-            cwd=str(crate_dir),
+            cmd,
+            cwd=cwd,
             capture_output=True,
             text=True,
             timeout=600,

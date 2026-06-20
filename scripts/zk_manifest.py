@@ -64,18 +64,30 @@ def update_manifest_for_circuit(
         raise FileNotFoundError(f"Missing keys for circuit {circuit}")
 
     manifest = load_manifest(base)
-    manifest["manifest_version"] = MANIFEST_VERSION
-    manifest["circuit_version"] = CIRCUIT_VERSION
-    manifest["updated_at"] = datetime.now(timezone.utc).isoformat()
     manifest.setdefault("circuits", {})
-    manifest["circuits"][circuit] = {
+    existing = manifest["circuits"].get(circuit, {})
+    entry = {
         "circuit_version": CIRCUIT_VERSION,
         "pk_hash": _sha256_file(pk),
         "vk_hash": _sha256_file(vk),
         "pk_path": str(pk.relative_to(base)).replace("\\", "/"),
         "vk_path": str(vk.relative_to(base)).replace("\\", "/"),
-        "setup_at": manifest["updated_at"],
     }
+    unchanged = (
+        existing.get("circuit_version") == entry["circuit_version"]
+        and existing.get("pk_hash") == entry["pk_hash"]
+        and existing.get("vk_hash") == entry["vk_hash"]
+        and existing.get("pk_path") == entry["pk_path"]
+        and existing.get("vk_path") == entry["vk_path"]
+    )
+    if unchanged:
+        return existing
+
+    manifest["manifest_version"] = MANIFEST_VERSION
+    manifest["circuit_version"] = CIRCUIT_VERSION
+    manifest["updated_at"] = datetime.now(timezone.utc).isoformat()
+    entry["setup_at"] = existing.get("setup_at") or manifest["updated_at"]
+    manifest["circuits"][circuit] = entry
     write_manifest(manifest, base_path=base)
     return manifest["circuits"][circuit]
 

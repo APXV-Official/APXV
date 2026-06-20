@@ -17,7 +17,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from agents.runtime import APXRuntime
-from scripts.setup_first_run import verify_zk_keys
+from scripts.setup_first_run import verify_entity_zk_keys, verify_zk_keys
 
 
 def _check_python() -> dict:
@@ -38,12 +38,18 @@ def _check_command(name: str) -> bool:
 def _check_rust() -> dict:
     cargo = _check_command("cargo")
     rustc = _check_command("rustc")
-    binary = shutil.which("apx-circuits") or (ROOT / "rust" / "target" / "release" / "apx-circuits").exists()
+    from scripts.rust_bins import resolve_apx_circuits_binary, resolve_apx_zk_binary
+
+    circuits_bin = resolve_apx_circuits_binary(ROOT) or shutil.which("apx-circuits")
+    zk_bin = resolve_apx_zk_binary(ROOT) or shutil.which("apx-zk")
     ok = cargo and rustc
     return {
         "name": "rust_toolchain",
         "ok": ok,
-        "detail": f"cargo={'yes' if cargo else 'no'}, rustc={'yes' if rustc else 'no'}, apx-circuits={'yes' if binary else 'no'}",
+        "detail": (
+            f"cargo={'yes' if cargo else 'no'}, rustc={'yes' if rustc else 'no'}, "
+            f"apx-circuits={'yes' if circuits_bin else 'no'}, apx-zk={'yes' if zk_bin else 'no'}"
+        ),
         "required": "cargo + rustc (for ZK setup and proofs)",
     }
 
@@ -79,10 +85,19 @@ def run_doctor(base_path: Path, *, check_llm: bool = False) -> dict:
     zk = verify_zk_keys(base_path)
     checks.append(
         {
-            "name": "zk_keys",
+            "name": "zk_keys_governance",
             "ok": zk["ready"],
             "detail": zk["circuits"],
-            "required": "all 3 circuits (redaction, rule-binding, pipeline)",
+            "required": "governance: redaction, rule-binding, pipeline",
+        }
+    )
+    entity_zk = verify_entity_zk_keys(base_path)
+    checks.append(
+        {
+            "name": "zk_keys_entity",
+            "ok": entity_zk["ready"],
+            "detail": entity_zk["circuits"],
+            "required": "entity: 8 apx-zk circuits",
         }
     )
 

@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import sys
 
+from .rust_bins import build_apx_circuits_command
 from .zk_manifest import (
     CIRCUIT_VERSION,
     rebuild_manifest,
@@ -43,14 +44,10 @@ def ensure_zk_setup(base_path: Path | None = None, force: bool = False) -> dict:
             continue
 
         print(f"[ZK Setup] Running one-time setup for circuit: {circuit}")
+        cmd, cwd = build_apx_circuits_command(base, "setup", circuit)
         result = subprocess.run(
-            [
-                "cargo", "run", "--release",
-                "--manifest-path", str(manifest),
-                "-p", "apx-circuits",
-                "--", "setup", circuit,
-            ],
-            cwd=str(crate_dir),
+            cmd,
+            cwd=cwd,
             capture_output=True,
             text=True,
             timeout=300,

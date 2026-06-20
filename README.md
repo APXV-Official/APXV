@@ -50,7 +50,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-**v1.0.0** completes the privacy migration: native redaction, optional encryption, and dual-track ZK attestation on the unchanged governance spine. The 3-agent reference pipeline and independent Groth16 verification are covered by **295+ automated tests**. See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) and [CHANGELOG.md](CHANGELOG.md).
+**v1.0.1** completes the privacy migration: native redaction, optional encryption, and dual-track ZK attestation on the unchanged governance spine. The 3-agent reference pipeline and independent Groth16 verification are covered by **295+ automated tests**. See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## Quickstart
 
@@ -162,7 +162,7 @@ flowchart TB
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/LOCAL-API.md](docs/LOCAL-API.md) | API reference |
 | [SECURITY.md](SECURITY.md) | Threat model |
-| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture (v1.0.0) |
+| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture (v1.0.1) |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [RUNBOOKS/](RUNBOOKS/) | Deployment and operations |

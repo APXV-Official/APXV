@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -32,7 +32,7 @@ jobs:
       - name: Install package
         run: pip install -e ".[dev]"
 
-      - name: Build Rust workspace
+      - name: Build Rust workspace (release)
         working-directory: rust
         run: cargo build --release -p apx-circuits -p apx-zk
 
@@ -43,11 +43,11 @@ jobs:
       - name: Setup first-run (with ZK)
         run: python -m scripts.setup_first_run
 
-      - name: Run tests
-        run: python -m pytest tests/ -q --tb=short
-
-      - name: Doctor check
+      - name: Doctor check (clean state)
         run: python -m scripts.apx_doctor
 
-      - name: Integrity check
+      - name: Integrity check (clean state)
         run: python -m scripts.apx_ctl integrity
+
+      - name: Run pytest
+        run: python -m pytest tests/ -q --tb=short

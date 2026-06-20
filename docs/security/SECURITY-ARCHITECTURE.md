@@ -1,6 +1,6 @@
 # APXV1 — Security Architecture
 
-**Version:** 1.0.0  
+**Version:** 1.0.1
 **Deployment:** Local, self-hosted, air-gapped compatible
 
 Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md).
@@ -90,7 +90,7 @@ See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESP
 
 ---
 
-## Deployment Posture (v1.0.0)
+## Deployment Posture (v1.0.1)
 
 **Appropriate for:** trusted internal environments, air-gapped labs, pilots with sensitive-but-non-regulated data.
 

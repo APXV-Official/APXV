@@ -138,23 +138,19 @@ def generate_zk_proof(
         inputs_file = Path(tmp) / f"{circuit}_inputs.json"
         inputs_file.write_text(json.dumps(inputs_for_circuit, indent=2))
 
-        rust_dir = base_path / "rust"
-        crate_dir = rust_dir / "apx-circuits"
-        manifest = rust_dir / "Cargo.toml"
+        from .rust_bins import build_apx_circuits_command
 
         print(f"\n[ZK] Invoking Rust Groth16 prover for circuit: {circuit}")
         print("     (First run will compile — can take 30-120s)")
 
-        cmd = [
-            "cargo", "run", "--release", "--manifest-path", str(manifest),
-            "-p", "apx-circuits",
-            "--", "prove", circuit, "--inputs", str(inputs_file),
-        ]
+        cmd, cwd = build_apx_circuits_command(
+            base_path, "prove", circuit, "--inputs", str(inputs_file),
+        )
 
         try:
             result = subprocess.run(
                 cmd,
-                cwd=str(crate_dir),
+                cwd=cwd,
                 capture_output=True,
                 text=True,
                 timeout=300,

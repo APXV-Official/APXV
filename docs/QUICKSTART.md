@@ -40,7 +40,7 @@ python -m scripts.run_apx --attest
 python -m scripts.verify_attestation --real-zk
 ```
 
-Expected: `HEALTHY`, `ATTESTED`, and all three proofs `VALID`.
+Expected: `HEALTHY`, `ATTESTED`, `Entity proofs: VALID`, and `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]`.
 
 ## Run the local API
 

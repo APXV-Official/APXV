@@ -1,7 +1,7 @@
 # APXV1 v1.0.0 Migration Plan
 
-**Status:** Complete — **v1.0.0** (Phases 0–4 + 6; Phase 5 voice deferred to v1.1)
-**Branch:** `apx-v1-migration` merged to `main`; tag `v1.0.0`
+**Status:** Complete — **v1.0.1** (Phases 0–4 + 6; Phase 5 voice deferred to v1.1)
+**Branch:** `apx-v1-migration` merged to `main`; tags `v1.0.0`, `v1.0.1`
 **Canonical workspace:** `C:\APXV1`  
 **Date:** June 2026
 

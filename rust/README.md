@@ -20,8 +20,8 @@ cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk
 ## Governance circuits (Track A)
 
 ```powershell
-cargo run --release --manifest-path rust/Cargo.toml -p apx-circuits -- setup redaction
-cargo run --release --manifest-path rust/Cargo.toml -p apx-circuits -- prove redaction --inputs inputs.json
+rust/target/release/apx-circuits setup redaction
+rust/target/release/apx-circuits prove redaction --inputs inputs.json
 ```
 
 Run from `rust/apx-circuits/` (keys resolve relative to crate cwd).
@@ -30,7 +30,7 @@ Run from `rust/apx-circuits/` (keys resolve relative to crate cwd).
 
 ```powershell
 python -m scripts.setup_entity_zk
-cargo run --release --manifest-path rust/Cargo.toml -p apx-zk -- setup redaction-v1
+rust/target/release/apx-zk setup redaction-v1
 ```
 
 Run from `rust/apx-zk/`.

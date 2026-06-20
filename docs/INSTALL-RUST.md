@@ -1,6 +1,6 @@
 # Installing Rust (Required for ZK)
 
-APXV1 uses Groth16 proofs. The Rust toolchain builds `apx-circuits` and runs trusted setup.
+APXV1 uses Groth16 proofs. The Rust toolchain builds `apx-circuits` (governance) and `apx-zk` (entity) and runs trusted setup.
 
 ## Windows
 
@@ -13,14 +13,13 @@ rustc --version
 cargo --version
 ```
 
-4. Build APXV1 circuits (from project root):
+4. Build APXV1 Rust workspace (from project root):
 
 ```powershell
-cd rust
-cargo build --release
+cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk
 ```
 
-The binary is at `rust\target\release\apx-circuits.exe`.
+Binaries: `rust\target\release\apx-circuits.exe` and `rust\target\release\apx-zk.exe`.
 
 ## macOS
 
@@ -29,7 +28,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source "$HOME/.cargo/env"
 rustc --version
 cargo --version
-cd rust && cargo build --release
+cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk
 ```
 
 ## Linux
@@ -37,7 +36,7 @@ cd rust && cargo build --release
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source "$HOME/.cargo/env"
-cd rust && cargo build --release
+cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk
 ```
 
 ## After Rust is installed
@@ -56,5 +55,5 @@ Rust is **not** required on the host if you only use Docker — ZK keys are gene
 | Problem | Fix |
 |---------|-----|
 | `cargo: command not found` | Restart terminal after rustup install |
-| ZK setup slow first time | Normal — trusted setup for 3 circuits |
-| `apx-circuits` not found | Run `cargo build --release` in `rust/` |
+| ZK setup slow first time | Normal — trusted setup for 3 governance + 8 entity circuits |
+| `apx-circuits` / `apx-zk` not found | Run `cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk` |

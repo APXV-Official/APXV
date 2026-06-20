@@ -31,6 +31,3 @@ hex = "0.4"
 # This enables Proof and VerifyingKey to be serialized/deserialized so they
 # can be written to disk and verified later by a completely separate process.
 ark-serialize = { version = "0.4", features = ["derive"] }
-
-[profile.release]
-opt-level = 3

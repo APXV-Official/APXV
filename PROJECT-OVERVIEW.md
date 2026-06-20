@@ -131,7 +131,7 @@ Fresh installs and CI environments should report **HEALTHY** without this step.
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain |
 | [docs/cryptography/](docs/cryptography/) | ZK setup and verification |
-| [docs/APX-V1-MIGRATION-PLAN.md](docs/APX-V1-MIGRATION-PLAN.md) | v1.0.0 migration record |
+| [docs/APX-V1-MIGRATION-PLAN.md](docs/APX-V1-MIGRATION-PLAN.md) | Migration record (v1.0.0 → v1.0.1) |
 | [SECURITY.md](SECURITY.md) | Threat model |
 | [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |

@@ -124,7 +124,7 @@ def test_full_dual_attest_and_verify():
         timeout=900,
     )
     assert verify.returncode == 0, verify.stdout + verify.stderr
-    assert "ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED" in verify.stdout
+    assert "ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED" in verify.stdout
 
     artifacts = sorted((ROOT / "managed" / "artifacts").glob("attested_result_pipeline_with_zk_*.json"))
     assert artifacts

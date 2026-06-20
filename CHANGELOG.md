@@ -4,6 +4,19 @@ All notable changes to APXV1 are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- CI: run doctor/integrity before pytest to avoid audit-chain pollution on shared runners
+- Manifest rebuild no longer rewrites timestamps when key hashes are unchanged
+
+### Changed
+
+- `scripts/rust_bins.py` — shared binary-first resolver for `apx-circuits` and `apx-zk`
+- Setup scripts, Dockerfile, and operator docs aligned with dual-track ZK + release binaries
+- Rust `[profile.release]` moved to workspace root (removes per-crate profile warnings)
+
 ## [1.0.1] - 2026-06-20
 
 ### Fixed

@@ -2,41 +2,13 @@
 
 from __future__ import annotations
 
-import os
 import subprocess
 from pathlib import Path
 from typing import List, Optional, Union
 
+from scripts.rust_bins import build_apx_zk_command, resolve_apx_zk_binary
+
 Number = Union[int, str]
-
-
-def resolve_apx_zk_binary(base_path: Path) -> Optional[Path]:
-    """Locate a pre-built apx-zk binary (avoids cargo rebuild locking .exe on Windows)."""
-    override = os.environ.get("APX_ZK_BIN")
-    if override:
-        path = Path(override)
-        return path if path.exists() else None
-    rust_dir = base_path / "rust"
-    for name in ("apx-zk.exe", "apx-zk"):
-        candidate = rust_dir / "target" / "release" / name
-        if candidate.exists():
-            return candidate
-    return None
-
-
-def build_apx_zk_command(base_path: Path, *args: str) -> tuple[list[str], str]:
-    """Build subprocess argv for apx-zk; prefer release binary over cargo run."""
-    rust_dir = base_path / "rust"
-    crate_dir = rust_dir / "apx-zk"
-    manifest = rust_dir / "Cargo.toml"
-    binary = resolve_apx_zk_binary(base_path)
-    if binary:
-        return [str(binary), *args], str(crate_dir)
-    return [
-        "cargo", "run", "--release", "--quiet",
-        "--manifest-path", str(manifest),
-        "-p", "apx-zk", "--", *args,
-    ], str(crate_dir)
 
 
 class PoseidonClient:

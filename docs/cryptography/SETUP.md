@@ -6,7 +6,7 @@
 
 APXV1 uses Groth16 over BN254 (arkworks 0.4). Each circuit requires a **one-time trusted setup** that produces a ProvingKey (PK) and VerifyingKey (VK). These keys are persisted and reused for all subsequent proofs.
 
-APXV1 v1.0.0 has **two key directories**:
+APXV1 v1.0.1 has **two key directories**:
 
 | Track | Crate | Keys directory | Manifest |
 |-------|-------|----------------|----------|
@@ -35,12 +35,12 @@ python -m scripts.setup_zk --force
 python -m scripts.setup_entity_zk
 python -m scripts.setup_entity_zk --force
 
-# Manual per-circuit setup (Rust)
-cargo run --release --manifest-path rust/Cargo.toml -p apx-circuits -- setup redaction
-cargo run --release --manifest-path rust/Cargo.toml -p apx-zk -- setup redaction-v1
+# Manual per-circuit setup (prefer pre-built release binaries)
+rust/target/release/apx-circuits setup redaction
+rust/target/release/apx-zk setup redaction-v1
 ```
 
-Run manual Rust setup from the respective crate directory (`rust/apx-circuits/` or `rust/apx-zk/`).
+Run manual setup from the respective crate directory (`rust/apx-circuits/` or `rust/apx-zk/`) after `cargo build --release`.
 
 ## What Happens During Setup
 
