@@ -173,11 +173,20 @@ agents/zk/
 
 ---
 
-### Phase 5 — Voice module (v1.1, deferred)
+### Phase 5 — Voice module + ceremony (v1.1, in progress)
 
-**Destination:** `agents/voice/` with `APXSTTProvider` / `APXTTSProvider`
+**Destination:** `agents/voice/` with `APXSTTProvider` / `APXTTSProvider`  
+**Ceremony:** `scripts/ceremony_transcript.py`, `scripts/export_verifier_bundle.py`  
+**Launch gates:** [V1.1-PUBLIC-LAUNCH-CHECKLIST.md](V1.1-PUBLIC-LAUNCH-CHECKLIST.md)
 
-Not required for v1.0.0.
+| Item | Status |
+|------|--------|
+| Voice providers + pipeline scaffold | Done (simulated STT/TTS) |
+| `voice-redaction` ZK prove path | Done (`run_voice_demo`, tests) |
+| Ceremony transcript Tier A/B | Done (CLI + doctor check) |
+| Verifier bundle export | Done |
+| Voice E2E in full attest pipeline | Pending |
+| Public demo video v1.1 | Pending |
 
 ---
 

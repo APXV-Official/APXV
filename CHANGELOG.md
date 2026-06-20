@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added (v1.1 scaffold)
+
+- [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md) — public launch gates (P0/P1/P2)
+- [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md) — ceremony tiers A/B/C
+- [docs/DEMO-SCRIPT-V1.1.md](docs/DEMO-SCRIPT-V1.1.md) — voice + ceremony demo script
+- `scripts/ceremony_transcript.py` — signed VK lineage transcript
+- `scripts/export_verifier_bundle.py` — VK-only distribution bundle
+- `agents/voice/` — STT/TTS providers + `VoicePrivacyPipeline` + `run_voice_demo`
+
 ### Fixed
 
 - CI: run doctor/integrity before pytest to avoid audit-chain pollution on shared runners
@@ -18,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `scripts/rust_bins.py` — shared binary-first resolver for `apx-circuits` and `apx-zk`
 - Setup scripts, Dockerfile, and operator docs aligned with dual-track ZK + release binaries
 - Rust `[profile.release]` moved to workspace root (removes per-crate profile warnings)
+- `apx_doctor` reports optional `ceremony_transcript` status
 
 ## [1.0.1] - 2026-06-20
 

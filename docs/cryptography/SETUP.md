@@ -79,3 +79,7 @@ Run manual setup from the respective crate directory (`rust/apx-circuits/` or `r
 - **No public ceremony** — setup is local to the operator
 - **No HSM integration** — keys stored as files on disk
 - **No automated key rotation** — manual re-setup required after circuit changes
+
+## Ceremony transparency (v1.1)
+
+See [CEREMONY.md](CEREMONY.md) for transcript generation and verifier bundle export.

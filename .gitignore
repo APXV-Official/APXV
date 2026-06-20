@@ -5,6 +5,7 @@ __pycache__/
 *.egg-info/
 .eggs/
 dist/
+.ci-venv/
 build/
 .pytest_cache/
 .mypy_cache/
@@ -32,6 +33,7 @@ managed/config/OPERATOR-KEY*.txt
 managed/config/capability_signing.key
 managed/config/capability_signing.json
 managed/config/capabilities.json
+managed/config/ceremony-transcript.json
 managed/config/capabilities.json.legacy
 managed/config/governance_signing.key
 managed/config/governance_signing.json

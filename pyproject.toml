@@ -38,6 +38,9 @@ verify-attestation = "scripts.verify_attestation:main"
 apx-verify-bundle = "scripts.apx_verify_bundle:main"
 apx-ctl = "scripts.apx_ctl:main"
 apx-serve = "scripts.apx_serve:main"
+ceremony-transcript = "scripts.ceremony_transcript:main"
+export-verifier-bundle = "scripts.export_verifier_bundle:main"
+run-voice-demo = "scripts.run_voice_demo:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
