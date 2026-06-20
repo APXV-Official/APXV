@@ -94,3 +94,49 @@ def rebuild_manifest(base_path: Optional[Path] = None) -> Dict[str, Any]:
         except FileNotFoundError:
             pass
     return load_manifest(base_path)
+
+
+def verify_vk_hash(
+    circuit: str,
+    vk_hex: str,
+    base_path: Optional[Path] = None,
+) -> Dict[str, Any]:
+    base = base_path or Path(__file__).parent.parent
+    manifest = load_manifest(base)
+    entry = manifest.get("circuits", {}).get(circuit)
+    if not entry:
+        return {
+            "passed": False,
+            "reason": f"No entity manifest entry for circuit {circuit}",
+        }
+
+    vk_path = base / entry["vk_path"]
+    if not vk_path.exists():
+        return {
+            "passed": False,
+            "reason": f"Entity manifest VK file missing: {vk_path}",
+        }
+
+    on_disk_hex = vk_path.read_bytes().hex()
+    bundle_matches_disk = vk_hex.lower() == on_disk_hex.lower()
+    return {
+        "passed": bundle_matches_disk,
+        "expected_vk_hash": entry["vk_hash"],
+        "circuit_version": entry.get("circuit_version"),
+        "reason": "VK matches entity manifest on-disk key"
+        if bundle_matches_disk
+        else "VK mismatch — wrong or stale entity verification key",
+    }
+
+
+def attach_entity_key_metadata(
+    proof_bundle: Dict[str, Any],
+    circuit: str,
+    base_path: Optional[Path] = None,
+) -> Dict[str, Any]:
+    manifest = load_manifest(base_path)
+    entry = manifest.get("circuits", {}).get(circuit, {})
+    proof_bundle["circuit_version"] = entry.get("circuit_version", CIRCUIT_VERSION)
+    proof_bundle["vk_hash"] = entry.get("vk_hash")
+    proof_bundle["manifest_version"] = manifest.get("manifest_version")
+    return proof_bundle

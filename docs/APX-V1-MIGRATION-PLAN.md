@@ -1,6 +1,6 @@
 # APXV1 v1.0.0 Migration Plan
 
-**Status:** Active — Phase 3 complete; ready for Phase 4
+**Status:** Active — Phase 4 complete; ready for Phase 5 (deferred) / Phase 6
 **Branch:** `apx-v1-migration` (local only — **no GitHub push until all 6 phases complete**)
 **Canonical workspace:** `C:\APXV1`  
 **Date:** June 2026
@@ -169,7 +169,7 @@ agents/zk/
 - `verify_attestation.py --real-zk` verifies both
 
 **Tests:** `tests/test_zk_entity_bundle.py` + E2E pipeline  
-**Gate:** Full redact → govern → dual attest → independent verify.
+**Gate:** Full redact → govern → dual attest → independent verify → **295 pytest passed** (2026-06-20).
 
 ---
 
@@ -226,7 +226,7 @@ Every phase:
 | After Phase 1 | ~100 | **123 passed** |
 | After Phase 2 | **278** | — |
 | After Phase 3 | **288** | **57** (apx-zk) |
-| After Phase 4 | ~135 | ~45 |
+| After Phase 4 | **295** | **57** |
 
 ---
 

@@ -234,6 +234,27 @@ def main():
         )
         attested["zk_proof_pipeline"] = zk_pipeline
 
+        from agents.zk.bridge import generate_entity_proofs
+        from agents.zk.bundle import build_dual_proof_bundle, build_governance_proof_bundle
+
+        print("\n[Entity ZK] Generating entity Groth16 proofs (Track B)...")
+        entity_bundle = generate_entity_proofs(attested, base_path=base)
+        attested["entity_proofs"] = entity_bundle
+        attested["governance_proofs"] = build_governance_proof_bundle(attested)
+        attested["dual_proof_bundle"] = build_dual_proof_bundle(attested)
+
+        entity_ok = all(
+            proof.get("verification_result") is True
+            for proof in entity_bundle.get("proofs", {}).values()
+            if isinstance(proof, dict)
+        )
+        if entity_ok:
+            print("      - Entity proofs: VALID (redaction-v1 + core-redaction"
+                  + (" + batch-merkle" if "batch_merkle" in entity_bundle.get("proofs", {}) else "")
+                  + ")")
+        else:
+            print("      - Entity proofs: one or more circuits failed — see artifact details")
+
         # Re-persist the artifact with the real cryptographic proofs attached.
         # Use a name that still matches the "attested_result_pipeline_*.json" discovery pattern
         # used by verify_attestation.py --real-zk for better robustness.
@@ -243,7 +264,7 @@ def main():
             data={"attestation_id": attested.get("attestation_id")},
         )
 
-        print("\n[ZK] Attested result now includes real, portable, independently verifiable Groth16 proofs.")
+        print("\n[ZK] Attested result now includes dual proof bundles (governance + entity).")
         print("     Use verify_attestation.py --real-zk to perform independent verification.")
 
     if with_encrypt:

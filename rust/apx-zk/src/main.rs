@@ -58,6 +58,8 @@ fn usage() -> ! {
     eprintln!("  apx-zk setup <circuit>");
     eprintln!("  apx-zk prove <circuit> --inputs <inputs.json> [--out <proof.json>]");
     eprintln!("  apx-zk verify <circuit> --inputs <inputs.json>");
+    eprintln!("  apx-zk hash-two <left_decimal> <right_decimal>");
+    eprintln!("  apx-zk hash-fields <decimal> [<decimal> ...]");
     eprintln!();
     eprintln!("Circuits:");
     for c in CIRCUITS {
@@ -492,6 +494,39 @@ fn serialize_proof(proof: &Proof<Bn254>) -> String {
     hex::encode(bytes)
 }
 
+fn serialize_vk(vk: &ark_groth16::VerifyingKey<Bn254>) -> String {
+    let mut bytes = Vec::new();
+    vk.serialize_compressed(&mut bytes).expect("serialize vk");
+    hex::encode(bytes)
+}
+
+fn run_hash_two(left: &str, right: &str) {
+    let left_fr = Fr::from_str(left).unwrap_or_else(|_| {
+        eprintln!("Invalid left field element: {}", left);
+        std::process::exit(1);
+    });
+    let right_fr = Fr::from_str(right).unwrap_or_else(|_| {
+        eprintln!("Invalid right field element: {}", right);
+        std::process::exit(1);
+    });
+    let result = Poseidon::new().hash_two(&left_fr, &right_fr);
+    println!("{}", result);
+}
+
+fn run_hash_fields(values: &[String]) {
+    let fields: Vec<Fr> = values
+        .iter()
+        .map(|s| {
+            Fr::from_str(s).unwrap_or_else(|_| {
+                eprintln!("Invalid field element: {}", s);
+                std::process::exit(1);
+            })
+        })
+        .collect();
+    let result = Poseidon::new().hash(&fields);
+    println!("{}", result);
+}
+
 fn deserialize_proof(hex_str: &str) -> Proof<Bn254> {
     let bytes = hex::decode(hex_str.trim_start_matches("0x")).expect("bad proof hex");
     Proof::<Bn254>::deserialize_compressed(&bytes[..]).expect("deserialize proof")
@@ -514,11 +549,14 @@ fn run_prove(circuit: &str, inputs_path: &Path, out_path: Option<&Path>) {
     let (proof, valid) = built.prove(&pk, &vk);
     let proof_hex = serialize_proof(&proof);
 
+    let vk_hex = serialize_vk(&vk);
+
     let result = serde_json::json!({
         "circuit": circuit,
         "status": if valid { "VERIFIED" } else { "INVALID" },
         "verification_result": valid,
         "proof_hex": proof_hex,
+        "vk_hex": vk_hex,
         "public_inputs": inputs,
     });
 
@@ -603,6 +641,20 @@ fn main() {
             let circuit = validate_circuit(&args[2]);
             let inputs_path = Path::new(&args[4]);
             run_verify(circuit, inputs_path);
+        }
+        "hash-two" => {
+            if args.len() < 4 {
+                eprintln!("Usage: apx-zk hash-two <left_decimal> <right_decimal>");
+                std::process::exit(1);
+            }
+            run_hash_two(&args[2], &args[3]);
+        }
+        "hash-fields" => {
+            if args.len() < 3 {
+                eprintln!("Usage: apx-zk hash-fields <decimal> [<decimal> ...]");
+                std::process::exit(1);
+            }
+            run_hash_fields(&args[2..].to_vec());
         }
         _ => usage(),
     }

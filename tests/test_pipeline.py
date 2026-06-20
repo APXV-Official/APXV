@@ -84,7 +84,7 @@ def test_full_attest_and_verify_real_zk():
         timeout=600,
     )
     assert verify.returncode == 0, verify.stdout + verify.stderr
-    assert "ALL THREE GROTH16 PROOFS INDEPENDENTLY VERIFIED" in verify.stdout
+    assert "GROTH16 PROOFS INDEPENDENTLY VERIFIED" in verify.stdout
 
     standalone = subprocess.run(
         [

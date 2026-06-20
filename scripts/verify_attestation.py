@@ -228,6 +228,80 @@ def verify_real_zk_independent(
             return {"status": "error_calling_rust", "error": str(e)}
 
 
+def verify_entity_zk_independent(
+    attested_result: dict,
+    base_path: Path,
+    circuit: str = "redaction-v1",
+) -> dict:
+    """Independent Groth16 verification for entity circuits (apx-zk)."""
+    import subprocess
+    import tempfile
+
+    from .entity_zk_manifest import verify_vk_hash
+
+    entity_bundle = attested_result.get("entity_proofs", {})
+    proofs = entity_bundle.get("proofs", {})
+    proof_key = circuit.replace("-", "_")
+    proof_bundle = proofs.get(proof_key)
+    if not isinstance(proof_bundle, dict) or "proof_hex" not in proof_bundle:
+        return {
+            "status": "no_entity_proof_in_attestation",
+            "message": f"No entity proof found for circuit {circuit}. Run with --attest first.",
+        }
+
+    vk_hex = proof_bundle.get("vk_hex")
+    if not vk_hex:
+        return {"status": "invalid_entity_proof_bundle", "message": "Missing vk_hex in entity proof"}
+
+    vk_check = verify_vk_hash(circuit, vk_hex, base_path=base_path)
+    if not vk_check["passed"]:
+        return {"status": "entity_vk_integrity_failed", "circuit": circuit, "details": vk_check}
+
+    public_inputs = proof_bundle.get("public_inputs", {})
+    if not isinstance(public_inputs, dict):
+        public_inputs = {}
+    with tempfile.TemporaryDirectory() as tmp:
+        proof_file = Path(tmp) / "entity_proof_bundle.json"
+        verify_payload = dict(public_inputs)
+        verify_payload["proof_hex"] = proof_bundle["proof_hex"]
+        verify_payload["vk_hex"] = vk_hex
+        proof_file.write_text(json.dumps(verify_payload, indent=2), encoding="utf-8")
+
+        rust_dir = base_path / "rust"
+        crate_dir = rust_dir / "apx-zk"
+        manifest = rust_dir / "Cargo.toml"
+
+        cmd = [
+            "cargo", "run", "--release", "--manifest-path", str(manifest),
+            "-p", "apx-zk",
+            "--", "verify", circuit,
+            "--inputs", str(proof_file),
+        ]
+
+        try:
+            result = subprocess.run(
+                cmd,
+                cwd=str(crate_dir),
+                capture_output=True,
+                text=True,
+                timeout=180,
+            )
+            if result.returncode != 0:
+                return {
+                    "status": "entity_verify_failed",
+                    "circuit": circuit,
+                    "stderr": result.stderr[-600:],
+                    "stdout": result.stdout[-400:],
+                }
+            return {
+                "status": "independent_verification_complete",
+                "circuit": circuit,
+                "verification_result": "VALID",
+            }
+        except Exception as exc:
+            return {"status": "error_calling_rust", "error": str(exc)}
+
+
 def main():
     """CLI entry point."""
     runtime = APXRuntime()
@@ -312,12 +386,31 @@ def main():
             zk_results[circuit] = zk_result
             if zk_result.get("status") != "independent_verification_complete":
                 all_valid = False
-            print(f"\n--- {circuit} ---")
+            print(f"\n--- governance: {circuit} ---")
             print(json.dumps(zk_result, indent=2))
 
+        entity_circuits = []
+        entity_proofs = attested.get("entity_proofs", {}).get("proofs", {})
+        for key in sorted(entity_proofs.keys()):
+            entity_circuits.append(key.replace("_", "-"))
+
+        entity_results = {}
+        for circuit in entity_circuits:
+            entity_result = verify_entity_zk_independent(attested, base, circuit=circuit)
+            entity_results[circuit] = entity_result
+            if entity_result.get("status") != "independent_verification_complete":
+                all_valid = False
+            print(f"\n--- entity: {circuit} ---")
+            print(json.dumps(entity_result, indent=2))
+
         print("\n" + "=" * 70)
-        if all_valid:
-            print("ALL THREE GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]")
+        if all_valid and entity_circuits:
+            print(
+                f"ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK] "
+                f"(3 governance + {len(entity_circuits)} entity)"
+            )
+        elif all_valid:
+            print("ALL THREE GOVERNANCE GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]")
         else:
             print("ONE OR MORE GROTH16 PROOFS FAILED INDEPENDENT VERIFICATION [FAIL]")
             sys.exit(1)
