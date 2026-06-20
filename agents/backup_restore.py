@@ -1,7 +1,7 @@
 """
 APX v1 — Backup & Restore (Phase 4 / Step 4)
 
-Air-gapped backup of managed/ state and rust/keys/ ZK material.
+Air-gapped backup of managed/ state and ZK key material (governance + entity).
 Stdlib only: tarfile + SHA-256 manifest for verify-before-restore.
 """
 
@@ -17,7 +17,11 @@ import uuid
 
 BACKUP_SCHEMA_VERSION = "1.0.0"
 MANIFEST_NAME = "apx-backup-manifest.json"
-DEFAULT_COMPONENTS = ("managed", "rust/keys")
+DEFAULT_COMPONENTS = (
+    "managed",
+    "rust/apx-circuits/keys",
+    "rust/apx-zk/keys",
+)
 
 EXCLUDE_DIR_NAMES = {
     "__pycache__",

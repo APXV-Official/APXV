@@ -10,7 +10,8 @@ services:
       - "127.0.0.1:8741:8741"
     volumes:
       - ./managed:/app/managed
-      - ./rust/keys:/app/rust/keys
+      - ./rust/apx-circuits/keys:/app/rust/apx-circuits/keys
+      - ./rust/apx-zk/keys:/app/rust/apx-zk/keys
     environment:
       - APX_BASE_PATH=/app
       - APX_CONTAINER_BIND=1

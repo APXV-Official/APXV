@@ -20,10 +20,14 @@ def _seed_env(base: Path) -> None:
     (managed / "config" / "server.json").write_text('{"port": 8741}', encoding="utf-8")
     (managed / "rules" / "rule1.md").write_text("# test rule\n", encoding="utf-8")
 
-    keys = base / "rust" / "keys"
+    keys = base / "rust" / "apx-circuits" / "keys"
     keys.mkdir(parents=True)
     (keys / "manifest.json").write_text('{"circuits": {}}', encoding="utf-8")
     (keys / "redaction.vk").write_bytes(b"vk-bytes")
+
+    entity_keys = base / "rust" / "apx-zk" / "keys"
+    entity_keys.mkdir(parents=True)
+    (entity_keys / "entity-manifest.json").write_text('{"circuits": {}}', encoding="utf-8")
 
 
 @pytest.fixture
@@ -50,8 +54,9 @@ def test_manifest_lists_managed_and_rust_keys(backup_env):
     paths = {entry["path"] for entry in manifest["files"]}
     assert "managed/config/server.json" in paths
     assert "managed/rules/rule1.md" in paths
-    assert "rust/keys/manifest.json" in paths
-    assert "rust/keys/redaction.vk" in paths
+    assert "rust/apx-circuits/keys/manifest.json" in paths
+    assert "rust/apx-circuits/keys/redaction.vk" in paths
+    assert "rust/apx-zk/keys/entity-manifest.json" in paths
     assert not any("managed/backups/" in p for p in paths)
 
 

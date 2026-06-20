@@ -45,7 +45,8 @@ RUNTIME_DIRS = (
     "managed/backups",
     "managed/config",
     "managed/store/blobs",
-    "rust/keys",
+    "rust/apx-circuits/keys",
+    "rust/apx-zk/keys",
 )
 
 
@@ -184,14 +185,15 @@ def print_report(report: dict) -> None:
         print("ZK setup: skipped (--skip-zk). Attestation will not work until keys exist.")
     elif zk.get("setup_ran"):
         print()
-        print("ZK setup: circuit keys generated under rust/keys/")
+        print("ZK setup: circuit keys generated under rust/apx-circuits/keys/")
     if zk_keys:
         print(f"ZK keys ready: {'yes' if zk_keys.get('ready') else 'no'}")
 
     print()
     print("Backup these paths regularly:")
     print("  managed/")
-    print("  rust/keys/")
+    print("  rust/apx-circuits/keys/")
+    print("  rust/apx-zk/keys/")
     print()
     print("Integrity check:")
     integrity = report["integrity"]

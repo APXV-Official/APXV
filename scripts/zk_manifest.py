@@ -16,15 +16,20 @@ import json
 CIRCUIT_VERSION = "1.1.0"
 MANIFEST_VERSION = "1.0.0"
 CIRCUITS = ("redaction", "rule-binding", "pipeline")
+GOVERNANCE_KEYS_DIR = "rust/apx-circuits/keys"
 
 
 def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def manifest_path(base_path: Optional[Path] = None) -> Path:
+def governance_keys_dir(base_path: Optional[Path] = None) -> Path:
     base = base_path or Path(__file__).parent.parent
-    return base / "rust" / "keys" / "manifest.json"
+    return base / "rust" / "apx-circuits" / "keys"
+
+
+def manifest_path(base_path: Optional[Path] = None) -> Path:
+    return governance_keys_dir(base_path) / "manifest.json"
 
 
 def load_manifest(base_path: Optional[Path] = None) -> Dict[str, Any]:
@@ -52,7 +57,7 @@ def update_manifest_for_circuit(
 ) -> Dict[str, Any]:
     """Record VK/PK hashes for a circuit after trusted setup."""
     base = base_path or Path(__file__).parent.parent
-    keys_dir = base / "rust" / "keys"
+    keys_dir = governance_keys_dir(base_path)
     pk = keys_dir / f"{circuit}.pk"
     vk = keys_dir / f"{circuit}.vk"
     if not pk.exists() or not vk.exists():

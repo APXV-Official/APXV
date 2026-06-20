@@ -8,16 +8,17 @@ FROM rust:1.85-slim AS rust-builder
 
 WORKDIR /app/rust
 
-# Copy only the files needed for Rust build (better cache)
+# Copy workspace crates needed for Rust build (better cache)
 COPY rust/Cargo.toml rust/Cargo.lock ./
-COPY rust/src ./src
-COPY rust/circuits ./circuits
+COPY rust/apx-circuits ./apx-circuits
+COPY rust/apx-zk ./apx-zk
 
-# Build the Rust binary and generate ZK trusted-setup keys in the image
-RUN cargo build --release \
-    && ./target/release/apx-circuits setup redaction \
-    && ./target/release/apx-circuits setup rule-binding \
-    && ./target/release/apx-circuits setup pipeline
+# Build governance + entity provers and generate ZK trusted-setup keys in the image
+RUN cargo build --release -p apx-circuits -p apx-zk \
+    && cd apx-circuits \
+    && ../target/release/apx-circuits setup redaction \
+    && ../target/release/apx-circuits setup rule-binding \
+    && ../target/release/apx-circuits setup pipeline
 
 # ============================================
 # Stage 2: Python runtime
@@ -41,7 +42,8 @@ RUN pip install --no-cache-dir -e .
 
 # Copy the compiled Rust binary and ZK keys from the builder stage
 COPY --from=rust-builder /app/rust/target/release/apx-circuits /usr/local/bin/apx-circuits
-COPY --from=rust-builder /app/rust/keys ./rust/keys
+COPY --from=rust-builder /app/rust/target/release/apx-zk /usr/local/bin/apx-zk
+COPY --from=rust-builder /app/rust/apx-circuits/keys ./rust/apx-circuits/keys
 
 # Make the binary executable
 RUN chmod +x /usr/local/bin/apx-circuits
@@ -53,7 +55,8 @@ COPY managed/knowledge ./managed/knowledge
 
 # Create runtime directories (populated via volumes at deploy time)
 RUN mkdir -p /app/managed/artifacts /app/managed/audit /app/managed/backups \
-    /app/managed/config /app/managed/store/blobs /app/rust/keys
+    /app/managed/config /app/managed/store/blobs \
+    /app/rust/apx-circuits/keys /app/rust/apx-zk/keys
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1

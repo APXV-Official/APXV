@@ -1,6 +1,6 @@
 # APXV1 v1.0.0 Migration Plan
 
-**Status:** Active — Phase 2 complete; ready for Phase 3
+**Status:** Active — Phase 3 complete; ready for Phase 4
 **Branch:** `apx-v1-migration` (local only — **no GitHub push until all 6 phases complete**)
 **Canonical workspace:** `C:\APXV1`  
 **Date:** June 2026
@@ -145,7 +145,7 @@ rust/
 - Separate key manifest for entity vs governance circuits
 - `cargo test` green in both crates
 
-**Gate:** Governance circuits unchanged; entity circuits prove + verify independently.
+**Gate:** Governance circuits unchanged; entity circuits prove + verify independently → **57 Rust tests + 288 pytest passed** (2026-06-20).
 
 ---
 
@@ -225,7 +225,7 @@ Every phase:
 | Baseline (Phase 0) | 51 | existing |
 | After Phase 1 | ~100 | **123 passed** |
 | After Phase 2 | **278** | — |
-| After Phase 3 | ~115 | ~45 |
+| After Phase 3 | **288** | **57** (apx-zk) |
 | After Phase 4 | ~135 | ~45 |
 
 ---

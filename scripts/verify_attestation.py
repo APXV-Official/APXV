@@ -189,6 +189,7 @@ def verify_real_zk_independent(
         )
 
         rust_dir = base_path / "rust"
+        crate_dir = rust_dir / "apx-circuits"
         manifest = rust_dir / "Cargo.toml"
 
         print(f"\n[REAL ZK] Performing independent Groth16 verification for {circuit}...")
@@ -196,6 +197,7 @@ def verify_real_zk_independent(
 
         cmd = [
             "cargo", "run", "--release", "--manifest-path", str(manifest),
+            "-p", "apx-circuits",
             "--", "verify", circuit,
             "--proof", str(proof_file),
         ]
@@ -203,7 +205,7 @@ def verify_real_zk_independent(
         try:
             result = subprocess.run(
                 cmd,
-                cwd=str(rust_dir),
+                cwd=str(crate_dir),
                 capture_output=True,
                 text=True,
                 timeout=180,

@@ -25,8 +25,8 @@ cargo test --manifest-path rust/Cargo.toml
 
 | Suite | Expected | Actual | Date |
 |-------|----------|--------|------|
-| pytest | 51 passed | **278 passed** (Phase 1 + Phase 2 E2EE) | 2026-06-20 |
-| rust (apx-circuits) | builds clean | **0 tests** (no unit tests in crate yet); `cargo test` ok | 2026-06-20 |
+| pytest | 51 passed | **288 passed** (Phase 1–3) | 2026-06-20 |
+| rust workspace | builds clean | **57 passed** (apx-zk entity circuits); apx-circuits governance unchanged | 2026-06-20 |
 
 ## Notes
 
