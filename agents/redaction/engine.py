@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import concurrent.futures
 import re
-import signal
-from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Iterator, List, Optional, Sequence, Tuple, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, TypeVar
 
 from .format_parser import FormatParser
 from .patterns import PIIPattern, compile_patterns
@@ -121,32 +119,12 @@ def _legacy_category(entity_type: str) -> Optional[str]:
     return None
 
 
-@contextmanager
-def _timeout(seconds: int) -> Iterator[None]:
-    if hasattr(signal, "SIGALRM"):
-
-        def handler(signum: int, frame: Any) -> None:
-            raise TimeoutError("Redaction timeout: input may be too complex")
-
-        previous = signal.signal(signal.SIGALRM, handler)
-        signal.alarm(seconds)
-        try:
-            yield
-        finally:
-            signal.alarm(0)
-            signal.signal(signal.SIGALRM, previous)
-    else:
-        yield
-
-
 def run_with_timeout(
     func: Callable[[], T],
-    seconds: int,
+    seconds: float,
     error_msg: str = "Operation timed out",
 ) -> T:
-    if hasattr(signal, "SIGALRM"):
-        with _timeout(seconds):
-            return func()
+    """Run func with a wall-clock timeout (portable; supports sub-second limits)."""
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(func)
         try:

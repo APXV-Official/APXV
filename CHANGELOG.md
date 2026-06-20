@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - CI: run doctor/integrity before pytest to avoid audit-chain pollution on shared runners
+- Linux CI: `run_with_timeout` no longer uses `signal.alarm` (breaks sub-second float timeouts on Ubuntu)
+- API server tests wait for `/health` instead of a fixed sleep (fewer flakes on slow runners)
 - Manifest rebuild no longer rewrites timestamps when key hashes are unchanged
 
 ### Changed

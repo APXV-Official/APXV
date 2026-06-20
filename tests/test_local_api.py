@@ -71,9 +71,16 @@ def api_server(tmp_path):
         api_key = auth.create_key("pytest-operator", description="API test fixture key")
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    time.sleep(0.3)
     host, port = server.address
     base = f"http://{host}:{port}"
+    for _ in range(50):
+        try:
+            _request(f"{base}/health")
+            break
+        except Exception:
+            time.sleep(0.1)
+    else:
+        pytest.fail("API server did not become ready")
     yield base, api_key
     server.worker.stop()
     server.httpd.shutdown()
