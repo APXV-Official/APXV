@@ -4,6 +4,19 @@ All notable changes to APXV1 are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-06-20
+
+### Fixed
+
+- Windows: entity ZK prove/verify no longer fails when `apx-zk.exe` is locked (use release binary instead of `cargo run`)
+- `--encrypt` no longer crashes final attestation summary (`KeyError: 'output'`)
+- `verify_attestation --real-zk` decrypts E2EE artifacts locally for Python-side checks
+
+### Changed
+
+- Re-recorded `apxv1-demo.mp4` (~2 min): dual-track ZK attestation, independent verify, optional E2EE
+- Updated `docs/assets/apxv1-demo-thumb.jpg`
+
 ## [1.0.0] - 2026-06-20
 
 **APXV1 v1.0.0** — privacy migration complete (Phases 0–4). Governance spine unchanged; native redaction, optional E2EE, and dual-track ZK attestation added.
@@ -68,5 +81,6 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, ZK `.pk`/`.vk`) excluded from version control via `.gitignore`
 - Maintainer-only paths gitignored (`docs/internal/`, `docs/resume/`)
 
+[1.0.1]: https://github.com/apxv1dev/APXV1/releases/tag/v1.0.1
 [1.0.0]: https://github.com/apxv1dev/APXV1/releases/tag/v1.0.0
 [0.3.0]: https://github.com/apxv1dev/APXV1/releases/tag/v0.3.0

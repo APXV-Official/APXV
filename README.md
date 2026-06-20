@@ -4,21 +4,19 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
-> Current release: **v1.0.0**.
+> Current release: **v1.0.1**.
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
 ## Demo
 
-End-to-end walkthrough on Windows: first-run setup, the 3-agent reference pipeline with attestation, independent Groth16 verification, and the [hello-agent](examples/hello-agent/) example.
+End-to-end walkthrough on Windows: health check, dual-track Groth16 attestation (governance + entity), independent verification, and optional E2EE encryption.
 
 <a href="https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4">
   <img src="docs/assets/apxv1-demo-thumb.jpg" alt="APXV1 end-to-end demo — click to watch" width="800">
 </a>
 
-**▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)** (~2 min)
-
-*Note: demo video recorded for v0.3.0 flow; v1.0.0 adds dual-track ZK and optional encryption — see [CHANGELOG.md](CHANGELOG.md).*
+**▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)** (~2 min, v1.0.1)
 
 ## Who This Is For
 

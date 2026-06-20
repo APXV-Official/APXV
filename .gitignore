@@ -59,6 +59,9 @@ managed/config/e2ee-keypair.json
 agent-tools/
 terminals/
 
+# Raw screen recordings (published demo is apxv1-demo.mp4 only)
+*Visual Studio Code*.mp4
+
 # OS / editor
 .DS_Store
 Thumbs.db

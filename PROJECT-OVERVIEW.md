@@ -2,7 +2,7 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** governed agent platform.
 
-**Version:** 1.0.0 · **License:** Apache 2.0
+**Version:** 1.0.1 · **License:** Apache 2.0
 
 This guide describes the repository layout, core components, and where to find operator documentation. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
@@ -37,7 +37,7 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 | Governed runtime core | Complete |
 | Privacy migration (redaction, E2EE, dual ZK) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
-| Current release | **v1.0.0** |
+| Current release | **v1.0.1** |
 
 The reference 3-agent pipeline (redact → orchestrate → attest) and dual-track Groth16 verification path are implemented and covered by **295+ automated tests**.
 

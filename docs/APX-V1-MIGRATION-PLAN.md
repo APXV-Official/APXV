@@ -191,7 +191,7 @@ Not required for v1.0.0.
 | CI: Rust workspace + extended pytest |
 | Legacy vendor naming scan → zero hits in tracked files |
 | Tag `v1.0.0`, merge `apx-v1-migration` → `main`, push |
-| Demo video re-record | Deferred — existing `apxv1-demo.mp4` covers v0.3.0 flow |
+| Demo video re-record | Done — `apxv1-demo.mp4` updated for v1.0.1 dual ZK + E2EE |
 
 ---
 
