@@ -186,9 +186,18 @@ def generate_zk_proof(
             return {"status": "error_calling_rust", "error": str(e)}
 
 
+def apply_e2ee_encryption(attested: dict, base_path: Path) -> dict:
+    """Opt-in local E2EE: encrypt proposed_artifact and attach envelope."""
+    from agents.encryption_engine import get_e2ee_instance
+
+    e2ee = get_e2ee_instance(base_path=base_path)
+    return e2ee.encrypt_artifact_payload(attested)
+
+
 def main():
     """CLI entry point."""
     with_proof = "--attest" in sys.argv
+    with_encrypt = "--encrypt" in sys.argv
 
     # Collect non-flag arguments as input text
     input_parts = []
@@ -234,6 +243,26 @@ def main():
 
         print("\n[ZK] Attested result now includes real, portable, independently verifiable Groth16 proofs.")
         print("     Use verify_attestation.py --real-zk to perform independent verification.")
+
+    if with_encrypt:
+        base = runtime.base_path
+        provider = runtime.provider
+
+        print("\n[E2EE] Encrypting proposed artifact with local XSalsa20-Poly1305...")
+        attested = apply_e2ee_encryption(attested, base)
+        write_meta = provider.write_artifact(
+            artifact=attested,
+            name="attested_result_pipeline_encrypted",
+        )
+        runtime.system_audit.log_event(
+            event_type="pipeline_attested_with_e2ee",
+            data={
+                "attestation_id": attested.get("attestation_id"),
+                "artifact_path": write_meta.get("path"),
+            },
+        )
+        print(f"      - Encrypted artifact written to: {write_meta['path']}")
+        print(f"      - Public key: {attested['e2ee']['publicKey'][:16]}...")
 
     # Print compact final summary
     print("\nFinal Attestation Summary:")
