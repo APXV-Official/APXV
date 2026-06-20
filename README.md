@@ -4,7 +4,7 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
-> Current release: **v0.3.0**.
+> Current release: **v1.0.0**.
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
@@ -17,6 +17,8 @@ End-to-end walkthrough on Windows: first-run setup, the 3-agent reference pipeli
 </a>
 
 **▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)** (~2 min)
+
+*Note: demo video recorded for v0.3.0 flow; v1.0.0 adds dual-track ZK and optional encryption — see [CHANGELOG.md](CHANGELOG.md).*
 
 ## Who This Is For
 
@@ -33,7 +35,9 @@ APXV1 is a **foundation to build on** — not a finished end-user product.
 - **Chained audit logs** — every action recorded and verifiable
 - **Signed capability policies** — agents only do what they're granted
 - **Governance approval workflow** — propose → approve → apply rule changes
-- **Groth16 ZK proofs** — real, independently verifiable attestation (required)
+- **Redaction engine v3** — format-aware pattern redaction with structured `entities[]` output
+- **Optional E2EE** — X25519 + XSalsa20-Poly1305 payload encryption (`--encrypt`)
+- **Dual-track Groth16 ZK** — governance proofs (3 circuits) + entity proofs (8 circuits)
 - **Local HTTP API** — localhost only, no cloud, no telemetry
 - **Pluggable LLMs** — bring Ollama or any backend via `LLMBackend` (optional)
 
@@ -48,7 +52,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-Cryptography, governed runtime, and onboarding paths are complete for **v0.3.0**. The deterministic 3-agent reference pipeline and ZK attestation path are verified end-to-end. See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for component details.
+**v1.0.0** completes the privacy migration: native redaction, optional encryption, and dual-track ZK attestation on the unchanged governance spine. The 3-agent reference pipeline and independent Groth16 verification are covered by **295+ automated tests**. See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) and [CHANGELOG.md](CHANGELOG.md).
 
 ## Quickstart
 
@@ -74,6 +78,14 @@ python -m scripts.apx_ctl integrity
 python -m scripts.apx_ctl api-key create my-app
 export APX_API_KEY="<key>"
 python -m scripts.apx_serve
+```
+
+### Attestation (dual ZK)
+
+```bash
+python -m scripts.run_apx --attest
+python -m scripts.run_apx --attest --encrypt   # optional E2EE
+python -m scripts.verify_attestation --real-zk
 ```
 
 ## Build On APXV1
@@ -107,32 +119,38 @@ flowchart TB
   subgraph runtime [APXV1 Runtime]
     API[Local API :8741]
     Cap[Signed capabilities]
-    Agents[Your agents + reference pipeline]
+    Redact[RedactionEngine v3]
+    Agents[3-agent reference pipeline]
     Store[(SQLite + CAS artifacts)]
     Audit[(Chained audit logs)]
   end
 
   subgraph crypto [Attestation]
-    ZK[Groth16 proofs — Rust circuits]
+    ZKA[Governance ZK — apx-circuits]
+    ZKB[Entity ZK — apx-zk]
     Verify[Independent verify]
   end
 
   Rules --> Agents
   Approval --> Rules
   Cap --> Agents
+  Redact --> Agents
   Agents --> Store
   Agents --> Audit
-  Agents --> ZK
-  ZK --> Verify
+  Agents --> ZKA
+  Agents --> ZKB
+  ZKA --> Verify
+  ZKB --> Verify
   API --> Agents
 ```
 
 | Layer | Components |
 |-------|------------|
+| **Privacy** | `APXRedactionEngine`, optional `APXE2EE` |
 | **Deterministic core** | RuleGovernedRedactor, WorkflowOrchestrator, AttestationCoordinator |
 | **Agentic layer** | `LLMBackend`, `LLMReasoner`, `ToolUser`, `AgenticContract` |
 | **Governance & control** | CapabilityChecker, AuditLogger, GovernanceRegistry |
-| **Cryptographic layer** | Groth16 proofs over BN254 (arkworks) |
+| **Cryptographic layer** | Dual Groth16 tracks over BN254 (arkworks) |
 
 ## Documentation
 
@@ -146,7 +164,8 @@ flowchart TB
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/LOCAL-API.md](docs/LOCAL-API.md) | API reference |
 | [SECURITY.md](SECURITY.md) | Threat model |
-| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture (v0.3.0) |
+| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture (v1.0.0) |
+| [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [RUNBOOKS/](RUNBOOKS/) | Deployment and operations |
 
@@ -156,7 +175,7 @@ flowchart TB
 python -m scripts.apx_ctl backup-create
 ```
 
-Back up `managed/` and `rust/keys/` regularly.
+Back up `managed/`, `rust/apx-circuits/keys/`, and `rust/apx-zk/keys/` regularly.
 
 ## Support
 

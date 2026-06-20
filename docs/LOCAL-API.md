@@ -46,7 +46,7 @@ Keys are stored as SHA-256 hashes in `managed/config/api_keys.json`.
 | GET | `/governance` | Yes | Active governance specifications |
 | GET | `/capabilities` | Yes | Signed capability policy status |
 | GET | `/backups` | Yes | List local backup archives |
-| POST | `/backup/create` | Yes | Create backup of `managed/` + `rust/keys/` |
+| POST | `/backup/create` | Yes | Create backup of `managed/` + ZK key directories |
 | POST | `/backup/restore` | Yes | Restore from backup filename in `managed/backups/` |
 | POST | `/pipeline/run` | Yes | Run or queue pipeline |
 | GET | `/jobs` | Yes | List recent jobs |

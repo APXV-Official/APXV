@@ -2,7 +2,7 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** governed agent platform.
 
-**Version:** 0.3.0 · **License:** Apache 2.0
+**Version:** 1.0.0 · **License:** Apache 2.0
 
 This guide describes the repository layout, core components, and where to find operator documentation. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
@@ -19,7 +19,9 @@ APXV1 is a **local, air-gapped platform** for building governed agent systems. C
 | **Audit chain** | Chained logs for system and agent events |
 | **Artifact store** | SQLite index + content-addressable blobs |
 | **Approval workflow** | Propose → approve → apply for governance changes |
-| **ZK attestation** | Groth16 proofs binding execution to rule hashes |
+| **Redaction engine v3** | Format-aware pattern redaction with `entities[]` output |
+| **Optional E2EE** | `APXE2EE` encryption (`--encrypt` on pipeline) |
+| **Dual-track ZK** | Governance proofs (3 circuits) + entity proofs (8 circuits) |
 | **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
 | **Pluggable LLMs** | Optional backends (Ollama example included) |
 
@@ -33,10 +35,11 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 |-----------|--------|
 | Cryptography & ZK attestation | Complete |
 | Governed runtime core | Complete |
+| Privacy migration (redaction, E2EE, dual ZK) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
-| Current release | **v0.3.0** |
+| Current release | **v1.0.0** |
 
-The reference 3-agent pipeline (redact → orchestrate → attest) and Groth16 verification path are implemented and covered by automated tests.
+The reference 3-agent pipeline (redact → orchestrate → attest) and dual-track Groth16 verification path are implemented and covered by **295+ automated tests**.
 
 ---
 
@@ -47,6 +50,9 @@ The reference 3-agent pipeline (redact → orchestrate → attest) and Groth16 v
 | Component | File(s) | Role |
 |-----------|---------|------|
 | Reference pipeline | `agent1.py` … `agent3.py` | Redaction, orchestration, attestation |
+| Redaction v3 | `redaction/` | Format parser, patterns, `APXRedactionEngine` |
+| Encryption | `encryption_engine.py` | `APXE2EE` (optional pipeline encryption) |
+| ZK bridge | `zk/` | Entity commitments, Merkle tree, dual proof bundle |
 | Runtime | `runtime.py` | Store, audit, capabilities, governance |
 | Local API | `local_api.py` | Auth, jobs, pipeline, health |
 | LLM integration | `llm_backend.py`, `llm_reasoner.py` | Pluggable model backends |
@@ -56,19 +62,22 @@ The reference 3-agent pipeline (redact → orchestrate → attest) and Groth16 v
 
 | Component | Role |
 |-----------|------|
-| `circuits/` | Groth16 circuits: redaction, rule-binding, pipeline |
-| `src/main.rs` | `apx-circuits` prover CLI |
-| `keys/` | Per-deployment `.pk`/`.vk` (gitignored); `manifest.json` committed |
+| `apx-circuits/` | Governance Groth16 circuits: redaction, rule-binding, pipeline |
+| `apx-zk/` | Entity Groth16 circuits (8): redaction-v1, batch-merkle, compliance, etc. |
+| `apx-circuits/keys/` | Governance `.pk`/`.vk`; `manifest.json` committed |
+| `apx-zk/keys/` | Entity `.pk`/`.vk`; `entity-manifest.json` committed |
 
 ### Operator tooling (`scripts/`)
 
 | Command | Purpose |
 |---------|---------|
 | `install.ps1` / `install.sh` | Cross-platform install |
-| `setup_first_run.py` | First-run setup (ZK enabled by default) |
+| `setup_first_run.py` | First-run setup (governance + entity ZK by default) |
+| `setup_entity_zk.py` | Entity circuit trusted setup only |
 | `apx_doctor.py` | Prerequisites and health check |
 | `apx_ctl.py` | Integrity, API keys, governance, backups |
-| `run_apx.py` | Full pipeline (`--attest` for ZK) |
+| `run_apx.py` | Full pipeline (`--attest`, optional `--encrypt`) |
+| `verify_attestation.py` | Independent dual-track ZK verification (`--real-zk`) |
 | `apx_serve.py` | Local HTTP API |
 
 ### Examples & templates
@@ -85,7 +94,7 @@ The reference 3-agent pipeline (redact → orchestrate → attest) and Groth16 v
 | Asset | Notes |
 |-------|-------|
 | `Dockerfile` | Rust 1.85; ZK keys baked at build |
-| `docker-compose.yml` | Port 8741; use fresh volumes for clean deploys |
+| `docker-compose.yml` | Port 8741; mounts both key directories |
 | `docs/AIR-GAP-INSTALL.md` | Offline installation |
 
 ---
@@ -94,8 +103,9 @@ The reference 3-agent pipeline (redact → orchestrate → attest) and Groth16 v
 
 | Check | Coverage |
 |-------|----------|
-| Unit & integration tests | `tests/` (51 tests) |
-| CI | `.github/workflows/ci.yml` — pytest, Rust build, setup, doctor, integrity |
+| Unit & integration tests | `tests/` (295+ tests) |
+| Rust tests | `cargo test` in `apx-circuits` + `apx-zk` (57 entity tests) |
+| CI | `.github/workflows/ci.yml` — pytest, workspace build/test, setup, doctor, integrity |
 | Independent ZK verify | `python -m scripts.verify_attestation --real-zk` |
 
 If `apx_doctor` reports a broken audit chain on a long-lived dev tree, reset local audit state and re-run setup:
@@ -121,6 +131,7 @@ Fresh installs and CI environments should report **HEALTHY** without this step.
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain |
 | [docs/cryptography/](docs/cryptography/) | ZK setup and verification |
+| [docs/APX-V1-MIGRATION-PLAN.md](docs/APX-V1-MIGRATION-PLAN.md) | v1.0.0 migration record |
 | [SECURITY.md](SECURITY.md) | Threat model |
 | [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |

@@ -49,7 +49,7 @@ No more. No scope creep. We stop at these 12 items until the end-to-end flow is 
 ## Non-Negotiable Rules
 
 1. **Original folders untouched**  
-   `CILAS v1.0.0/`, `PEET*`, `AXP/`, `AXP1/`, `peet-proof-system/`, etc. remain exactly as they are for ongoing use.
+   `CILAS v1.0.0/`, `*SDK v1.0.0/`, `AXP/`, `AXP1/`, `*-proof-system/`, etc. remain exactly as they are for ongoing use.
 
 2. **Reference only — no copying**  
    We may study patterns from existing folders, but all code, circuits, and markdowns in `APX v1/` must be written fresh under the APX name.

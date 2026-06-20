@@ -1,42 +1,53 @@
-# APXV1 — Trusted Setup Process (Phase 1)
+# APXV1 — Trusted Setup Process
 
-**Status:** Active — Phase 1 Criterion #1  
-**Circuit Version:** 1.1.0
+**Circuit Version:** see `rust/apx-circuits/keys/manifest.json` (governance) and `rust/apx-zk/keys/entity-manifest.json` (entity)
 
 ## Overview
 
 APXV1 uses Groth16 over BN254 (arkworks 0.4). Each circuit requires a **one-time trusted setup** that produces a ProvingKey (PK) and VerifyingKey (VK). These keys are persisted and reused for all subsequent proofs.
 
+APXV1 v1.0.0 has **two key directories**:
+
+| Track | Crate | Keys directory | Manifest |
+|-------|-------|----------------|----------|
+| Governance (Track A) | `apx-circuits` | `rust/apx-circuits/keys/` | `manifest.json` |
+| Entity (Track B) | `apx-zk` | `rust/apx-zk/keys/` | `entity-manifest.json` |
+
 ## When Setup Is Required
 
 Run setup when:
 - First deploying APXV1
-- Circuit code changes (version bump in `rust/circuits/*.rs`)
-- Keys are missing from `rust/keys/`
+- Circuit code changes (version bump in manifest)
+- Keys are missing from either key directory
 - Verification fails with VK mismatch errors
 
 ## Commands
 
 ```bash
-# Auto-setup (runs only for missing keys)
-python -m scripts.setup_zk
+# First-run: governance + entity setup (recommended)
+python -m scripts.setup_first_run
 
-# Force re-setup after circuit changes
+# Governance circuits only
+python -m scripts.setup_zk
 python -m scripts.setup_zk --force
 
+# Entity circuits only
+python -m scripts.setup_entity_zk
+python -m scripts.setup_entity_zk --force
+
 # Manual per-circuit setup (Rust)
-cd rust
-cargo run -- setup redaction
-cargo run -- setup rule-binding
-cargo run -- setup pipeline
+cargo run --release --manifest-path rust/Cargo.toml -p apx-circuits -- setup redaction
+cargo run --release --manifest-path rust/Cargo.toml -p apx-zk -- setup redaction-v1
 ```
+
+Run manual Rust setup from the respective crate directory (`rust/apx-circuits/` or `rust/apx-zk/`).
 
 ## What Happens During Setup
 
 1. `StdRng::from_entropy()` provides cryptographic randomness (via `getrandom` on `ark-std`)
 2. `Groth16::<Bn254>::circuit_specific_setup` runs **once** per circuit
-3. PK and VK are serialized with `ark-serialize` (compressed) to `rust/keys/<circuit>.pk` and `.vk`
-4. `rust/keys/manifest.json` is updated with VK/PK SHA-256 hashes and circuit version
+3. PK and VK are serialized with `ark-serialize` (compressed) to the crate's `keys/` directory
+4. The appropriate manifest is updated with VK/PK SHA-256 hashes and circuit version
 5. The setup RNG ("toxic waste") is discarded — it is **not** written to disk
 
 ## Entropy Source
@@ -45,26 +56,26 @@ cargo run -- setup pipeline
 - **Backend:** `getrandom` crate (OS CSPRNG: `/dev/urandom`, `BCryptGenRandom`, etc.)
 - **Limitation:** Single-party setup. A malicious operator who retains toxic waste could forge proofs.
 
-## Key Files
+## Key Files (Governance)
 
 | File | Purpose |
 |------|---------|
-| `rust/keys/redaction.pk` | Proving key (operator-only) |
-| `rust/keys/redaction.vk` | Verifying key (distributable) |
-| `rust/keys/rule-binding.pk` / `.vk` | Rule-binding circuit keys |
-| `rust/keys/pipeline.pk` / `.vk` | Pipeline circuit keys |
-| `rust/keys/manifest.json` | VK hashes, circuit version, setup timestamps |
+| `rust/apx-circuits/keys/redaction.pk` | Proving key (operator-only) |
+| `rust/apx-circuits/keys/redaction.vk` | Verifying key (distributable) |
+| `rust/apx-circuits/keys/rule-binding.pk` / `.vk` | Rule-binding circuit keys |
+| `rust/apx-circuits/keys/pipeline.pk` / `.vk` | Pipeline circuit keys |
+| `rust/apx-circuits/keys/manifest.json` | VK hashes, circuit version, setup timestamps |
 
-## Phase 1 Limitations
+## Key Files (Entity)
+
+| File | Purpose |
+|------|---------|
+| `rust/apx-zk/keys/<circuit>.pk` / `.vk` | Per-circuit entity proving/verification keys |
+| `rust/apx-zk/keys/entity-manifest.json` | Entity VK hashes and circuit version |
+
+## Limitations
 
 - **Single-party honest setup** — not a multi-party computation (MPC) ceremony
 - **No public ceremony** — setup is local to the operator
 - **No HSM integration** — keys stored as files on disk
 - **No automated key rotation** — manual re-setup required after circuit changes
-
-## Future (Post-Phase 1)
-
-- Multi-party trusted setup ceremony
-- HSM-backed key storage
-- Automated key rotation and revocation
-- Public audit trail of ceremony participants

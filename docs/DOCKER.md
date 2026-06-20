@@ -34,7 +34,8 @@ docker exec apx-v1 python -m scripts.apx_ctl api-key create team-api
 | Host path | Purpose |
 |-----------|---------|
 | `./managed` | Artifacts, config, audit, store |
-| `./rust/keys` | ZK proving/verification keys |
+| `./rust/apx-circuits/keys` | Governance ZK keys |
+| `./rust/apx-zk/keys` | Entity ZK keys |
 
 ### Use fresh volumes for production-like deploys
 

@@ -31,4 +31,4 @@ cargo test --manifest-path rust/Cargo.toml
 ## Notes
 
 - Legacy reference folders gitignored; not part of baseline.
-- `rust/keys/manifest.json` may show local modifications — expected.
+- `rust/apx-circuits/keys/manifest.json` may show local modifications — expected.

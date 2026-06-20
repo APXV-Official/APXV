@@ -10,8 +10,25 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "PEET SDK v1.0.0" / "src" / "modules" / "redaction" / "engine.ts"
 OUTPUT = ROOT / "agents" / "redaction" / "patterns_data.py"
+
+
+def resolve_legacy_source() -> Path:
+    """Locate gitignored legacy redaction engine.ts without hard-coding vendor folder names."""
+    candidates = [
+        ROOT / "legacy" / "redaction" / "engine.ts",
+        *(
+            sdk / "src" / "modules" / "redaction" / "engine.ts"
+            for sdk in sorted(ROOT.glob("*SDK v1.0.0"))
+        ),
+    ]
+    for path in candidates:
+        if path.exists():
+            return path
+    raise SystemExit(
+        "Legacy redaction source not found. Expected legacy/redaction/engine.ts "
+        "or *SDK v1.0.0/src/modules/redaction/engine.ts (gitignored)."
+    )
 
 BLOCK_RE = re.compile(
     r"\{\s*"
@@ -49,10 +66,8 @@ def js_regex_to_python(pattern: str, flags: str) -> tuple[str, int]:
 
 
 def main() -> None:
-    if not SOURCE.exists():
-        raise SystemExit(f"Source not found: {SOURCE}")
-
-    text = SOURCE.read_text(encoding="utf-8")
+    source = resolve_legacy_source()
+    text = source.read_text(encoding="utf-8")
     patterns = []
     for match in BLOCK_RE.finditer(text):
         category, ptype, regex_body, flag_str, replacement, description, severity, enabled = match.groups()

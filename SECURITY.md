@@ -4,7 +4,8 @@
 
 | Version | Supported |
 |---------|-----------|
-| 0.3.x   | Yes       |
+| 1.0.x   | Yes       |
+| 0.3.x   | No        |
 
 ## Reporting a Vulnerability
 
@@ -39,7 +40,7 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 
 ## Operator Responsibilities
 
-1. **Back up** `managed/` and `rust/keys/` regularly.
+1. **Back up** `managed/`, `rust/apx-circuits/keys/`, and `rust/apx-zk/keys/` regularly.
 2. **Restrict filesystem access** to the APXV1 host.
 3. **Bind API to localhost** only (default; do not expose to LAN/internet without additional controls).
 4. **Rotate keys** if compromise is suspected.
@@ -52,7 +53,9 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 | `managed/config/api_keys.json` | Hashed operator API keys |
 | `managed/config/capability_signing.key` | Capability policy signing key |
 | `managed/config/governance_signing.key` | Governance approval signing key |
-| `rust/keys/` | ZK circuit proving/verification keys |
+| `rust/apx-circuits/keys/` | Governance ZK proving/verification keys |
+| `rust/apx-zk/keys/` | Entity ZK proving/verification keys |
+| `managed/config/e2ee-keypair.json` | Optional E2EE keypair (when `--encrypt` is used) |
 
 Treat these as secrets. They are gitignored by default.
 

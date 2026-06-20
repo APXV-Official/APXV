@@ -6,7 +6,7 @@ This directory contains the three small, original Rust circuits for the APXV1 re
 
 - Exactly **three** small circuits.
 - Written fresh for APXV1.
-- **Reference only**: The circuits in `peet-proof-system/src/circuits/` were studied for patterns (arkworks 0.4 + BN254 + Groth16 structure, ConstraintSynthesizer usage, public vs witness allocation, basic constraint patterns). No code was copied.
+- **Reference only**: Legacy proof-system circuit sources (gitignored `*-proof-system/`) were studied for patterns (arkworks 0.4 + BN254 + Groth16 structure, ConstraintSynthesizer usage, public vs witness allocation, basic constraint patterns). No code was copied.
 - These circuits are intentionally minimal to match the "3 of everything" tiny build.
 
 ## The Three Circuits

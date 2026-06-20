@@ -313,7 +313,7 @@ def main() -> int:
         default="Signed via apx_ctl",
         help="Human-readable policy change description",
     )
-    backup_create = sub.add_parser("backup-create", help="Create managed/ + rust/keys backup")
+    backup_create = sub.add_parser("backup-create", help="Create managed/ + ZK keys backup")
     backup_create.add_argument("--output", help="Output .tar.gz path (default: managed/backups/)")
     sub.add_parser("backup-list", help="List local backup archives")
     backup_verify = sub.add_parser("backup-verify", help="Verify backup archive integrity")

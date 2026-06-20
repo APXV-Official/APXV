@@ -61,7 +61,7 @@ python -m scripts.verify_attestation --real-zk
 Back up regularly:
 
 - `managed/` — artifacts, audit logs, config, store
-- `rust/keys/` — ZK proving/verification keys
+- `rust/apx-circuits/keys/` and `rust/apx-zk/keys/` — ZK proving/verification keys
 
 ```bash
 python -m scripts.apx_ctl backup-create
@@ -74,7 +74,7 @@ python -m scripts.apx_ctl backup-create
 3. Re-run `python -m scripts.apx_ctl integrity`.
 4. Re-run tests: `python -m pytest tests/ -v`.
 
-Do not overwrite `managed/` or `rust/keys/` during updates unless restoring from backup.
+Do not overwrite `managed/` or ZK key directories during updates unless restoring from backup.
 
 ## 7. Change Rules Safely
 

@@ -30,7 +30,7 @@ This phase does **not** include:
 ## Non-Negotiables for Phase 1
 
 - All new Rust code must be original (Apache-2.0, 2026 headers).
-- We study patterns only from `peet-proof-system/` and other legacy folders — no copying.
+- We study patterns only from `*-proof-system/` and other legacy folders — no copying.
 - We maintain strict discipline: one focused step at a time, with explicit confirmation before proceeding to the next.
 - We do not declare Phase 1 complete until the exit criteria are actually demonstrated with working code and artifacts.
 - The existing APX v1 code and `BUILD-PLAN.md` remain untouched as the historical record.

@@ -1,7 +1,7 @@
 # APXV1 v1.0.0 Migration Plan
 
-**Status:** Active — Phase 4 complete; ready for Phase 5 (deferred) / Phase 6
-**Branch:** `apx-v1-migration` (local only — **no GitHub push until all 6 phases complete**)
+**Status:** Complete — **v1.0.0** (Phases 0–4 + 6; Phase 5 voice deferred to v1.1)
+**Branch:** `apx-v1-migration` merged to `main`; tag `v1.0.0`
 **Canonical workspace:** `C:\APXV1`  
 **Date:** June 2026
 
@@ -55,8 +55,8 @@ Input
 |--------|-------|
 | `*RedactEnhanced*` | `APXRedactionEngine` |
 | `*E2EE*` class | `APXE2EE` |
-| `peet-zk` / `peet_zk` | `apx-zk` / `apx_zk` |
-| `PEET_*` env vars | `APX_*` |
+| legacy `*-zk` crate names | `apx-zk` / `apx_zk` |
+| legacy `*_` env var prefixes | `APX_*` |
 | Layer IDs 1–14 | APX audit event types |
 
 All new file headers: Apache 2.0, `apxv1dev`, © 2026.
@@ -82,7 +82,7 @@ All new file headers: Apache 2.0, `apxv1dev`, © 2026.
 
 ### Phase 1 — Redaction engine v3 (1–2 weeks)
 
-**Source reference:** `PEET SDK v1.0.0/src/modules/redaction/` (gitignored)
+**Source reference:** `legacy/` redaction module (gitignored; `*SDK v1.0.0` locally)
 
 **Destination:**
 
@@ -113,7 +113,7 @@ scripts/extract_redaction_patterns.py
 
 ### Phase 2 — Encryption module (3–5 days)
 
-**Source reference:** `PEET SDK v1.0.0/src/modules/encryption/` (gitignored)
+**Source reference:** `legacy/` encryption module (gitignored)
 
 **Destination:** `agents/encryption_engine.py` (`APXE2EE`, PyNaCl)
 
@@ -129,7 +129,7 @@ scripts/extract_redaction_patterns.py
 
 ### Phase 3 — Proof system crate (2–3 weeks)
 
-**Source reference:** `peet-proof-system/` (gitignored)
+**Source reference:** `*-proof-system/` (gitignored)
 
 **Destination:**
 
@@ -151,7 +151,7 @@ rust/
 
 ### Phase 4 — ZK orchestration bridge (1–2 weeks)
 
-**Source reference:** `PEET SDK v1.0.0/src/modules/zk/` (gitignored)
+**Source reference:** `legacy/` ZK orchestration module (gitignored)
 
 **Destination:**
 
@@ -189,8 +189,9 @@ Not required for v1.0.0.
 | Update README, SECURITY.md, PROJECT-OVERVIEW.md, site |
 | Re-record demo video |
 | CI: Rust workspace + extended pytest |
-| `rg -i peet` → zero hits in tracked files |
+| Legacy vendor naming scan → zero hits in tracked files |
 | Tag `v1.0.0`, merge `apx-v1-migration` → `main`, push |
+| Demo video re-record | Deferred — existing `apxv1-demo.mp4` covers v0.3.0 flow |
 
 ---
 
@@ -256,8 +257,8 @@ Every phase:
 |-------|---------|-----------|-------|
 | 0 | 2026-06-20 | 2026-06-20 | Baseline + plan + branch |
 | 1 | 2026-06-20 | 2026-06-20 | RedactionEngine v3 in agents/redaction/ |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
-| 6 | | | |
+| 2 | 2026-06-20 | 2026-06-20 | APXE2EE + `--encrypt`; 278 pytest |
+| 3 | 2026-06-20 | 2026-06-20 | rust/apx-zk workspace; 57 Rust + 288 pytest |
+| 4 | 2026-06-20 | 2026-06-20 | Dual ZK bridge; 295 pytest |
+| 5 | — | — | Voice deferred to v1.1 |
+| 6 | 2026-06-20 | 2026-06-20 | v1.0.0 release hygiene, CI, docs |

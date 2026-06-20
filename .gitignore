@@ -17,7 +17,7 @@ env/
 # Rust
 rust/target/
 
-# ZK trusted-setup keys (generated per deployment)
+# Legacy key path (pre-workspace layout)
 rust/keys/*.pk
 rust/keys/*.vk
 
@@ -47,9 +47,10 @@ docs/internal/
 # Local marketing site (iterate before deploy — do not publish)
 website-local/
 
-# Legacy PEET reference trees (local porting source — never publish)
-PEET SDK v1.0.0/
-peet-proof-system/
+# Legacy reference trees (local porting source — never publish)
+legacy/
+*SDK v1.0.0/
+*-proof-system/
 
 # E2EE keypair (generated at runtime — never commit)
 managed/config/e2ee-keypair.json

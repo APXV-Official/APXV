@@ -87,7 +87,7 @@ Third parties verify proofs without re-running your system. See [docs/cryptograp
 ## Company / Team Deployment
 
 1. Run `setup_first_run` on each instance
-2. Mount persistent volumes for `managed/` and `rust/keys/` (Docker)
+2. Mount persistent volumes for `managed/`, `rust/apx-circuits/keys/`, and `rust/apx-zk/keys/` (Docker)
 3. Back up regularly: `python -m scripts.apx_ctl backup-create`
 4. Restrict host filesystem access to APXV1 directories
 5. Keep API on localhost unless you add your own network controls

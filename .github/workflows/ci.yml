@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -32,9 +32,13 @@ jobs:
       - name: Install package
         run: pip install -e ".[dev]"
 
-      - name: Build Rust prover
+      - name: Build Rust workspace
         working-directory: rust
-        run: cargo build --release
+        run: cargo build --release -p apx-circuits -p apx-zk
+
+      - name: Run Rust tests
+        working-directory: rust
+        run: cargo test -p apx-circuits -p apx-zk -q
 
       - name: Setup first-run (with ZK)
         run: python -m scripts.setup_first_run

@@ -1,6 +1,6 @@
 # APXV1 — Security Architecture
 
-**Version:** 0.3.0  
+**Version:** 1.0.0  
 **Deployment:** Local, self-hosted, air-gapped compatible
 
 Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md).
@@ -10,6 +10,9 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 ## Components Reviewed
 
 - `agents/agent1.py`, `agent2.py`, `agent3.py` — deterministic pipeline agents
+- `agents/redaction/` — APXRedactionEngine v3 (pattern redaction, format parsing)
+- `agents/encryption_engine.py` — optional E2EE (`APXE2EE`)
+- `agents/zk/` — dual-track ZK bridge (governance + entity proofs)
 - `agents/store.py` — SQLite + content-addressable artifact store
 - `agents/artifact_provider.py` — `SqliteArtifactProvider`
 - `agents/runtime.py` — unified `APXRuntime`
@@ -29,7 +32,8 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 - Governance specification change tracking in SQLite
 - Unified runtime with integrity check (`apx_ctl integrity`)
 - No network dependencies — suitable for air-gapped deployment
-- Groth16 attestation independently verifiable via `verify_attestation --real-zk`
+- Dual-track Groth16 attestation independently verifiable via `verify_attestation --real-zk`
+- Optional E2EE for pipeline payloads (`--encrypt`)
 
 ---
 
@@ -41,6 +45,7 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 | Agent isolation | Same process | No container sandbox per agent |
 | Rate limiting | None | Local API only |
 | Centralized monitoring | CLI / JSON logs | Bring your own observability stack |
+| E2EE scope | Pipeline payload only | Does not encrypt entire filesystem or store |
 
 ---
 
@@ -52,7 +57,8 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 - SQLite store + CAS blobs
 - Audit logs and ZK proof artifacts
 - Capability policy and signing keys
-- Rust proving keys (`rust/keys/`)
+- Rust proving keys (`rust/apx-circuits/keys/`, `rust/apx-zk/keys/`)
+- Optional E2EE keypair (`managed/config/e2ee-keypair.json`)
 
 ### Threat Actors
 
@@ -67,7 +73,7 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 | Artifact tampering | CAS blobs + hash chain; integrity verification |
 | Audit log tampering | Cryptographic chaining; `audit-verify` |
 | Unauthorized agent actions | Signed capability policy + audit of all checks |
-| Wrong VK / stale proofs | VK manifest integrity checks |
+| Wrong VK / stale proofs | Separate VK manifests for governance and entity circuits |
 | Policy tampering | Ed25519-signed capability policy; OS file permissions |
 
 ---
@@ -84,7 +90,7 @@ See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESP
 
 ---
 
-## Deployment Posture (v0.3.0)
+## Deployment Posture (v1.0.0)
 
 **Appropriate for:** trusted internal environments, air-gapped labs, pilots with sensitive-but-non-regulated data.
 

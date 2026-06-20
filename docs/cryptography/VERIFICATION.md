@@ -7,7 +7,9 @@
 To verify an APXV1 attestation **without trusting the operator** and **without re-proving**:
 
 1. The attested artifact JSON (contains `zk_proof_*` bundles)
-2. The `rust/keys/manifest.json` from the same circuit version (for VK integrity)
+2. The VK manifests from the same circuit version (for VK integrity):
+   - `rust/apx-circuits/keys/manifest.json` (governance proofs)
+   - `rust/apx-zk/keys/entity-manifest.json` (entity proofs)
 3. Either:
    - The APXV1 Python verifier: `python -m scripts.verify_attestation --real-zk`
    - The standalone verifier: `python -m scripts.apx_verify_bundle <artifact.json>`

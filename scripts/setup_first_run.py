@@ -108,11 +108,26 @@ def ensure_api_key(base_path: Path) -> dict:
 
 
 def verify_zk_keys(base_path: Path) -> dict:
-    keys_dir = base_path / "rust" / "keys"
+    keys_dir = base_path / "rust" / "apx-circuits" / "keys"
     circuits = ("redaction", "rule-binding", "pipeline")
     status = {}
     all_ready = True
     for circuit in circuits:
+        pk_ok = (keys_dir / f"{circuit}.pk").exists()
+        vk_ok = (keys_dir / f"{circuit}.vk").exists()
+        ready = pk_ok and vk_ok
+        status[circuit] = {"pk": pk_ok, "vk": vk_ok, "ready": ready}
+        all_ready = all_ready and ready
+    return {"circuits": status, "ready": all_ready}
+
+
+def verify_entity_zk_keys(base_path: Path) -> dict:
+    from scripts.entity_zk_manifest import ENTITY_CIRCUITS
+
+    keys_dir = base_path / "rust" / "apx-zk" / "keys"
+    status = {}
+    all_ready = True
+    for circuit in ENTITY_CIRCUITS:
         pk_ok = (keys_dir / f"{circuit}.pk").exists()
         vk_ok = (keys_dir / f"{circuit}.vk").exists()
         ready = pk_ok and vk_ok
@@ -136,18 +151,26 @@ def run_setup(base_path: Path, *, setup_zk: bool = True) -> dict:
     report["steps"]["api_key"] = ensure_api_key(base_path)
 
     if setup_zk:
+        from scripts.setup_entity_zk import ensure_entity_zk_setup
         from scripts.setup_zk import ensure_zk_setup
 
         report["steps"]["zk_setup"] = ensure_zk_setup(base_path=base_path)
+        report["steps"]["entity_zk_setup"] = ensure_entity_zk_setup(base_path=base_path)
         report["steps"]["zk_keys"] = verify_zk_keys(base_path)
+        report["steps"]["entity_zk_keys"] = verify_entity_zk_keys(base_path)
     else:
         report["steps"]["zk_setup"] = {"skipped": True}
+        report["steps"]["entity_zk_setup"] = {"skipped": True}
         report["steps"]["zk_keys"] = verify_zk_keys(base_path)
+        report["steps"]["entity_zk_keys"] = verify_entity_zk_keys(base_path)
 
     integrity = runtime.verify_integrity()
     report["integrity"] = integrity
     zk_ready = report["steps"]["zk_keys"]["ready"]
-    report["healthy"] = integrity["healthy"] and (zk_ready or not setup_zk)
+    entity_zk_ready = report["steps"]["entity_zk_keys"]["ready"]
+    report["healthy"] = integrity["healthy"] and (
+        (zk_ready and entity_zk_ready) or not setup_zk
+    )
     report["zk_required"] = setup_zk
     return report
 
@@ -179,15 +202,22 @@ def print_report(report: dict) -> None:
         print(f"Governance specs bootstrapped: {len(bootstrapped)}")
 
     zk = report["steps"].get("zk_setup", {})
+    entity_zk = report["steps"].get("entity_zk_setup", {})
     zk_keys = report["steps"].get("zk_keys", {})
+    entity_zk_keys = report["steps"].get("entity_zk_keys", {})
     if zk.get("skipped"):
         print()
         print("ZK setup: skipped (--skip-zk). Attestation will not work until keys exist.")
-    elif zk.get("setup_ran"):
-        print()
-        print("ZK setup: circuit keys generated under rust/apx-circuits/keys/")
+    else:
+        if zk.get("setup_ran"):
+            print()
+            print("Governance ZK setup: keys generated under rust/apx-circuits/keys/")
+        if entity_zk.get("setup_ran"):
+            print("Entity ZK setup: keys generated under rust/apx-zk/keys/")
     if zk_keys:
-        print(f"ZK keys ready: {'yes' if zk_keys.get('ready') else 'no'}")
+        print(f"Governance ZK keys ready: {'yes' if zk_keys.get('ready') else 'no'}")
+    if entity_zk_keys:
+        print(f"Entity ZK keys ready: {'yes' if entity_zk_keys.get('ready') else 'no'}")
 
     print()
     print("Backup these paths regularly:")

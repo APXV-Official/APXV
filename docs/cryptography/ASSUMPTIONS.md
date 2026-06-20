@@ -75,7 +75,7 @@
 
 **Assumptions:**
 - Setup operator is honest and destroys toxic waste
-- Persisted keys in `rust/keys/` are not tampered with after creation
+- Persisted keys in `rust/apx-circuits/keys/` and `rust/apx-zk/keys/` are not tampered with after creation
 - `manifest.json` accurately records VK hashes for the active circuit version
 - Verifier uses the VK matching the proof bundle's `vk_hex` and manifest entry
 

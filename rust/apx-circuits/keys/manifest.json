@@ -1,7 +1,7 @@
 {
   "manifest_version": "1.0.0",
   "circuit_version": "1.1.0",
-  "updated_at": "2026-06-20T17:22:38.575954+00:00",
+  "updated_at": "2026-06-20T18:06:02.664831+00:00",
   "circuits": {
     "redaction": {
       "circuit_version": "1.1.0",
@@ -9,7 +9,7 @@
       "vk_hash": "46d5b00eb9183087b630d4aa707ddc14061c8e54a06bd11258713d035ede8cf8",
       "pk_path": "rust/apx-circuits/keys/redaction.pk",
       "vk_path": "rust/apx-circuits/keys/redaction.vk",
-      "setup_at": "2026-06-20T17:22:38.563475+00:00"
+      "setup_at": "2026-06-20T18:06:02.649615+00:00"
     },
     "rule-binding": {
       "circuit_version": "1.1.0",
@@ -17,7 +17,7 @@
       "vk_hash": "f59033708bb8440a03441c75d60e90604ab7e6517d26f3397dfcd56a9fec32c0",
       "pk_path": "rust/apx-circuits/keys/rule-binding.pk",
       "vk_path": "rust/apx-circuits/keys/rule-binding.vk",
-      "setup_at": "2026-06-20T17:22:38.570091+00:00"
+      "setup_at": "2026-06-20T18:06:02.656813+00:00"
     },
     "pipeline": {
       "circuit_version": "1.1.0",
@@ -25,7 +25,7 @@
       "vk_hash": "b85dade4c0b2c1a79cafe09b5be59be98a795bfe3145f9456a7f91d86adbe4e7",
       "pk_path": "rust/apx-circuits/keys/pipeline.pk",
       "vk_path": "rust/apx-circuits/keys/pipeline.vk",
-      "setup_at": "2026-06-20T17:22:38.575954+00:00"
+      "setup_at": "2026-06-20T18:06:02.664831+00:00"
     }
   }
 }

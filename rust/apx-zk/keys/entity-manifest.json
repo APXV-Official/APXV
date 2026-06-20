@@ -1,5 +1,71 @@
 {
   "manifest_version": "1.0.0",
   "circuit_version": "1.0.0",
-  "circuits": {}
+  "circuits": {
+    "normalization": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "13f8d8883452198b1ef24d6f032a57c89ff27b67a3df3d950a4b23d441dbe27b",
+      "vk_hash": "0ec1a9c53103984d6977351fad448b51b77b036ef1e45c05b1475501a710257c",
+      "pk_path": "rust/apx-zk/keys/normalization.pk",
+      "vk_path": "rust/apx-zk/keys/normalization.vk",
+      "setup_at": "2026-06-20T18:05:52.692866+00:00"
+    },
+    "core-redaction": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "688cee4c91dbfe4dd4d24c36ce4d69e581f6b20e9a6aaf939091711602694a6a",
+      "vk_hash": "94408295806eeff45f9beb4ab3f2923007adcce31aa5deab9034c48a9fa9ec8e",
+      "pk_path": "rust/apx-zk/keys/core-redaction.pk",
+      "vk_path": "rust/apx-zk/keys/core-redaction.vk",
+      "setup_at": "2026-06-20T18:05:52.700991+00:00"
+    },
+    "compliance": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "2ee70f260599e2eaa3adaf6a8f4469d217fdbea6096dd408ad91e727b2ed8ca6",
+      "vk_hash": "a06aef10beb99447848d9afc1d1ae55029af1d5fcb38e67fd26cb6f8fe0c8216",
+      "pk_path": "rust/apx-zk/keys/compliance.pk",
+      "vk_path": "rust/apx-zk/keys/compliance.vk",
+      "setup_at": "2026-06-20T18:05:52.708094+00:00"
+    },
+    "threat": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "4068cec90aec4093ec25e86ad55cc1221d35f9173484aa53899e89d43981d7f8",
+      "vk_hash": "3362c1b42ffa88c2b8e16c5e24187f6a5ca01ba6ce38054361c9d30ee4a4a88c",
+      "pk_path": "rust/apx-zk/keys/threat.pk",
+      "vk_path": "rust/apx-zk/keys/threat.vk",
+      "setup_at": "2026-06-20T18:05:52.715705+00:00"
+    },
+    "voice-redaction": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "f71edea231f86e93e2bdb35856258bb9111750ac9580dddf2c80bfef9cc02a56",
+      "vk_hash": "2902ead3dd7aebc22326f5bf7ae12c095cc1065a3a54bc4f4d8881abc93712ab",
+      "pk_path": "rust/apx-zk/keys/voice-redaction.pk",
+      "vk_path": "rust/apx-zk/keys/voice-redaction.vk",
+      "setup_at": "2026-06-20T18:05:52.723220+00:00"
+    },
+    "redaction-v1": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "537a27d587de8d0ebfebed71187c63cf658fcab14a3c8b596dcce3ac39b3c46f",
+      "vk_hash": "7aff04cc5fefbcbc5e55cfdc713713477910ba353744f20f91ae0345b193a9ee",
+      "pk_path": "rust/apx-zk/keys/redaction-v1.pk",
+      "vk_path": "rust/apx-zk/keys/redaction-v1.vk",
+      "setup_at": "2026-06-20T18:05:52.731220+00:00"
+    },
+    "merkle-inclusion": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "4d5d7f0ce327500c2640e1fca58b135706f5abbc7f617f27a480bba1b7bf08ad",
+      "vk_hash": "08a641ae475617d09cd20576072b5cef725f516d2142f1b5324de84aafd135e2",
+      "pk_path": "rust/apx-zk/keys/merkle-inclusion.pk",
+      "vk_path": "rust/apx-zk/keys/merkle-inclusion.vk",
+      "setup_at": "2026-06-20T18:05:52.738792+00:00"
+    },
+    "batch-merkle": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "5cbc4bde049ed821cdb16240f388df9230b988da8051d3ee903fbc60d9bd1fe8",
+      "vk_hash": "121495532c433be5afc05338696f0ce614847aae78b0556a6ab1855e478c4033",
+      "pk_path": "rust/apx-zk/keys/batch-merkle.pk",
+      "vk_path": "rust/apx-zk/keys/batch-merkle.vk",
+      "setup_at": "2026-06-20T18:05:52.746928+00:00"
+    }
+  },
+  "updated_at": "2026-06-20T18:05:52.746928+00:00"
 }

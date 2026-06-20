@@ -5,7 +5,7 @@ Third-party verification without the full APX Python runtime.
 Requires only:
   - This script OR the compiled apx-circuits binary
   - A proof bundle (from an attested artifact or exported JSON)
-  - The keys manifest (rust/keys/manifest.json) for VK integrity checks
+  - The keys manifests (rust/apx-circuits/keys/manifest.json, rust/apx-zk/keys/entity-manifest.json) for VK integrity checks
 
 Usage:
   python -m scripts.apx_verify_bundle <proof_bundle.json> --circuit redaction
