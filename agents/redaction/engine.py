@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+import concurrent.futures
 import re
 import signal
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple
+from typing import Any, Callable, Dict, Iterator, List, Optional, Sequence, Tuple, TypeVar
 
-from .patterns import NAME_PATTERN_TYPES, PIIPattern, compile_patterns
+from .format_parser import FormatParser
+from .patterns import PIIPattern, compile_patterns
 from .unicode_armor import preprocess_for_pii_detection, unicode_armor
+
+T = TypeVar("T")
 
 REDACTION_ENGINE_VERSION = "3.0.0"
 MAX_TEXT_LENGTH = 500_000
@@ -135,6 +139,22 @@ def _timeout(seconds: int) -> Iterator[None]:
         yield
 
 
+def run_with_timeout(
+    func: Callable[[], T],
+    seconds: int,
+    error_msg: str = "Operation timed out",
+) -> T:
+    if hasattr(signal, "SIGALRM"):
+        with _timeout(seconds):
+            return func()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(func)
+        try:
+            return future.result(timeout=seconds)
+        except concurrent.futures.TimeoutError as exc:
+            raise TimeoutError(error_msg) from exc
+
+
 class APXRedactionEngine:
     """Expanded redaction engine with entity output for downstream attestation."""
 
@@ -152,72 +172,93 @@ class APXRedactionEngine:
                 f"redact_pii: input too large ({len(text):,} chars). "
                 f"Maximum is {MAX_TEXT_LENGTH:,} chars."
             )
+        return run_with_timeout(
+            lambda: self._redact_pii_impl(text, redact_names=redact_names),
+            REDACTION_TIMEOUT_SECONDS,
+            "Redaction timeout: input may be too complex",
+        )
 
-        with _timeout(REDACTION_TIMEOUT_SECONDS):
-            normalized = unicode_armor(text)
-            normalized = re.sub(r"\s+", " ", normalized) if normalized else normalized
-            redacted = normalized
-            entities: List[PIIEntity] = []
-            summary = RedactionSummary()
-            uncertain: List[Dict[str, Any]] = []
+    def _redact_pii_impl(self, text: str, *, redact_names: bool = False) -> Dict[str, Any]:
+        normalized = unicode_armor(text)
+        normalized = re.sub(r"\s+", " ", normalized) if normalized else normalized
+        redacted = normalized
+        entities: List[PIIEntity] = []
+        summary = RedactionSummary()
+        uncertain: List[Dict[str, Any]] = []
 
-            for pattern in self._get_patterns(redact_names=redact_names):
-                if not self._pattern_applies(pattern, redacted):
+        for pattern in self._get_patterns(redact_names=redact_names):
+            if not self._pattern_applies(pattern, redacted):
+                continue
+            matches = list(pattern.regex.finditer(redacted))
+            for match in reversed(matches):
+                matched = match.group(0)
+                start, end = match.start(), match.end()
+                if not self._accept_match(pattern, matched, redacted, start, uncertain):
                     continue
-                matches = list(pattern.regex.finditer(redacted))
-                for match in reversed(matches):
-                    matched = match.group(0)
-                    if not self._accept_match(pattern, matched, uncertain):
-                        continue
-                    replacement = pattern.replacement
-                    start, end = match.start(), match.end()
-                    entities.append(
-                        PIIEntity(
-                            type=pattern.type,
-                            value=matched,
-                            start=start,
-                            end=end,
-                            severity=pattern.severity,
-                            category=pattern.category,
-                            redacted_as=replacement,
-                        )
+                replacement = self._replacement_for_match(pattern, matched)
+                entities.append(
+                    PIIEntity(
+                        type=pattern.type,
+                        value=matched,
+                        start=start,
+                        end=end,
+                        severity=pattern.severity,
+                        category=pattern.category,
+                        redacted_as=replacement,
                     )
-                    redacted = redacted[:start] + replacement + redacted[end:]
-                    summary.total_detected += 1
-                    summary.by_category[pattern.category] = (
-                        summary.by_category.get(pattern.category, 0) + 1
-                    )
-                    summary.by_severity[pattern.severity] = (
-                        summary.by_severity.get(pattern.severity, 0) + 1
-                    )
+                )
+                redacted = redacted[:start] + replacement + redacted[end:]
+                summary.total_detected += 1
+                summary.by_category[pattern.category] = (
+                    summary.by_category.get(pattern.category, 0) + 1
+                )
+                summary.by_severity[pattern.severity] = (
+                    summary.by_severity.get(pattern.severity, 0) + 1
+                )
 
-            redacted, entities, summary, uncertain = self._apply_legacy_supplements(
-                redacted, entities, summary, uncertain
-            )
-            redacted = self._post_process(redacted, entities, summary, redact_names)
+        redacted, entities, summary, uncertain = self._apply_legacy_supplements(
+            redacted, entities, summary, uncertain
+        )
+        redacted, entities, summary = self._post_process(
+            redacted, entities, summary, redact_names
+        )
 
-            return {
-                "redacted_text": redacted,
-                "entities": [entity.as_dict() for entity in entities],
-                "summary": {
-                    "total_detected": summary.total_detected,
-                    "by_category": summary.by_category,
-                    "by_severity": summary.by_severity,
-                },
-                "uncertain_matches": uncertain,
-            }
+        return {
+            "redacted_text": redacted,
+            "entities": [entity.as_dict() for entity in entities],
+            "summary": {
+                "total_detected": summary.total_detected,
+                "by_category": summary.by_category,
+                "by_severity": summary.by_severity,
+            },
+            "uncertain_matches": uncertain,
+        }
+
+    def _replacement_for_match(self, pattern: PIIPattern, matched: str) -> str:
+        replacement = pattern.replacement
+        if "\\" in replacement:
+            return pattern.regex.sub(replacement, matched, count=1)
+        return replacement
 
     def _pattern_applies(self, pattern: PIIPattern, text: str) -> bool:
-        if pattern.type in NAME_PATTERN_TYPES:
-            return False
         return True
 
     def _accept_match(
         self,
         pattern: PIIPattern,
         matched: str,
+        text: str,
+        start: int,
         uncertain: List[Dict[str, Any]],
     ) -> bool:
+        if pattern.type == "national_id_numbers":
+            prefix = text[max(0, start - 24) : start].lower()
+            if re.search(r"routing[\s:#]+$", prefix):
+                return False
+        if pattern.type == "address":
+            prefix = text[max(0, start - 4) : start]
+            if re.search(r"\d{1,2}\.$", prefix):
+                return False
         if pattern.type in {"credit_card", "credit_card_generic", "credit_card_dashed"}:
             if not _luhn_valid(_digits_only(matched)):
                 uncertain.append(
@@ -320,25 +361,186 @@ class APXRedactionEngine:
         entities: List[PIIEntity],
         summary: RedactionSummary,
         redact_names: bool,
-    ) -> str:
+    ) -> Tuple[str, List[PIIEntity], RedactionSummary]:
         redacted = text
+
+        def post_replace(
+            pattern: re.Pattern[str],
+            token: str,
+            entity_type: str,
+            category: str = "Personal Information",
+            severity: str = "high",
+        ) -> None:
+            nonlocal redacted
+
+            def replacer(match: re.Match[str]) -> str:
+                matched = match.group(0)
+                entities.append(
+                    PIIEntity(
+                        type=entity_type,
+                        value=matched,
+                        start=-1,
+                        end=-1,
+                        severity=severity,
+                        category=category,
+                        redacted_as=token,
+                    )
+                )
+                summary.total_detected += 1
+                summary.by_category[category] = summary.by_category.get(category, 0) + 1
+                summary.by_severity[severity] = summary.by_severity.get(severity, 0) + 1
+                return token
+
+            redacted = pattern.sub(replacer, redacted)
+
+        orphan_bridge = re.compile(
+            r"\b([A-Z][a-z]+)\s+(\[REDACTED(?:-[A-Z0-9]+)+\])\s+([A-Z][a-z]+)\b"
+        )
+
+        def orphan_replacer(match: re.Match[str]) -> str:
+            full_match = match.group(0)
+            entities.append(
+                PIIEntity(
+                    type="name_orphan_bridge",
+                    value=full_match,
+                    start=-1,
+                    end=-1,
+                    severity="critical",
+                    category="Personal Information",
+                    redacted_as="[REDACTED-NAME]",
+                )
+            )
+            summary.total_detected += 1
+            summary.by_category["Personal Information"] = (
+                summary.by_category.get("Personal Information", 0) + 1
+            )
+            summary.by_severity["critical"] = summary.by_severity.get("critical", 0) + 1
+            return "[REDACTED-NAME]"
+
+        redacted = orphan_bridge.sub(orphan_replacer, redacted)
+
         if redact_names:
-            redacted = re.sub(
-                r"\b(?:Dr\.|Doctor|Prof\.|Professor|Rev\.|Hon\.)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b",
+            post_replace(
+                re.compile(
+                    r"\b(?:Dr\.|Doctor|Prof\.|Professor|Rev\.|Hon\.)\s+"
+                    r"[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b"
+                ),
                 "[REDACTED-NAME]",
-                redacted,
+                "titled_name_postprocess",
+                severity="critical",
             )
-            redacted = re.sub(
-                r"\b[A-Z][a-z]{1,30}(?:\s+[A-Z][a-z]{1,30}){1,3}\b",
+            post_replace(
+                re.compile(
+                    r"\b(?:Dr\.?|Doctor|Prof\.?|Professor|Rev\.?|Hon\.?)\s+"
+                    r"(?=\[REDACTED-NAME\])",
+                    re.IGNORECASE,
+                ),
+                "",
+                "titled_orphan_remove_postprocess",
+                severity="critical",
+            )
+            post_replace(
+                re.compile(
+                    r"\b[A-Z][a-z]{1,30}(?:\s+[A-Z][a-z]{1,30}){1,3}\b"
+                ),
                 "[REDACTED-NAME]",
-                redacted,
+                "full_name",
+                severity="high",
             )
-        return redacted
+
+        post_replace(
+            re.compile(
+                r"\b([a-z]{2,})(?:pon|on)?\d{1,2}"
+                r"(?:january|february|march|april|may|june|july|august|"
+                r"september|october|november|december)\b",
+                re.IGNORECASE,
+            ),
+            "[REDACTED-NAME-DATE]",
+            "embedded_name_date_postprocess",
+            severity="critical",
+        )
+        post_replace(
+            re.compile(
+                r"\[REDACTED-AGE\]\s+(?:male|female|m(?:ales?)?|f(?:emales?)?)\b",
+                re.IGNORECASE,
+            ),
+            "[REDACTED-AGE] [REDACTED-SEX]",
+            "age_sex_postprocess",
+            "Demographics",
+            "critical",
+        )
+        post_replace(
+            re.compile(
+                r"(?:[a-z]+)?(?:a)?(\d{1,3})(?:yo|y\.o\.|y/o)"
+                r"(?:male|female|m(?:ales?)?|f(?:emales?)?)",
+                re.IGNORECASE,
+            ),
+            "[REDACTED-AGE] [REDACTED-SEX]",
+            "age_sex_compact_postprocess",
+            "Demographics",
+            "critical",
+        )
+        post_replace(
+            re.compile(
+                r"\b\d{1,2}\s*(?:january|february|march|april|may|june|july|"
+                r"august|september|october|november|december)\b",
+                re.IGNORECASE,
+            ),
+            "[REDACTED-DATE]",
+            "date_day_month_postprocess",
+            severity="critical",
+        )
+
+        return redacted, entities, summary
 
     def apply(self, text: str, *, redact_names: bool = False) -> Dict[str, Any]:
         if NAME_FLAG_PHRASE in text.lower():
             redact_names = True
 
+        parser = FormatParser()
+        parsed = parser.parse(text)
+        fmt = parsed.original_format
+
+        if fmt == "text":
+            return self._apply_text_segments(text, redact_names=redact_names)
+
+        deep_result = deep_redact_with_count(
+            parsed.data, self, redact_names=redact_names
+        )
+        redacted_text = parser.serialize(deep_result["redacted"], fmt)
+        all_entities = deep_result["entities"]
+        uncertain: List[Dict[str, Any]] = []
+        legacy_counts = {key: 0 for key in LEGACY_CATEGORY_ORDER}
+        for entity in all_entities:
+            legacy = _legacy_category(entity["type"])
+            if legacy:
+                legacy_counts[legacy] += 1
+
+        redactions_applied = [
+            {"category": category, "count": legacy_counts[category]}
+            for category in LEGACY_CATEGORY_ORDER
+            if legacy_counts[category] > 0
+        ]
+        total = sum(legacy_counts.values())
+        summary = (
+            "No redactions applied per APX-RULE-001."
+            if total == 0
+            else f"Applied {total} redaction(s) across {len(redactions_applied)} categories."
+        )
+
+        return {
+            "redacted_text": redacted_text,
+            "redactions_applied": redactions_applied,
+            "total_redactions": total,
+            "engine_version": REDACTION_ENGINE_VERSION,
+            "redaction_summary": summary,
+            "uncertain_matches": uncertain,
+            "entities": all_entities,
+            "entity_count": len(all_entities),
+            "input_format": fmt,
+        }
+
+    def _apply_text_segments(self, text: str, *, redact_names: bool) -> Dict[str, Any]:
         segments = self._split_segments(text)
         rebuilt: List[str] = []
         all_entities: List[Dict[str, Any]] = []
@@ -379,6 +581,7 @@ class APXRedactionEngine:
             "uncertain_matches": uncertain,
             "entities": all_entities,
             "entity_count": len(all_entities),
+            "input_format": "text",
         }
 
     def _split_segments(self, text: str) -> List[Tuple[str, str]]:

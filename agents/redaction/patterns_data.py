@@ -69,7 +69,7 @@ PATTERN_DEFINITIONS: List[Dict[str, Any]] = [
     {
         "category": 'Financial Information',
         "type": 'national_id_numbers',
-        "regex": r"""(?<!routing[\s:]+)\b(?:[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]|\d{3}\s\d{3}\s\d{3}|\d{1,2}\s\d{2}\s\d{2}\s\d{2,3}\s\d{3}\s\d{3}\s\d{2})\b""",
+        "regex": r"""\b(?:[A-Z]{6}\d{2}[A-Z]\d{2}[A-Z]\d{3}[A-Z]|\d{3}\s\d{3}\s\d{3}|\d{1,2}\s\d{2}\s\d{2}\s\d{2,3}\s\d{3}\s\d{3}\s\d{2})\b""",
         "flags": 0,
         "replacement": '[REDACTED-NATIONAL-ID]',
         "description": 'National ID Numbers (Italian Codice Fiscale, French NIR with spaces, Canadian SIN with spaces)',
@@ -169,7 +169,7 @@ PATTERN_DEFINITIONS: List[Dict[str, Any]] = [
     {
         "category": 'Personal Information',
         "type": 'address',
-        "regex": r"""(?<!\d{1,2}\.)\b\d{1,5}\s+(?:[A-Za-z]+\s+)*?[A-Za-z]+\s+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Court|Ct|Way|Place|Pl|Parkway|Pkwy|Highway|Hwy|Circle|Cir)(?:\s*\.)?(?:,?\s+(?:Apt\.?|Apartment|Suite|Ste\.?|Unit|#)\s*[A-Za-z0-9-]+)?""",
+        "regex": r"""\b\d{1,5}\s+(?:[A-Za-z]+\s+)*?[A-Za-z]+\s+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Court|Ct|Way|Place|Pl|Parkway|Pkwy|Highway|Hwy|Circle|Cir)(?:\s*\.)?(?:,?\s+(?:Apt\.?|Apartment|Suite|Ste\.?|Unit|#)\s*[A-Za-z0-9-]+)?""",
         "flags": re.IGNORECASE,
         "replacement": '[REDACTED-ADDRESS]',
         "description": 'Street Address with any street name — catches "303 birch st", "123 Main Avenue"',
@@ -199,7 +199,7 @@ PATTERN_DEFINITIONS: List[Dict[str, Any]] = [
     {
         "category": 'Location Information',
         "type": 'state_abbreviation',
-        "regex": r"""(?<=,\s*|\s+)\b(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b(?=\s+\d{5}|\s*$|[,\s])""",
+        "regex": r"""\b(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b(?=\s+\d{5}|\s*$|[,\s])""",
         "flags": 0,
         "replacement": '[REDACTED-STATE]',
         "description": 'US State abbreviations in address context — uppercase only',

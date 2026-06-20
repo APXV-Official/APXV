@@ -9,13 +9,14 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from agents.redaction import APXRedactionEngine
-from agents.redaction.patterns_data import PATTERN_COUNT
+from agents.redaction.patterns import ALL_PATTERN_DEFINITIONS, compile_patterns
 
 ENGINE = APXRedactionEngine()
 
 
 def test_pattern_count_loaded():
-    assert PATTERN_COUNT >= 60
+    assert len(ALL_PATTERN_DEFINITIONS) >= 75
+    assert len(compile_patterns()) >= 65
 
 
 def test_redacts_ssn_and_emits_entities():

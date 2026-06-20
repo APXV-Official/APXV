@@ -1,7 +1,7 @@
 # APXV1 v1.0.0 Migration Plan
 
 **Status:** Active — Phase 1 complete; ready for Phase 2  
-**Branch:** `apx-v1-migration` (local; push only when ready)  
+**Branch:** `apx-v1-migration` (local only — **no GitHub push until all 6 phases complete**)
 **Canonical workspace:** `C:\APXV1`  
 **Date:** June 2026
 
@@ -89,21 +89,25 @@ All new file headers: Apache 2.0, `apxv1dev`, © 2026.
 ```
 agents/redaction/
   __init__.py
-  format_parser.py
+  format_parser.py         # detect, parse, serialize (incl. CSV injection guards)
   unicode_armor.py
   patterns.py
-  engine.py              # APXRedactionEngine
+  patterns_data.py         # auto-extracted regex library
+  patterns_supplement.py   # hand-ported patterns (function replacements)
+  engine.py                # APXRedactionEngine v3.0.0
 agents/redaction_engine.py   # backward-compat wrapper
+scripts/extract_redaction_patterns.py
 ```
 
 **Deliverables:**
-- ~90 pattern redaction, format-aware (JSON/CSV/XML/YAML/text)
-- Unicode armor, production guards (max length, timeout)
-- `entities[]` output on every run
-- Agent 1 wired to new engine
+- 76 pattern definitions (68 compile at runtime; standalone digit patterns disabled by policy)
+- Format-aware `apply()`: detect → parse → `deep_redact_with_count` → serialize
+- Unicode armor on all string paths; production guards (max length, cross-platform timeout)
+- Legacy post-processing sweeps (orphan bridge, age/sex, date fallbacks)
+- `entities[]` + `entity_count` on every run; Agent 1 uses `RedactionEngine.apply()`
 
-**Tests:** `tests/test_redaction_v3.py`, `test_format_parser.py`, `test_unicode_armor.py`  
-**Gate:** Existing `test_redaction_engine.py` still passes + ≥50 new cases green.
+**Tests:** `test_redaction_engine.py`, `test_redaction_v3.py`, `test_redaction_matrix.py`, `test_deep_redact.py`, `test_format_parser.py`, `test_format_parser_full.py`, `test_unicode_armor.py`  
+**Gate:** Existing `test_redaction_engine.py` still passes + ≥50 new cases green → **123 pytest passed** (2026-06-20).
 
 ---
 
@@ -219,7 +223,7 @@ Every phase:
 | Milestone | Python tests | Rust tests |
 |-----------|--------------|------------|
 | Baseline (Phase 0) | 51 | existing |
-| After Phase 1 | ~100 | — |
+| After Phase 1 | ~100 | **123 passed** |
 | After Phase 2 | ~115 | — |
 | After Phase 3 | ~115 | ~45 |
 | After Phase 4 | ~135 | ~45 |

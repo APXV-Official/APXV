@@ -165,3 +165,107 @@ class FormatParser:
                 value = False
             parent[key] = value
         return root
+
+    def serialize(self, data: Any, fmt: FormatName) -> str:
+        if fmt == "json":
+            return json.dumps(data, indent=2)
+        if fmt == "xml":
+            return self._to_xml(data)
+        if fmt == "csv":
+            return self._to_csv(data)
+        if fmt == "yaml":
+            return self._to_yaml(data)
+        if isinstance(data, str):
+            return data
+        if isinstance(data, dict) and "text" in data and len(data) == 1:
+            return str(data["text"])
+        return json.dumps(data, indent=2)
+
+    def _to_xml(self, obj: Any, root_name: str = "root") -> str:
+        lines = ['<?xml version="1.0" encoding="UTF-8"?>', f"<{root_name}>"]
+        for key, value in obj.items():
+            if isinstance(value, dict):
+                lines.append(f"  <{key}>")
+                lines.append(self._object_to_xml(value, 4))
+                lines.append(f"  </{key}>")
+            else:
+                lines.append(f"  <{key}>{self._escape_xml(str(value))}</{key}>")
+        lines.append(f"</{root_name}>")
+        return "\n".join(lines)
+
+    def _object_to_xml(self, obj: dict[str, Any], indent: int) -> str:
+        spaces = " " * indent
+        lines: List[str] = []
+        for key, value in obj.items():
+            if isinstance(value, dict):
+                lines.append(f"{spaces}<{key}>")
+                lines.append(self._object_to_xml(value, indent + 2))
+                lines.append(f"{spaces}</{key}>")
+            else:
+                lines.append(f"{spaces}<{key}>{self._escape_xml(str(value))}</{key}>")
+        return "\n".join(lines).rstrip()
+
+    def _escape_xml(self, value: str) -> str:
+        return (
+            value.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+            .replace("'", "&apos;")
+        )
+
+    def _to_csv(self, data: Any) -> str:
+        rows = data if isinstance(data, list) else [data]
+        if not rows:
+            return ""
+        headers = [key for key in rows[0].keys() if not str(key).startswith("_")]
+        lines = [",".join(self._escape_csv_field(str(header)) for header in headers)]
+        for row in rows:
+            values: List[str] = []
+            for header in headers:
+                raw = row.get(header, "")
+                val = "" if raw is None else str(raw)
+                val = self._neutralize_csv_formula(val)
+                if re.search(r'[,\n"]', val):
+                    val = f'"{val.replace(chr(34), chr(34) + chr(34))}"'
+                values.append(val)
+            lines.append(",".join(values))
+        return "\n".join(lines)
+
+    def _neutralize_csv_formula(self, value: str) -> str:
+        if not value:
+            return value
+        first = ord(value[0])
+        if first in (0x3D, 0x2B, 0x2D, 0x40, 0x09, 0x0D):
+            return f"'{value}"
+        return value
+
+    def _escape_csv_field(self, value: str) -> str:
+        val = self._neutralize_csv_formula(value)
+        if re.search(r'[,\n"]', val):
+            val = f'"{val.replace(chr(34), chr(34) + chr(34))}"'
+        return val
+
+    def _to_yaml(self, obj: Any, indent: int = 0) -> str:
+        spaces = " " * indent
+        lines: List[str] = []
+        for key, value in obj.items():
+            if isinstance(value, dict):
+                lines.append(f"{spaces}{key}:")
+                lines.append(self._to_yaml(value, indent + 2))
+            elif isinstance(value, list):
+                lines.append(f"{spaces}{key}: [{', '.join(str(item) for item in value)}]")
+            else:
+                string_value = str(value)
+                needs_quotes = (
+                    ":" in string_value
+                    or "#" in string_value
+                    or string_value.startswith(("{", "[", "&", "*", "!", "%", "@", "`", "'", '"', "|", ">"))
+                    or string_value in {"null", "true", "false", "~"}
+                    or string_value.strip() != string_value
+                    or (string_value.isdigit() and string_value != "")
+                )
+                escaped = string_value.replace("\\", "\\\\").replace('"', '\\"')
+                rendered = f'"{escaped}"' if needs_quotes else string_value
+                lines.append(f"{spaces}{key}: {rendered}")
+        return "\n".join(lines) + ("\n" if lines else "")

@@ -7,6 +7,9 @@ from dataclasses import dataclass
 from typing import List, Sequence
 
 from .patterns_data import PATTERN_DEFINITIONS
+from .patterns_supplement import SUPPLEMENTAL_PATTERN_DEFINITIONS
+
+ALL_PATTERN_DEFINITIONS = [*PATTERN_DEFINITIONS, *SUPPLEMENTAL_PATTERN_DEFINITIONS]
 
 
 @dataclass(frozen=True)
@@ -32,21 +35,13 @@ DISABLED_PATTERN_TYPES = frozenset(
     }
 )
 
-NAME_PATTERN_TYPES = frozenset(
-    {
-        "full_name",
-        "uppercase_name",
-        "name_after_title",
-        "titled_name_postprocess",
-        "name_orphan_bridge",
-        "embedded_name_date_postprocess",
-        "ner_name",
-    }
-)
+# Broad name sweeps are post-process only (gated by redact_names in engine).
+# Keyword-anchored name patterns always compile and run.
+NAME_PATTERN_TYPES = frozenset()
 
 
 def compile_patterns(
-    definitions: Sequence[dict] = PATTERN_DEFINITIONS,
+    definitions: Sequence[dict] = ALL_PATTERN_DEFINITIONS,
     *,
     include_names: bool = False,
 ) -> List[PIIPattern]:
