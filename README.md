@@ -67,6 +67,8 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 We document this plainly in [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md). v1.1 is **not** Powers of Tau or MPC.
 
+Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest works out of the box. For your own trust boundary, run `setup_first_run` and protect your proving keys — see [SECURITY.md](SECURITY.md) and [docs/cryptography/SETUP.md](docs/cryptography/SETUP.md).
+
 ## Quickstart
 
 **Start here:** [docs/QUICKSTART.md](docs/QUICKSTART.md) (15 minutes)

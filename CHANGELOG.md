@@ -41,7 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Security
 
 - Documented trust model: self-hosters trust themselves; verifying operator releases trusts operator setup (not MPC/PoT)
-- Verifier bundle exports VKs only — proving keys remain operator-local
+- Verifier bundle exports VKs only; reference `.pk`/`.vk` ship in-repo for clone-and-run — production operators should re-run setup and protect their own proving keys
 
 ## [1.0.1] - 2026-06-20
 
@@ -68,7 +68,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `agents/zk/` — dual ZK bridge: governance proofs (Track A) + entity proofs (Track B) in one attestation bundle
 - `scripts/setup_entity_zk.py` — one-time entity circuit trusted setup
 - Tests: redaction matrix, encryption round-trip, entity bundle E2E (`tests/test_zk_entity_bundle.py`)
-- Migration plan and baseline docs under `docs/migration/`
+
 
 ### Changed
 
@@ -117,7 +117,8 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 
 ### Security
 
-- Runtime secrets (API keys, signing keys, ZK `.pk`/`.vk`) excluded from version control via `.gitignore`
+- Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
+- Reference ZK `.pk`/`.vk` committed for out-of-box attest; operators may re-run setup for their own keys
 - Maintainer-only paths gitignored (`docs/internal/`, `docs/resume/`)
 
 [1.1.0]: https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0

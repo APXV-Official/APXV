@@ -23,6 +23,8 @@ rust/keys/*.pk
 rust/keys/*.vk
 
 # Runtime state — generated locally, never commit
+managed/*.json
+!managed/config/.gitkeep
 managed/artifacts/
 managed/store/
 managed/store/voice-models/

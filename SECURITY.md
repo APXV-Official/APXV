@@ -50,16 +50,29 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 
 ## Key Locations
 
+### Runtime secrets (gitignored — never commit)
+
 | Path | Purpose |
 |------|---------|
 | `managed/config/api_keys.json` | Hashed operator API keys |
 | `managed/config/capability_signing.key` | Capability policy signing key |
 | `managed/config/governance_signing.key` | Governance approval signing key |
-| `rust/apx-circuits/keys/` | Governance ZK proving/verification keys |
-| `rust/apx-zk/keys/` | Entity ZK proving/verification keys |
 | `managed/config/e2ee-keypair.json` | Optional E2EE keypair (when `--encrypt` is used) |
+| `managed/config/ceremony-transcript.json` | Local ceremony transcript (generated after setup) |
 
-Treat these as secrets. They are gitignored by default.
+Treat these as secrets on every deployment.
+
+### Reference ZK keys (committed for clone-and-run)
+
+| Path | Purpose |
+|------|---------|
+| `rust/apx-circuits/keys/*.pk` / `*.vk` | Governance Groth16 keys (3 circuits) |
+| `rust/apx-zk/keys/*.pk` / `*.vk` | Entity Groth16 keys (8 circuits) |
+| `manifest.json`, `entity-manifest.json` | VK/PK hashes and circuit version |
+
+The repository ships **reference** proving and verification keys so `run_apx --attest` works after install without an immediate re-setup. Anyone with the proving keys can generate proofs for that circuit version — same trust model as verifying our published artifacts.
+
+**Production posture:** run `python -m scripts.setup_first_run` (or per-circuit `--force` setup) on your own host, restrict filesystem access to the resulting `.pk` files, and treat your keys as confidential. Third parties verifying your attestations need only `.vk` files or the verifier bundle (VKs only).
 
 ## ZK ceremony and trust (v1.1)
 

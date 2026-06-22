@@ -56,11 +56,17 @@ Run manual setup from the respective crate directory (`rust/apx-circuits/` or `r
 - **Backend:** `getrandom` crate (OS CSPRNG: `/dev/urandom`, `BCryptGenRandom`, etc.)
 - **Limitation:** Single-party setup. A malicious operator who retains toxic waste could forge proofs.
 
+## Shipped reference keys (v1.1.0)
+
+The repository commits pre-generated `.pk` and `.vk` files under both key directories so install → attest works without an immediate setup step. These are **reference keys** for demo, CI, and evaluation — not a claim that toxic waste was destroyed in a public ceremony.
+
+Operators who need their own trust boundary should run `setup_first_run` (or `--force` per-circuit setup) and protect the new `.pk` files locally. Publish only `.vk` material via `export_verifier_bundle` (no proving keys in the bundle).
+
 ## Key Files (Governance)
 
 | File | Purpose |
 |------|---------|
-| `rust/apx-circuits/keys/redaction.pk` | Proving key (operator-only) |
+| `rust/apx-circuits/keys/redaction.pk` | Proving key (confidential on your deployment) |
 | `rust/apx-circuits/keys/redaction.vk` | Verifying key (distributable) |
 | `rust/apx-circuits/keys/rule-binding.pk` / `.vk` | Rule-binding circuit keys |
 | `rust/apx-circuits/keys/pipeline.pk` / `.vk` | Pipeline circuit keys |

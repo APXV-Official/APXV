@@ -60,7 +60,7 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 - SQLite store + CAS blobs
 - Audit logs and ZK proof artifacts
 - Capability policy and signing keys
-- Rust proving keys (`rust/apx-circuits/keys/`, `rust/apx-zk/keys/`)
+- Rust proving keys on the deployment host (`rust/apx-circuits/keys/`, `rust/apx-zk/keys/` — reference keys ship in-repo; re-run setup for production isolation)
 - Optional E2EE keypair (`managed/config/e2ee-keypair.json`)
 
 ### Threat Actors

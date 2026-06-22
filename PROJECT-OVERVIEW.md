@@ -68,8 +68,8 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 | `apx-circuits/` | Governance Groth16 circuits: redaction, rule-binding, pipeline |
 | `apx-zk/` | Entity Groth16 circuits (8 in crate; 3–4 + voice on default attest — see `docs/cryptography/CIRCUITS.md`) |
 | `voice/` | Voice privacy pipeline (STT/TTS providers, `VoicePrivacyPipeline`) |
-| `apx-circuits/keys/` | Governance `.pk`/`.vk`; `manifest.json` committed |
-| `apx-zk/keys/` | Entity `.pk`/`.vk`; `entity-manifest.json` committed |
+| `apx-circuits/keys/` | Reference governance `.pk`/`.vk` + `manifest.json` (re-run setup for your own keys) |
+| `apx-zk/keys/` | Reference entity `.pk`/`.vk` + `entity-manifest.json` (re-run setup for your own keys) |
 
 ### Operator tooling (`scripts/`)
 
@@ -139,7 +139,6 @@ Fresh installs and CI environments should report **HEALTHY** without this step.
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain |
 | [docs/cryptography/](docs/cryptography/) | ZK setup, circuits, ceremony, verification |
-| [docs/APX-V1-MIGRATION-PLAN.md](docs/APX-V1-MIGRATION-PLAN.md) | Migration record (Phases 0–6 + voice) |
 | [SECURITY.md](SECURITY.md) | Threat model |
 | [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
