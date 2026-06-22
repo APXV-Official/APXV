@@ -619,7 +619,6 @@ fn run_verify(circuit: &str, inputs_path: &Path) {
 mod json_witness_tests {
     use super::*;
     use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystem};
-    use std::fs;
 
     fn batch_merkle_satisfied(v: &Value) -> bool {
         let circuit = BatchMerkleCircuit {
@@ -636,9 +635,8 @@ mod json_witness_tests {
 
     #[test]
     fn batch_merkle_ec2_json_matches_hardcoded_witness() {
-        let content = fs::read_to_string("../../managed/bm_ec2.json")
-            .expect("managed/bm_ec2.json fixture");
-        let v: Value = serde_json::from_str(&content).expect("valid JSON");
+        let v: Value = serde_json::from_str(include_str!("../tests/fixtures/batch_merkle_ec2.json"))
+            .expect("valid JSON");
         assert!(
             batch_merkle_satisfied(&v),
             "JSON-loaded ec2 witness should satisfy batch-merkle constraints"
