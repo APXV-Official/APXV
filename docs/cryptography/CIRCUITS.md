@@ -2,9 +2,9 @@
 
 APXV1 uses **Groth16 over BN254** (arkworks 0.4) in two Rust crates. This document separates **circuits that exist** from **circuits proven on the default attest path**.
 
-## Trust reminder
+## Verification scope
 
-Independent verification checks proof math and VK lineage. It does **not** prove setup toxic waste was destroyed unless you self-host (`setup_first_run` on your machine). See [CEREMONY.md](CEREMONY.md).
+Independent verification checks proof math and VK lineage. Setup honesty is a separate trust assumption — see [CEREMONY.md](CEREMONY.md).
 
 ---
 

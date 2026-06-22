@@ -20,7 +20,7 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 
 **v1.1 walkthrough:** voice attest + ceremony checks — [docs/QUICKSTART.md](docs/QUICKSTART.md) (Voice attest and Ceremony transcript sections). A re-recorded video is optional; the v1.0 demo video above covers text/E2EE only.
 
-**Verifier bundle (VKs only):** after we publish the GitHub Release, download `apxv1-verifier-bundle-v1.1.0.zip` from [Releases](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
+**Verifier bundle (VKs only):** download `apxv1-verifier-bundle-v1.1.0.zip` from [GitHub Releases](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0) when available, or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
 
 ## Who This Is For
 
@@ -63,9 +63,9 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 | You want to… | Trust |
 |--------------|-------|
 | Run APXV1 yourself (`setup_first_run`, your keys) | **Yourself** |
-| Verify our published demo/release artifacts | **Our setup** for those VKs (math is self-checking; setup honesty is not) |
+| Verify artifacts from a published release | **Publisher's setup** for those VKs (proof math is self-checking; setup honesty is separate) |
 
-We document this plainly in [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md). v1.1 is **not** Powers of Tau or MPC.
+See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md). v1.1.0 uses single-party Groth16 trusted setup.
 
 Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest works out of the box. For your own trust boundary, run `setup_first_run` and protect your proving keys — see [SECURITY.md](SECURITY.md) and [docs/cryptography/SETUP.md](docs/cryptography/SETUP.md).
 

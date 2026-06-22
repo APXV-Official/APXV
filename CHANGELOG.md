@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `voice-redaction` entity proof wired in dual attestation when `voice_session` is present
 - `scripts/ceremony_transcript.py` — Tier A/B ceremony transcript (manifest aggregation + optional Ed25519 signature)
 - `scripts/export_verifier_bundle.py` — publishable VK-only bundle for third-party verification
-- `docs/cryptography/CEREMONY.md` — ceremony tiers, trust model, operator workflow
+- `docs/cryptography/CEREMONY.md` — ceremony tiers and trust model
 - Tests: `tests/test_voice_suite.py`, `tests/test_voice_e2e.py`, `tests/test_ceremony_transcript.py`
 
 ### Fixed
@@ -40,8 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Security
 
-- Documented trust model: self-hosters trust themselves; verifying operator releases trusts operator setup (not MPC/PoT)
-- Verifier bundle exports VKs only; reference `.pk`/`.vk` ship in-repo for clone-and-run — production operators should re-run setup and protect their own proving keys
+- Documented trust model: self-hosters trust themselves; verifying release artifacts trusts publisher setup (single-party Groth16)
+- Verifier bundle exports VKs only; reference `.pk`/`.vk` ship in-repo for clone-and-run — re-run setup to use your own proving keys
 
 ## [1.0.1] - 2026-06-20
 
@@ -76,7 +76,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `run_apx.py --attest` produces dual proofs; `verify_attestation.py --real-zk` verifies both tracks
 - Governance keys: `rust/apx-circuits/keys/`; entity keys: `rust/apx-zk/keys/`
 - CI: workspace `cargo build` + `cargo test` for both crates; full pytest suite
-- Version bump from 0.3.0 → 1.0.0 across package and operator docs
+- Version bump from 0.3.0 → 1.0.0 across package and documentation
 
 ### Security
 
@@ -93,19 +93,19 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - One-command install scripts: `scripts/install.ps1`, `scripts/install.sh`
 - `scripts/apx_doctor.py` — prerequisite and health checker
 - `scripts/setup_first_run.py` — ZK setup on by default (`--skip-zk` optional)
-- `scripts/apx_ctl.py` — `api-key create|list` and operator commands
+- `scripts/apx_ctl.py` — `api-key create|list` and administration commands
 - Local HTTP API (`scripts/apx_serve.py`) with localhost binding; Docker bind via `APX_CONTAINER_BIND=1`
 - Pluggable `LLMBackend` interface and `examples/llm-ollama/`
 - Examples: `examples/hello-agent/`, `examples/api-client/`
 - Docker image and `docker-compose.yml` with baked ZK keys at build time
-- Documentation: `docs/QUICKSTART.md`, `docs/BUILDING.md`, `docs/INSTALL-RUST.md`, `docs/DOCKER.md`, operator runbooks
+- Documentation: `docs/QUICKSTART.md`, `docs/BUILDING.md`, `docs/INSTALL-RUST.md`, `docs/DOCKER.md`, deployment runbooks
 - CI workflow: `.github/workflows/ci.yml` (pytest, Rust build, setup, doctor, integrity)
 - Legal and hygiene: `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, expanded `.gitignore`
 
 ### Changed
 
 - README repositioned as an air-gapped **platform foundation** for builders (not a finished consumer product)
-- Stale planning docs archived under `docs/archive/`
+
 - `agents/llm_reasoner.py` refactored to use `LLMBackend`
 
 ### Fixed
@@ -118,8 +118,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 ### Security
 
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
-- Reference ZK `.pk`/`.vk` committed for out-of-box attest; operators may re-run setup for their own keys
-- Maintainer-only paths gitignored (`docs/internal/`, `docs/resume/`)
+- Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
 [1.1.0]: https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0
 [1.0.1]: https://github.com/apxv1dev/APXV1/releases/tag/v1.0.1

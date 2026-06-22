@@ -41,7 +41,7 @@
 - Collect relevant log entries and artifact metadata
 
 ### Step 3: Communicate
-- Notify relevant internal stakeholders
+- Notify responsible parties in your organization
 - Document findings clearly (what happened, when, and evidence)
 
 ### Step 4: Remediate

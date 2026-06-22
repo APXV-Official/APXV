@@ -1,46 +1,44 @@
 # APXV1 — ZK Ceremony Transparency (v1.1)
 
-APXV1 uses Groth16 with a **one-time trusted setup** per circuit. This document defines what we mean by "ceremony" for v1.1 releases and how operators publish verifiable transparency artifacts.
+APXV1 uses Groth16 with a **one-time trusted setup** per circuit. This document describes ceremony tiers, transparency artifacts, and the trust model for v1.1.0.
 
-## Trust model (read this first)
+## Trust model
 
-| Scenario | Who you trust |
+| Scenario | Trust boundary |
 |----------|----------------|
-| **Self-host** — clone APXV1, run `setup_first_run`, attest your own data | Yourself (your setup, your keys) |
-| **Verify our release** — our artifacts + verifier bundle from GitHub Releases | Our one-time setup honesty + published VK lineage |
+| **Self-hosted** — run `setup_first_run`, generate your own keys, attest your data | You trust your own setup and key handling |
+| **Verify release artifacts** — use a published verifier bundle and matching VKs | You trust the publisher's one-time setup for those verification keys |
 
-Tier B ceremony does **not** replace multi-party setup. It commits verification-key hashes and signs that commitment when operator Ed25519 signing keys exist (created by default in `setup_first_run`). Without signing keys, you have Tier A (hash-committed manifests only). Anyone can verify Groth16 proofs mathematically; setup honesty for **our** keys still requires trust or self-hosting.
+Groth16 verification checks proof validity cryptographically. Trusted-setup honesty is a separate assumption. v1.1.0 uses **single-party setup** — not a multi-party ceremony.
+
+Tier A and Tier B document verification-key lineage. They do not provide the guarantees of collaborative trusted setup (a future Tier C capability).
 
 ## Tiers
 
-### Tier A — Transparent single-party (v1.1 minimum)
+### Tier A — Manifest commitment
 
-- Operator runs setup locally (`setup_first_run` or per-circuit setup).
-- **Manifests** record VK/PK SHA-256 hashes and circuit versions:
+- Trusted setup runs locally (`setup_first_run` or per-circuit setup).
+- **Manifests** record VK and PK SHA-256 hashes and circuit versions:
   - `rust/apx-circuits/keys/manifest.json`
   - `rust/apx-zk/keys/entity-manifest.json`
-- **Ceremony transcript** (`managed/config/ceremony-transcript.json`) aggregates both manifests with metadata.
-- **Verifier bundle** exports VK files + manifests only (no proving keys).
+- **Ceremony transcript** (`managed/config/ceremony-transcript.json`) optionally aggregates both manifests with metadata.
+- **Verifier bundle** exports VK files and manifests only (no proving keys).
 
-**Public claim:** "Proofs are verifiable against published verification keys; setup was operator-run with an auditable transcript."
+Provides hash-committed verification-key lineage and an auditable record of which keys were active.
 
-### Tier B — Attested ceremony (v1.1 when signing keys exist)
+### Tier B — Signed transcript
 
 Everything in Tier A, plus:
 
-- Transcript body signed with Ed25519 using the operator capability signing key (from `setup_first_run`).
-- If signing keys are absent, `ceremony_transcript --write` records `"signature": null` — treat as **Tier A**, not Tier B.
-- Transcript may be published alongside GitHub Releases (operator choice).
-- `python -m scripts.ceremony_transcript --verify` passes in CI after setup.
+- Transcript body signed with Ed25519 using the capability signing key from `setup_first_run`.
+- If signing keys are absent, `ceremony_transcript --write` records `"signature": null` — this is **Tier A**, not Tier B.
+- Signed transcripts may be distributed with release artifacts.
 
-**Public claim (Tier B only):** "Verification key lineage is hash-committed and signed by the operator identity."
+Adds a signature binding the transcript to a deployment identity.
 
-### Tier C — Multi-party ceremony (v1.2+, optional)
+### Tier C — Multi-party ceremony (future)
 
-- Collaborative MPC setup (e.g. Powers of Tau + per-circuit phase 2).
-- Not required for v1.1.
-
-**Do not imply Tier C unless implemented.**
+Collaborative MPC trusted setup is not included in v1.1.0.
 
 ## Ceremony transcript schema
 
@@ -61,38 +59,38 @@ Everything in Tier A, plus:
 }
 ```
 
-## Operator workflow
+## Generating a ceremony transcript
 
 ```bash
 # After keys exist (first-run or forced re-setup)
-python -m scripts.ceremony_transcript --write --tier B --note "v1.1.0 release"
+python -m scripts.ceremony_transcript --write --tier B --note "v1.1.0"
 python -m scripts.ceremony_transcript --verify
 
-# Publish verifier-only artifacts (safe to distribute)
+# Export verifier-only artifacts (safe to distribute)
 python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
 ```
 
-## Third-party verification
+## Verifying release artifacts
 
-1. Obtain attested artifact JSON (from operator).
-2. Obtain verifier bundle (VKs + manifests + optional signed transcript).
-3. Confirm transcript `content_hash` and signature (Tier B).
+1. Obtain the attested artifact JSON.
+2. Obtain the verifier bundle (VKs, manifests, and optional signed transcript).
+3. Confirm transcript `content_hash` and signature when Tier B applies.
 4. Run:
    ```bash
    python -m scripts.verify_attestation --real-zk path/to/artifact.json
    ```
-   Or use manifests to confirm `vk_hex` in proof bundles matches on-disk VK hashes.
+   Or compare artifact `vk_hex` values to VK hashes in the bundle manifests.
 
-## Limitations (state plainly in launch materials)
+## Limitations
 
-- Single-party setup: a malicious operator who retained toxic waste could forge proofs for that circuit version.
-- Keys on disk: no HSM integration in v1.1.
-- No automated rotation: circuit version bump requires re-setup and new transcript.
-- Not Powers of Tau / MPC unless Tier C is implemented.
+- **Single-party setup** — a party that retained setup entropy could forge proofs for that circuit version.
+- **Keys on disk** — no HSM integration in v1.1.0.
+- **No automated rotation** — circuit version changes require re-setup and a new transcript.
+- **Scope** — v1.1.0 documents VK lineage; it does not cryptographically prove setup entropy was destroyed.
 
 ## Related docs
 
 - [CIRCUITS.md](CIRCUITS.md) — which circuits exist vs run on `--attest`
 - [SETUP.md](SETUP.md) — trusted setup commands
-- [VERIFICATION.md](VERIFICATION.md) — third-party verify paths and trust model
+- [VERIFICATION.md](VERIFICATION.md) — independent verification paths
 - [ASSUMPTIONS.md](ASSUMPTIONS.md) — what circuits prove and do not prove

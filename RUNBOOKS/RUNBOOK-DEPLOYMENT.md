@@ -1,6 +1,6 @@
 # APXV1 — Runbook: Deployment
 
-> **Note:** For current onboarding, prefer [docs/QUICKSTART.md](../docs/QUICKSTART.md) and [docs/DOCKER.md](../docs/DOCKER.md). This runbook is operator reference.
+> **Note:** For first-time setup, see [docs/QUICKSTART.md](../docs/QUICKSTART.md) and [docs/DOCKER.md](../docs/DOCKER.md).
 
 **Purpose:** Guide for deploying APXV1 in production or staging environments.
 

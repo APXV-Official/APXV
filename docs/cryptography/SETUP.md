@@ -54,13 +54,13 @@ Run manual setup from the respective crate directory (`rust/apx-circuits/` or `r
 
 - **Library:** `ark_std::rand::rngs::StdRng::from_entropy()`
 - **Backend:** `getrandom` crate (OS CSPRNG: `/dev/urandom`, `BCryptGenRandom`, etc.)
-- **Limitation:** Single-party setup. A malicious operator who retains toxic waste could forge proofs.
+- **Limitation:** Single-party setup. A party that retained setup entropy could forge proofs.
 
 ## Shipped reference keys (v1.1.0)
 
-The repository commits pre-generated `.pk` and `.vk` files under both key directories so install → attest works without an immediate setup step. These are **reference keys** for demo, CI, and evaluation — not a claim that toxic waste was destroyed in a public ceremony.
+The repository includes pre-generated `.pk` and `.vk` files under both key directories so install → attest works without an immediate setup step. These are **reference keys** for evaluation and CI.
 
-Operators who need their own trust boundary should run `setup_first_run` (or `--force` per-circuit setup) and protect the new `.pk` files locally. Publish only `.vk` material via `export_verifier_bundle` (no proving keys in the bundle).
+For an isolated trust boundary, run `setup_first_run` (or `--force` per-circuit setup) and protect the resulting `.pk` files locally. Distribute only `.vk` material via `export_verifier_bundle` (proving keys are excluded from the bundle).
 
 ## Key Files (Governance)
 
@@ -81,7 +81,7 @@ Operators who need their own trust boundary should run `setup_first_run` (or `--
 
 ## Ceremony transparency (v1.1)
 
-After setup, operators can publish auditable VK lineage:
+After setup, generate auditable VK lineage:
 
 ```bash
 python -m scripts.ceremony_transcript --write --tier B
@@ -93,7 +93,7 @@ See [CEREMONY.md](CEREMONY.md) for tiers, trust model, and limitations. See [CIR
 
 ## Limitations
 
-- **Single-party honest setup** — not MPC or Powers of Tau (Tier C is v1.2+)
-- **Tier B** adds signed transcript + verifier bundle — not proof that toxic waste was destroyed
+- **Single-party setup** — multi-party ceremony is a future capability (Tier C)
+- **Tier B** adds signed transcript and verifier bundle — does not cryptographically prove setup entropy was destroyed
 - **No HSM integration** — keys stored as files on disk
 - **No automated key rotation** — manual re-setup required after circuit changes

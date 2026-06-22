@@ -3,7 +3,7 @@
 **Version:** 1.1.0
 **Deployment:** Local, self-hosted, air-gapped compatible
 
-Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md).
+Supplements the threat model in [SECURITY.md](../../SECURITY.md).
 
 ---
 
@@ -65,7 +65,7 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 
 ### Threat Actors
 
-- **Malicious local operator** — filesystem and key access
+- **Malicious local user** — filesystem and key access
 - **Compromised agent code** — bug or tampered Python module
 - **Insider with filesystem access** — tampering with logs or store
 
@@ -90,7 +90,7 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 4. Collect latest artifacts from `managed/store/blobs/`
 5. Export audit logs from `managed/audit/`
 
-See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md) for operator steps.
+See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md) for incident response steps.
 
 ---
 
@@ -109,6 +109,6 @@ Eight entity circuits exist in `apx-zk`; the default `--attest` path proves a su
 
 ## Deployment Posture (v1.1.0)
 
-**Appropriate for:** trusted internal environments, air-gapped labs, pilots with sensitive-but-non-regulated data.
+**Appropriate for:** self-hosted deployments, air-gapped labs, pilots with sensitive-but-non-regulated data.
 
 **Not appropriate for:** multi-tenant SaaS, regulated production (HIPAA/PCI), internet-exposed deployments without additional controls.

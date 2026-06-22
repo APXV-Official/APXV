@@ -4,13 +4,13 @@
 
 **Version:** 1.1.0 · **License:** Apache 2.0
 
-This guide describes the repository layout, core components, and where to find operator documentation. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
+This guide describes the repository layout, core components, and documentation index. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ---
 
 ## What APXV1 Provides
 
-APXV1 is a **local, air-gapped platform** for building governed agent systems. Code modules use the `APX` prefix internally; the product name is **APXV1**.
+APXV1 is a **local, air-gapped platform** for building governed agent systems. Code modules use the `APX` prefix; the product name is **APXV1**.
 
 | Capability | Description |
 |------------|-------------|
@@ -71,7 +71,7 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 | `apx-circuits/keys/` | Reference governance `.pk`/`.vk` + `manifest.json` (re-run setup for your own keys) |
 | `apx-zk/keys/` | Reference entity `.pk`/`.vk` + `entity-manifest.json` (re-run setup for your own keys) |
 
-### Operator tooling (`scripts/`)
+### Scripts and CLI (`scripts/`)
 
 | Command | Purpose |
 |---------|---------|

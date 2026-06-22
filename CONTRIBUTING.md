@@ -30,14 +30,14 @@ Thank you for your interest in **APXV1** (*Attested Proof Execution Verified*, 1
 - **Local-first:** No cloud dependencies, no outbound network calls in core paths.
 - **Governed by default:** Agents read versioned specs; changes go through approval workflow.
 - **Auditable:** Artifact and audit chains must remain verifiable.
-- **Honest scope:** Do not claim production/regulatory readiness without evidence.
+- **Accurate documentation:** State limitations and trust assumptions clearly in docs and PR descriptions.
 
 ## Pull Requests
 
 1. Keep changes focused — one logical change per PR.
 2. Add or update tests for behavior changes.
 3. Run `python -m scripts.apx_ctl integrity` before submitting.
-4. Update docs when changing operator-facing behavior.
+4. Update docs when changing user-visible behavior.
 
 ## Reporting Issues
 

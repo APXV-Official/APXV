@@ -1,29 +1,27 @@
 # APXV1 — Independent Proof Verification (v1.1)
 
-**Status:** Active
-
-## What a third party needs
+## What you need
 
 To verify Groth16 proofs **without re-proving**:
 
 1. The attested artifact JSON (`zk_proof_*`, `entity_proofs`, optional `voice_session`)
 2. Matching verification keys for the same circuit version:
-   - Operator's verifier bundle (recommended for releases), or
+   - Published verifier bundle (recommended), or
    - `rust/apx-circuits/keys/manifest.json` + `rust/apx-zk/keys/entity-manifest.json` + `.vk` files
 3. A verifier:
    - `python -m scripts.verify_attestation --real-zk [artifact.json]`
    - `python -m scripts.apx_verify_bundle <artifact.json>`
    - Rust: `apx-circuits verify` / `apx-zk verify` with proof bundle JSON
 
-## Trust model (important)
+## Trust model
 
 | Verification type | What you can confirm | What you still trust |
 |-------------------|----------------------|----------------------|
 | **Proof math** | Groth16 valid for public inputs under the VK | Nothing (cryptographic) |
-| **VK lineage** | Transcript hashes match published manifests (Tier B) | Operator did not swap keys after signing |
-| **Setup honesty** | — | Operator destroyed toxic waste (unless you self-host) |
+| **VK lineage** | Transcript hashes match published manifests (Tier B) | Setup party did not swap keys after signing |
+| **Setup honesty** | — | Setup entropy was discarded (unless you self-host) |
 
-Self-hosters who run their own `setup_first_run` verify against **their** keys and trust **themselves** for setup. Verifying **someone else's** artifacts uses **their** VKs — you trust their one-time setup.
+If you run your own `setup_first_run`, you verify against **your** keys and trust **your** setup. Verifying **another party's** artifacts uses **their** VKs — you trust their one-time setup.
 
 See [CEREMONY.md](CEREMONY.md) and [ASSUMPTIONS.md](ASSUMPTIONS.md).
 
@@ -80,8 +78,8 @@ cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk
 
 ### Option D — Release verifier bundle
 
-1. Obtain `apxv1-verifier-bundle` from GitHub Releases (VKs + manifests + optional signed transcript).
-2. Confirm transcript `content_hash` / signature (Tier B).
+1. Obtain `apxv1-verifier-bundle` from GitHub Releases (VKs, manifests, optional signed transcript).
+2. Confirm transcript `content_hash` and signature when Tier B applies.
 3. Run Option A with APXV1 installed, or compare artifact `vk_hex` to bundle VK bytes.
 
 ## VK integrity

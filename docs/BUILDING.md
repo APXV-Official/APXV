@@ -99,7 +99,7 @@ Examples of systems on APXV1:
 
 - Local PII processing service with audit trail + proofs
 - Policy-governed document pipeline
-- Internal compliance bot with signed rule changes
+- Compliance automation with signed rule changes
 - Hybrid workflow: deterministic core + optional LLM reasoning step
 - Attestation export for external auditors
 

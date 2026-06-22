@@ -33,14 +33,14 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 
 ### APXV1 Does NOT Protect Against
 
-- **Malicious operators** with filesystem and key access
+- **Malicious users** with filesystem and key access
 - **Compromised host OS** (malware, root access)
 - **Physical access** to the machine
 - **Advanced insider attacks** that steal signing keys from `managed/config/`
 - **All PII leakage** (redaction is pattern-based, not full DLP)
 - **Regulatory certification** (not HIPAA, SOC2, or GDPR certified)
 
-## Operator Responsibilities
+## Deployment Responsibilities
 
 1. **Back up** `managed/`, `rust/apx-circuits/keys/`, and `rust/apx-zk/keys/` regularly.
 2. **Restrict filesystem access** to the APXV1 host.
@@ -54,7 +54,7 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 
 | Path | Purpose |
 |------|---------|
-| `managed/config/api_keys.json` | Hashed operator API keys |
+| `managed/config/api_keys.json` | Hashed API keys |
 | `managed/config/capability_signing.key` | Capability policy signing key |
 | `managed/config/governance_signing.key` | Governance approval signing key |
 | `managed/config/e2ee-keypair.json` | Optional E2EE keypair (when `--encrypt` is used) |
@@ -70,9 +70,9 @@ Treat these as secrets on every deployment.
 | `rust/apx-zk/keys/*.pk` / `*.vk` | Entity Groth16 keys (8 circuits) |
 | `manifest.json`, `entity-manifest.json` | VK/PK hashes and circuit version |
 
-The repository ships **reference** proving and verification keys so `run_apx --attest` works after install without an immediate re-setup. Anyone with the proving keys can generate proofs for that circuit version — same trust model as verifying our published artifacts.
+The repository ships **reference** proving and verification keys so `run_apx --attest` works after install without an immediate re-setup. Anyone with the proving keys can generate proofs for that circuit version.
 
-**Production posture:** run `python -m scripts.setup_first_run` (or per-circuit `--force` setup) on your own host, restrict filesystem access to the resulting `.pk` files, and treat your keys as confidential. Third parties verifying your attestations need only `.vk` files or the verifier bundle (VKs only).
+For production isolation, run `python -m scripts.setup_first_run` (or per-circuit `--force` setup) on your own host, restrict filesystem access to the resulting `.pk` files, and treat your keys as confidential. Third parties verifying your attestations need only `.vk` files or the verifier bundle (VKs only).
 
 ## ZK ceremony and trust (v1.1)
 
@@ -80,10 +80,10 @@ APXV1 uses **single-party Groth16 trusted setup** per circuit. v1.1 adds **Tier 
 
 - `python -m scripts.ceremony_transcript --write` commits VK/PK hashes from both manifests (+ Ed25519 signature when signing keys exist)
 - `python -m scripts.export_verifier_bundle` publishes VKs only (safe for GitHub Releases)
-- **Self-host:** run your own `setup_first_run` — you trust your setup, not the maintainer
-- **Verify our demo/release:** use our verifier bundle — you trust our setup honesty for those VKs
+- **Self-hosted:** run your own `setup_first_run` — you trust your own setup
+- **Release verification:** use the published verifier bundle — you trust the publisher's setup for those VKs
 
-We do **not** claim Powers of Tau, MPC, or trustless setup in v1.1. See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
+v1.1.0 uses single-party Groth16 trusted setup. See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
 
 ## Voice privacy (v1.1)
 
