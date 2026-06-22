@@ -4,7 +4,7 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
-> **Version:** 1.1.0 — see [CHANGELOG.md](CHANGELOG.md) and [docs/RELEASE-v1.1.0.md](docs/RELEASE-v1.1.0.md).
+> **Version:** 1.1.0 — see [CHANGELOG.md](CHANGELOG.md).
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
@@ -18,7 +18,7 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 
 **▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)**
 
-**v1.1 live walkthrough:** voice attest + ceremony checks — follow [docs/DEMO-SCRIPT-V1.1.md](docs/DEMO-SCRIPT-V1.1.md) (~3 min scripted terminal demo). A re-recorded video is optional; the script is the canonical v1.1 narrative.
+**v1.1 walkthrough:** voice attest + ceremony checks — [docs/QUICKSTART.md](docs/QUICKSTART.md) (Voice attest and Ceremony transcript sections). A re-recorded video is optional; the v1.0 demo video above covers text/E2EE only.
 
 **Verifier bundle (VKs only):** after we publish the GitHub Release, download `apxv1-verifier-bundle-v1.1.0.zip` from [Releases](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
 
@@ -56,7 +56,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier A/B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **307 automated tests** (1 optional skip for local Vosk) cover text, voice, ceremony, and ZK paths. See [CHANGELOG.md](CHANGELOG.md) and [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md).
+**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier A/B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **307 automated tests** (1 optional skip for local Vosk) cover text, voice, ceremony, and ZK paths. See [CHANGELOG.md](CHANGELOG.md).
 
 ### Trust model
 

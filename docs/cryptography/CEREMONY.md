@@ -96,4 +96,3 @@ python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
 - [SETUP.md](SETUP.md) — trusted setup commands
 - [VERIFICATION.md](VERIFICATION.md) — third-party verify paths and trust model
 - [ASSUMPTIONS.md](ASSUMPTIONS.md) — what circuits prove and do not prove
-- [V1.1-PUBLIC-LAUNCH-CHECKLIST.md](../V1.1-PUBLIC-LAUNCH-CHECKLIST.md) — launch gates

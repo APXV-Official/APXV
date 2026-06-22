@@ -6,6 +6,6 @@ Some archive pages state that APX v1 is "not production-ready" or describe futur
 
 - [README.md](../../README.md) and [SECURITY.md](../../SECURITY.md) — scope and limits today
 - [docs/cryptography/](../cryptography/) — circuits, ceremony, verification, assumptions
-- [CHANGELOG.md](../../CHANGELOG.md) and [docs/RELEASE-v1.1.0.md](../RELEASE-v1.1.0.md) — what shipped in v1.1.0
+- [CHANGELOG.md](../../CHANGELOG.md) — what shipped in v1.1.0
 
 Do not cite archive docs in launch materials unless you explicitly label them as historical context.

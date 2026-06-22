@@ -23,7 +23,20 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_REPO = "apxv1dev/APXV1"
-NOTES_PATH = ROOT / "docs" / "RELEASE-v1.1.0.md"
+CHANGELOG_PATH = ROOT / "CHANGELOG.md"
+
+
+def changelog_section(changelog_path: Path, tag: str) -> str:
+    """Extract a Keep-a-Changelog section for a tag like v1.1.0."""
+    version = tag.lstrip("v")
+    text = changelog_path.read_text(encoding="utf-8")
+    header = f"## [{version}]"
+    start = text.find(header)
+    if start < 0:
+        raise SystemExit(f"Section not found in {changelog_path}: {header}")
+    next_header = text.find("\n## [", start + len(header))
+    section = text[start:next_header] if next_header >= 0 else text[start:]
+    return section.strip()
 
 
 def _token() -> str:
@@ -83,7 +96,10 @@ def publish_release(
 ) -> str:
     token = _token()
     base = f"https://api.github.com/repos/{repo}"
-    notes = notes_path.read_text(encoding="utf-8")
+    if notes_path == CHANGELOG_PATH:
+        notes = changelog_section(notes_path, tag)
+    else:
+        notes = notes_path.read_text(encoding="utf-8")
 
     release = None
     try:
@@ -151,7 +167,7 @@ def main() -> int:
         type=Path,
         default=ROOT / "dist" / "apxv1-verifier-bundle-v1.1.0",
     )
-    parser.add_argument("--notes", type=Path, default=NOTES_PATH)
+    parser.add_argument("--notes", type=Path, default=CHANGELOG_PATH)
     parser.add_argument("--draft", action="store_true")
     args = parser.parse_args()
 
