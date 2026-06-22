@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Agent 2 now propagates `entities[]` into proposed artifacts (fixes `redaction-v1` proofs for multi-entity voice/text inputs)
 - Entity ZK bridge skips category-only `redactions_applied` summaries when building commitments
+- `apx-zk` `json_fr` parser: bare decimal Merkle roots no longer misread as hex byte blobs (fixes `batch-merkle` for two-entity documents)
 - CI: run doctor/integrity before pytest to avoid audit-chain pollution on shared runners
 - Linux CI: `run_with_timeout` no longer uses `signal.alarm` (breaks sub-second float timeouts on Ubuntu)
 - API server tests wait for `/health` instead of a fixed sleep (fewer flakes on slow runners)

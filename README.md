@@ -10,13 +10,17 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 
 ## Demo
 
-End-to-end walkthrough on Windows: health check, dual-track Groth16 attestation (governance + entity), independent verification, and optional E2EE encryption.
+**Video (v1.0.x):** text pipeline, dual-track Groth16 attestation, independent verify, optional E2EE (~2 min).
 
 <a href="https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4">
   <img src="docs/assets/apxv1-demo-thumb.jpg" alt="APXV1 end-to-end demo — click to watch" width="800">
 </a>
 
-**▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)** (~2 min; v1.1 demo re-record pending)
+**▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)**
+
+**v1.1 live walkthrough:** voice attest + ceremony checks — follow [docs/DEMO-SCRIPT-V1.1.md](docs/DEMO-SCRIPT-V1.1.md) (~3 min scripted terminal demo). A re-recorded video is optional; the script is the canonical v1.1 narrative.
+
+**Verifier bundle (VKs only):** download `apxv1-verifier-bundle-v1.1.0.zip` from the [v1.1.0 release](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0) or run `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
 
 ## Who This Is For
 
@@ -52,7 +56,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **306 automated tests** (1 optional skip for local Vosk) cover text, voice, ceremony, and ZK paths. See [CHANGELOG.md](CHANGELOG.md) and [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md).
+**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **307 automated tests** (1 optional skip for local Vosk) cover text, voice, ceremony, and ZK paths. See [CHANGELOG.md](CHANGELOG.md) and [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md).
 
 ### Trust model
 
