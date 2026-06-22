@@ -1,6 +1,6 @@
 # APXV1 — Security Architecture
 
-**Version:** 1.0.1
+**Version:** 1.1.0
 **Deployment:** Local, self-hosted, air-gapped compatible
 
 Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md).
@@ -12,7 +12,8 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 - `agents/agent1.py`, `agent2.py`, `agent3.py` — deterministic pipeline agents
 - `agents/redaction/` — APXRedactionEngine v3 (pattern redaction, format parsing)
 - `agents/encryption_engine.py` — optional E2EE (`APXE2EE`)
-- `agents/zk/` — dual-track ZK bridge (governance + entity proofs)
+- `agents/zk/` — dual-track ZK bridge (governance + entity proofs on attest path)
+- `agents/voice/` — voice privacy pipeline (STT/TTS, `voice-redaction` inputs)
 - `agents/store.py` — SQLite + content-addressable artifact store
 - `agents/artifact_provider.py` — `SqliteArtifactProvider`
 - `agents/runtime.py` — unified `APXRuntime`
@@ -33,6 +34,8 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 - Unified runtime with integrity check (`apx_ctl integrity`)
 - No network dependencies — suitable for air-gapped deployment
 - Dual-track Groth16 attestation independently verifiable via `verify_attestation --real-zk`
+- Tier B ceremony transcript + exportable verifier bundle (VK lineage)
+- Voice path with simulated (CI) or local offline STT/TTS backends
 - Optional E2EE for pipeline payloads (`--encrypt`)
 
 ---
@@ -73,7 +76,8 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 | Artifact tampering | CAS blobs + hash chain; integrity verification |
 | Audit log tampering | Cryptographic chaining; `audit-verify` |
 | Unauthorized agent actions | Signed capability policy + audit of all checks |
-| Wrong VK / stale proofs | Separate VK manifests for governance and entity circuits |
+| Wrong VK / stale proofs | Separate VK manifests; ceremony transcript drift detection |
+| Setup trust (single-party) | Documented in CEREMONY.md — self-host vs verify-release |
 | Policy tampering | Ed25519-signed capability policy; OS file permissions |
 
 ---
@@ -90,7 +94,20 @@ See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESP
 
 ---
 
-## Deployment Posture (v1.0.1)
+## Voice data flow (v1.1)
+
+- Audio or transcript enters `VoicePrivacyPipeline` locally (Vosk, pyttsx3, or simulated providers).
+- Redaction uses the same `APXRedactionEngine` as the text pipeline.
+- Attested artifacts may include `voice_session` (transcript hash, entities for ZK, `voice_redaction_inputs`).
+- Raw audio is not embedded in Groth16 public inputs; treat artifacts as sensitive if entities/transcripts are present.
+
+## ZK circuit scope (v1.1)
+
+Eight entity circuits exist in `apx-zk`; the default `--attest` path proves a subset (see [../cryptography/CIRCUITS.md](../cryptography/CIRCUITS.md)). `normalization`, `compliance`, `threat`, and `merkle-inclusion` require future product modules.
+
+---
+
+## Deployment Posture (v1.1.0)
 
 **Appropriate for:** trusted internal environments, air-gapped labs, pilots with sensitive-but-non-regulated data.
 

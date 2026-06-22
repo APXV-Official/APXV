@@ -132,6 +132,20 @@ def run_doctor(base_path: Path, *, check_llm: bool = False) -> dict:
             }
         )
 
+    transcript_path = base_path / "managed" / "config" / "ceremony-transcript.json"
+    if transcript_path.exists():
+        from scripts.ceremony_transcript import verify_transcript
+
+        ceremony = verify_transcript(base_path)
+        checks.append(
+            {
+                "name": "ceremony_transcript",
+                "ok": ceremony.get("valid", False),
+                "detail": ceremony.get("issues") or ceremony.get("ceremony_tier"),
+                "required": "signed VK lineage matches manifests",
+            }
+        )
+
     required_ok = all(c["ok"] for c in checks if c["required"] != "optional")
     return {"healthy": required_ok, "checks": checks}
 

@@ -25,6 +25,7 @@ rust/keys/*.vk
 # Runtime state — generated locally, never commit
 managed/artifacts/
 managed/store/
+managed/store/voice-models/
 managed/audit/
 managed/backups/
 managed/config/api_keys.json
@@ -37,6 +38,7 @@ managed/config/governance_signing.key
 managed/config/governance_signing.json
 managed/config/server.json
 managed/config/runtime.json
+managed/config/ceremony-transcript.json
 managed/config/capability_policy_history/
 
 # Personal resume notes (not for public repo)
@@ -44,6 +46,7 @@ docs/resume/
 
 # Internal commercial / private ops (do not publish)
 docs/internal/
+internal-v1.1/
 
 # Local marketing site (iterate before deploy — do not publish)
 website-local/

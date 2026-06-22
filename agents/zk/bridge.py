@@ -36,13 +36,23 @@ class EntityZKBridge:
         entities = output.get("entities", [])
         if isinstance(entities, list) and entities:
             return entities
+
+        voice_session = attested.get("voice_session", {})
+        if isinstance(voice_session, dict):
+            voice_entities = voice_session.get("entities", [])
+            if isinstance(voice_entities, list) and voice_entities:
+                return voice_entities
+
         redactions = output.get("redactions_applied", [])
         rebuilt: List[Dict[str, Any]] = []
         for item in redactions:
+            value = item.get("original", item.get("value"))
+            if value is None and "count" in item:
+                continue
             rebuilt.append(
                 {
                     "type": item.get("category", item.get("type", "unknown")).lower(),
-                    "value": item.get("original", item.get("value", "")),
+                    "value": value or "",
                     "start": item.get("position", item.get("start", -1)),
                 }
             )
@@ -142,9 +152,21 @@ class EntityZKBridge:
         if "batch-merkle" in prepared:
             circuits_to_run.append("batch-merkle")
 
+        voice_inputs = (
+            attested.get("voice_session", {}).get("voice_redaction_inputs")
+            if isinstance(attested.get("voice_session"), dict)
+            else None
+        )
+        if isinstance(voice_inputs, dict) and voice_inputs:
+            circuits_to_run.append("voice-redaction")
+
         proofs: Dict[str, Any] = {}
         for circuit in circuits_to_run:
-            proof = self.prove_circuit(circuit, prepared[circuit])
+            if circuit == "voice-redaction":
+                payload = voice_inputs
+            else:
+                payload = prepared[circuit]
+            proof = self.prove_circuit(circuit, payload)
             proofs[circuit.replace("-", "_")] = proof
 
         metadata = {
@@ -155,6 +177,8 @@ class EntityZKBridge:
             "commitments": prepared["commitments"],
             "circuits": circuits_to_run,
         }
+        if voice_inputs:
+            metadata["voice_redaction"] = True
 
         return {
             "track": "entity",

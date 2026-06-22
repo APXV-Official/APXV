@@ -98,11 +98,22 @@ fn json_fr(v: &Value, key: &str) -> Fr {
         return Fr::from(n);
     }
     if let Some(s) = v.get(key).and_then(|x| x.as_str()) {
-        if let Ok(bytes) = hex::decode(s.trim_start_matches("0x")) {
-            let mut buf = [0u8; 32];
-            let len = bytes.len().min(32);
-            buf[32 - len..].copy_from_slice(&bytes[bytes.len() - len..]);
-            return Fr::from_be_bytes_mod_order(&buf);
+        let trimmed = s.trim();
+        let hex_body = trimmed
+            .trim_start_matches("0x")
+            .trim_start_matches("0X");
+        let looks_like_byte_hex = trimmed.starts_with("0x")
+            || trimmed.starts_with("0X")
+            || hex_body.chars().any(|c| matches!(c, 'a'..='f' | 'A'..='F'));
+        // Bare decimal field elements use only 0-9 but are still valid hex; decode those
+        // as decimal strings. SHA-style hashes include a-f and stay on the byte path.
+        if looks_like_byte_hex {
+            if let Ok(bytes) = hex::decode(hex_body) {
+                let mut buf = [0u8; 32];
+                let len = bytes.len().min(32);
+                buf[32 - len..].copy_from_slice(&bytes[bytes.len() - len..]);
+                return Fr::from_be_bytes_mod_order(&buf);
+            }
         }
         if let Ok(f) = Fr::from_str(s) {
             return f;
@@ -601,6 +612,37 @@ fn run_verify(circuit: &str, inputs_path: &Path) {
 
     if !valid {
         std::process::exit(1);
+    }
+}
+
+#[cfg(test)]
+mod json_witness_tests {
+    use super::*;
+    use ark_relations::r1cs::{ConstraintSynthesizer, ConstraintSystem};
+    use std::fs;
+
+    fn batch_merkle_satisfied(v: &Value) -> bool {
+        let circuit = BatchMerkleCircuit {
+            merkle_root: json_fr(v, "merkle_root"),
+            entity_count: json_fr(v, "entity_count"),
+            leaves: json_fr_array::<4>(v, "leaves"),
+            path_elements: json_fr_matrix::<4, 8>(v, "path_elements"),
+            path_indices: json_fr_matrix::<4, 8>(v, "path_indices"),
+        };
+        let cs = ConstraintSystem::<Fr>::new_ref();
+        circuit.generate_constraints(cs.clone()).unwrap();
+        cs.is_satisfied().unwrap()
+    }
+
+    #[test]
+    fn batch_merkle_ec2_json_matches_hardcoded_witness() {
+        let content = fs::read_to_string("../../managed/bm_ec2.json")
+            .expect("managed/bm_ec2.json fixture");
+        let v: Value = serde_json::from_str(&content).expect("valid JSON");
+        assert!(
+            batch_merkle_satisfied(&v),
+            "JSON-loaded ec2 witness should satisfy batch-merkle constraints"
+        );
     }
 }
 

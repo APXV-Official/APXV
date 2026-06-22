@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "apx-v1"
-version = "1.0.1"
+version = "1.1.0"
 description = "APXV1 — Air-gapped governed agent platform with cryptographic attestation (Attested Proof Execution Verified)"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -29,6 +29,11 @@ dev = [
     "mypy>=1.0",
 ]
 
+voice = [
+    "vosk>=0.3.45",
+    "pyttsx3>=2.90",
+]
+
 [project.scripts]
 run-apx = "scripts.run_apx:main"
 setup-zk = "scripts.setup_zk:main"
@@ -38,6 +43,10 @@ verify-attestation = "scripts.verify_attestation:main"
 apx-verify-bundle = "scripts.apx_verify_bundle:main"
 apx-ctl = "scripts.apx_ctl:main"
 apx-serve = "scripts.apx_serve:main"
+setup-voice = "scripts.setup_voice:main"
+run-voice-demo = "scripts.run_voice_demo:main"
+ceremony-transcript = "scripts.ceremony_transcript:main"
+export-verifier-bundle = "scripts.export_verifier_bundle:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

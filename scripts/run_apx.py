@@ -18,7 +18,8 @@ All code is original work written for APX v1.
 """
 
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, Optional
+import hashlib
 import json
 import sys
 
@@ -31,7 +32,46 @@ from agents.agent3 import AttestationCoordinator
 from agents.runtime import APXRuntime
 
 
-def run_full_pipeline(input_text: Optional[str] = None, runtime: Optional[APXRuntime] = None) -> dict:
+def prepare_voice_session(
+    *,
+    base_path: Path,
+    voice_file: Optional[Path] = None,
+    voice_transcript: Optional[str] = None,
+    voice_mode: Optional[str] = None,
+    synthesize_tts: bool = False,
+) -> tuple[Optional[str], Optional[Dict[str, Any]]]:
+    """Run voice STT/redaction; return (pipeline_input_text, voice_session dict)."""
+    from agents.voice import VoicePrivacyPipeline
+
+    if not voice_file and not voice_transcript:
+        return None, None
+
+    pipeline = VoicePrivacyPipeline(base_path=base_path, voice_mode=voice_mode)
+    if voice_file:
+        audio = voice_file.read_bytes()
+        audio_sha = hashlib.sha256(audio).hexdigest()
+        result = pipeline.process_audio(audio, synthesize_redacted=synthesize_tts)
+        session = pipeline.build_voice_session(result, source="audio_file", audio_sha256=audio_sha)
+        session["audio_path"] = str(voice_file)
+    else:
+        result = pipeline.process_transcript(voice_transcript or "", synthesize_redacted=synthesize_tts)
+        session = pipeline.build_voice_session(result, source="transcript")
+
+    print("\n[Voice] STT + redaction complete")
+    print(f"      - Mode: {result.voice_mode} (STT: {result.stt_provider})")
+    print(f"      - Entities: {len(result.entities)}")
+    print(f"      - Transcript: {result.transcript[:72]}...")
+
+    # Feed original transcript to the governed text pipeline (Agent 1 redacts again).
+    return result.transcript, session
+
+
+def run_full_pipeline(
+    input_text: Optional[str] = None,
+    runtime: Optional[APXRuntime] = None,
+    *,
+    voice_session: Optional[Dict[str, Any]] = None,
+) -> dict:
     """
     Run the complete APX v1 3-agent pipeline.
 
@@ -87,6 +127,10 @@ def run_full_pipeline(input_text: Optional[str] = None, runtime: Optional[APXRun
     )
     print(f"      - Written to: {write_meta['path']}")
     print(f"      - Artifact hash: {write_meta['hash'][:16]}...")
+
+    if voice_session:
+        attested["voice_session"] = voice_session
+        provider.write_artifact(artifact=attested, name="attested_result_pipeline")
 
     print("\n" + "=" * 60)
     print("PIPELINE COMPLETE — Status: ATTESTED")
@@ -192,20 +236,54 @@ def apply_e2ee_encryption(attested: dict, base_path: Path) -> dict:
     return e2ee.encrypt_artifact_payload(attested)
 
 
+def _pop_flag_value(argv: list[str], flag: str) -> Optional[str]:
+    if flag not in argv:
+        return None
+    idx = argv.index(flag)
+    argv.pop(idx)
+    if idx >= len(argv):
+        raise SystemExit(f"Missing value for {flag}")
+    return argv.pop(idx)
+
+
 def main():
     """CLI entry point."""
-    with_proof = "--attest" in sys.argv
-    with_encrypt = "--encrypt" in sys.argv
+    argv = list(sys.argv)
+    with_proof = "--attest" in argv
+    with_encrypt = "--encrypt" in argv
+    voice_synthesize = "--voice-synthesize" in argv
+    if voice_synthesize:
+        argv.remove("--voice-synthesize")
+    if with_proof:
+        argv.remove("--attest")
+    if with_encrypt:
+        argv.remove("--encrypt")
 
-    # Collect non-flag arguments as input text
-    input_parts = []
-    for arg in sys.argv[1:]:
-        if not arg.startswith("--"):
-            input_parts.append(arg)
+    voice_file_raw = _pop_flag_value(argv, "--voice-file")
+    voice_transcript = _pop_flag_value(argv, "--voice-transcript")
+    voice_mode = _pop_flag_value(argv, "--voice-mode")
+
+    input_parts = [arg for arg in argv[1:] if not arg.startswith("--")]
     input_text = " ".join(input_parts) if input_parts else None
 
     runtime = APXRuntime()
-    attested = run_full_pipeline(input_text=input_text, runtime=runtime)
+    base = runtime.base_path
+
+    voice_input, voice_session = prepare_voice_session(
+        base_path=base,
+        voice_file=Path(voice_file_raw) if voice_file_raw else None,
+        voice_transcript=voice_transcript,
+        voice_mode=voice_mode,
+        synthesize_tts=voice_synthesize,
+    )
+    if voice_input is not None:
+        input_text = voice_input
+
+    attested = run_full_pipeline(
+        input_text=input_text,
+        runtime=runtime,
+        voice_session=voice_session,
+    )
     total_redactions = attested["proposed_artifact"]["output"]["total_redactions"]
 
     if with_proof:
@@ -246,9 +324,13 @@ def main():
             if isinstance(proof, dict)
         )
         if entity_ok:
-            print("      - Entity proofs: VALID (redaction-v1 + core-redaction"
-                  + (" + batch-merkle" if "batch_merkle" in entity_bundle.get("proofs", {}) else "")
-                  + ")")
+            extras = []
+            if "batch_merkle" in entity_bundle.get("proofs", {}):
+                extras.append("batch-merkle")
+            if "voice_redaction" in entity_bundle.get("proofs", {}):
+                extras.append("voice-redaction")
+            suffix = (" + " + " + ".join(extras)) if extras else ""
+            print("      - Entity proofs: VALID (redaction-v1 + core-redaction" + suffix + ")")
         else:
             print("      - Entity proofs: one or more circuits failed — see artifact details")
             for name, proof in entity_bundle.get("proofs", {}).items():

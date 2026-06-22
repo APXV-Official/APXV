@@ -30,7 +30,9 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install package
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev,voice]"
+        env:
+          APX_VOICE_MODE: simulated
 
       - name: Build Rust workspace (release)
         working-directory: rust
@@ -43,6 +45,11 @@ jobs:
       - name: Setup first-run (with ZK)
         run: python -m scripts.setup_first_run
 
+      - name: Ceremony transcript (Tier B)
+        run: |
+          python -m scripts.ceremony_transcript --write --tier B --note "CI ubuntu-latest"
+          python -m scripts.ceremony_transcript --verify
+
       - name: Doctor check (clean state)
         run: python -m scripts.apx_doctor
 
@@ -51,3 +58,5 @@ jobs:
 
       - name: Run pytest
         run: python -m pytest tests/ -q --tb=short
+        env:
+          APX_VOICE_MODE: simulated

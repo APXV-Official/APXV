@@ -4,7 +4,7 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
-> Current release: **v1.0.1**.
+> **Version:** 1.1.0 — see [CHANGELOG.md](CHANGELOG.md).
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
@@ -16,7 +16,7 @@ End-to-end walkthrough on Windows: health check, dual-track Groth16 attestation 
   <img src="docs/assets/apxv1-demo-thumb.jpg" alt="APXV1 end-to-end demo — click to watch" width="800">
 </a>
 
-**▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)** (~2 min, v1.0.1)
+**▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)** (~2 min; v1.1 demo re-record pending)
 
 ## Who This Is For
 
@@ -35,7 +35,9 @@ APXV1 is a **foundation to build on** — not a finished end-user product.
 - **Governance approval workflow** — propose → approve → apply rule changes
 - **Redaction engine v3** — format-aware pattern redaction with structured `entities[]` output
 - **Optional E2EE** — X25519 + XSalsa20-Poly1305 payload encryption (`--encrypt`)
-- **Dual-track Groth16 ZK** — governance proofs (3 circuits) + entity proofs (8 circuits)
+- **Dual-track Groth16 ZK** — 3 governance circuits + up to 4 entity proofs per attest (8 entity circuits in crate; see [docs/cryptography/CIRCUITS.md](docs/cryptography/CIRCUITS.md))
+- **Voice privacy suite** — STT → redact → attest with `voice-redaction` proof (simulated or local Vosk/pyttsx3)
+- **Ceremony transparency (Tier B)** — signed VK lineage transcript + publishable verifier bundle
 - **Local HTTP API** — localhost only, no cloud, no telemetry
 - **Pluggable LLMs** — bring Ollama or any backend via `LLMBackend` (optional)
 
@@ -50,7 +52,16 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-**v1.0.1** completes the privacy migration: native redaction, optional encryption, and dual-track ZK attestation on the unchanged governance spine. The 3-agent reference pipeline and independent Groth16 verification are covered by **295+ automated tests**. See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) and [CHANGELOG.md](CHANGELOG.md).
+**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **306 automated tests** (1 optional skip for local Vosk) cover text, voice, ceremony, and ZK paths. See [CHANGELOG.md](CHANGELOG.md) and [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md).
+
+### Trust model
+
+| You want to… | Trust |
+|--------------|-------|
+| Run APXV1 yourself (`setup_first_run`, your keys) | **Yourself** |
+| Verify our published demo/release artifacts | **Our setup** for those VKs (math is self-checking; setup honesty is not) |
+
+We document this plainly in [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md). v1.1 is **not** Powers of Tau or MPC.
 
 ## Quickstart
 
@@ -84,6 +95,16 @@ python -m scripts.apx_serve
 python -m scripts.run_apx --attest
 python -m scripts.run_apx --attest --encrypt   # optional E2EE
 python -m scripts.verify_attestation --real-zk
+```
+
+### Voice + ceremony (v1.1)
+
+```bash
+pip install -e ".[dev,voice]"
+python -m scripts.setup_voice                    # Vosk model for local STT
+python -m scripts.run_apx --voice-transcript "Contact Jane at jane@example.com" --attest
+python -m scripts.ceremony_transcript --write --tier B
+python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
 ```
 
 ## Build On APXV1
@@ -162,7 +183,9 @@ flowchart TB
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/LOCAL-API.md](docs/LOCAL-API.md) | API reference |
 | [SECURITY.md](SECURITY.md) | Threat model |
-| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture (v1.0.1) |
+| [docs/cryptography/CIRCUITS.md](docs/cryptography/CIRCUITS.md) | Which circuits exist vs which run on `--attest` |
+| [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md) | ZK ceremony tiers and trust model |
+| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
 | [RUNBOOKS/](RUNBOOKS/) | Deployment and operations |

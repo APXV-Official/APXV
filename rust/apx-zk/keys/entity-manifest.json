@@ -60,12 +60,12 @@
     },
     "batch-merkle": {
       "circuit_version": "1.0.0",
-      "pk_hash": "5cbc4bde049ed821cdb16240f388df9230b988da8051d3ee903fbc60d9bd1fe8",
-      "vk_hash": "121495532c433be5afc05338696f0ce614847aae78b0556a6ab1855e478c4033",
+      "pk_hash": "d5ee4a3f41cfcff30b945560698b5ddc8ff25e8bb779ea88e42c46171782f8d5",
+      "vk_hash": "04c0eceb791fa982224fb3ba9c760e953e8a5ea156fe7eef81dc70fe46efab10",
       "pk_path": "rust/apx-zk/keys/batch-merkle.pk",
       "vk_path": "rust/apx-zk/keys/batch-merkle.vk",
       "setup_at": "2026-06-20T18:05:52.746928+00:00"
     }
   },
-  "updated_at": "2026-06-20T18:05:52.746928+00:00"
+  "updated_at": "2026-06-22T15:44:08.044916+00:00"
 }

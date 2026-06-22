@@ -55,5 +55,5 @@ Rust is **not** required on the host if you only use Docker — ZK keys are gene
 | Problem | Fix |
 |---------|-----|
 | `cargo: command not found` | Restart terminal after rustup install |
-| ZK setup slow first time | Normal — trusted setup for 3 governance + 8 entity circuits |
+| ZK setup slow first time | Normal — trusted setup for 3 governance + 8 entity circuits (see [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md) for attest-path subset) |
 | `apx-circuits` / `apx-zk` not found | Run `cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk` |

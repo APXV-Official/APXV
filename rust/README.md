@@ -7,7 +7,9 @@ Groth16 zero-knowledge proof crates for APXV1 (BN254 / arkworks 0.4).
 | Crate | Purpose | Keys |
 |-------|---------|------|
 | `apx-circuits` | Governance pipeline proofs (3 circuits) | `apx-circuits/keys/manifest.json` |
-| `apx-zk` | Entity-level proofs (8 circuits) | `apx-zk/keys/entity-manifest.json` |
+| `apx-zk` | Entity-level proofs (8 circuits in crate; 3–4 + voice on default Python attest) | `apx-zk/keys/entity-manifest.json` |
+
+See [../docs/cryptography/CIRCUITS.md](../docs/cryptography/CIRCUITS.md) for which circuits run on `run_apx --attest`.
 
 ## Build & test
 

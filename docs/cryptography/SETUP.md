@@ -6,7 +6,7 @@
 
 APXV1 uses Groth16 over BN254 (arkworks 0.4). Each circuit requires a **one-time trusted setup** that produces a ProvingKey (PK) and VerifyingKey (VK). These keys are persisted and reused for all subsequent proofs.
 
-APXV1 v1.0.1 has **two key directories**:
+APXV1 v1.1.0 has **two key directories**:
 
 | Track | Crate | Keys directory | Manifest |
 |-------|-------|----------------|----------|
@@ -73,9 +73,21 @@ Run manual setup from the respective crate directory (`rust/apx-circuits/` or `r
 | `rust/apx-zk/keys/<circuit>.pk` / `.vk` | Per-circuit entity proving/verification keys |
 | `rust/apx-zk/keys/entity-manifest.json` | Entity VK hashes and circuit version |
 
+## Ceremony transparency (v1.1)
+
+After setup, operators can publish auditable VK lineage:
+
+```bash
+python -m scripts.ceremony_transcript --write --tier B
+python -m scripts.ceremony_transcript --verify
+python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
+```
+
+See [CEREMONY.md](CEREMONY.md) for tiers, trust model, and limitations. See [CIRCUITS.md](CIRCUITS.md) for which circuits run on `--attest`.
+
 ## Limitations
 
-- **Single-party honest setup** — not a multi-party computation (MPC) ceremony
-- **No public ceremony** — setup is local to the operator
+- **Single-party honest setup** — not MPC or Powers of Tau (Tier C is v1.2+)
+- **Tier B** adds signed transcript + verifier bundle — not proof that toxic waste was destroyed
 - **No HSM integration** — keys stored as files on disk
 - **No automated key rotation** — manual re-setup required after circuit changes

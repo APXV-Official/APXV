@@ -23,7 +23,7 @@ if ! command -v cargo >/dev/null 2>&1 || ! command -v rustc >/dev/null 2>&1; the
 fi
 
 echo "[1/5] Installing Python package..."
-python3 -m pip install -e ".[dev]"
+python3 -m pip install -e ".[dev,voice]"
 
 echo "[2/5] First-run setup (includes ZK keys)..."
 python3 -m scripts.setup_first_run
@@ -39,6 +39,8 @@ python3 -m scripts.verify_attestation --real-zk
 
 echo "============================================================"
 echo "APXV1 install complete."
+echo "Optional voice model: python3 -m scripts.setup_voice"
+echo "Ceremony (releases): python3 -m scripts.ceremony_transcript --write --tier B"
 echo "Next: python3 -m scripts.apx_serve"
 echo "Docs: docs/QUICKSTART.md"
 echo "============================================================"

@@ -19,7 +19,7 @@ if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
 }
 
 Write-Host "[1/5] Installing Python package..."
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[dev,voice]"
 
 Write-Host "[2/5] First-run setup (includes ZK keys)..."
 python -m scripts.setup_first_run
@@ -35,6 +35,8 @@ python -m scripts.verify_attestation --real-zk
 
 Write-Host "============================================================"
 Write-Host "APXV1 install complete."
+Write-Host "Optional voice model: python -m scripts.setup_voice"
+Write-Host "Ceremony (releases): python -m scripts.ceremony_transcript --write --tier B"
 Write-Host "Next: python -m scripts.apx_serve"
 Write-Host "Docs: docs/QUICKSTART.md"
 Write-Host "============================================================"

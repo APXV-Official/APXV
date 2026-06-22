@@ -1,28 +1,52 @@
-# APXV1 — Independent Proof Verification (Phase 1)
+# APXV1 — Independent Proof Verification (v1.1)
 
-**Status:** Active — Phase 1 Criterion #3
+**Status:** Active
 
-## What a Third Party Needs
+## What a third party needs
 
-To verify an APXV1 attestation **without trusting the operator** and **without re-proving**:
+To verify Groth16 proofs **without re-proving**:
 
-1. The attested artifact JSON (contains `zk_proof_*` bundles)
-2. The VK manifests from the same circuit version (for VK integrity):
-   - `rust/apx-circuits/keys/manifest.json` (governance proofs)
-   - `rust/apx-zk/keys/entity-manifest.json` (entity proofs)
-3. Either:
-   - The APXV1 Python verifier: `python -m scripts.verify_attestation --real-zk`
-   - The standalone verifier: `python -m scripts.apx_verify_bundle <artifact.json>`
-   - The compiled Rust binary: `apx-circuits verify <circuit> --proof <bundle.json>`
+1. The attested artifact JSON (`zk_proof_*`, `entity_proofs`, optional `voice_session`)
+2. Matching verification keys for the same circuit version:
+   - Operator's verifier bundle (recommended for releases), or
+   - `rust/apx-circuits/keys/manifest.json` + `rust/apx-zk/keys/entity-manifest.json` + `.vk` files
+3. A verifier:
+   - `python -m scripts.verify_attestation --real-zk [artifact.json]`
+   - `python -m scripts.apx_verify_bundle <artifact.json>`
+   - Rust: `apx-circuits verify` / `apx-zk verify` with proof bundle JSON
 
-## Proof Bundle Format
+## Trust model (important)
 
-Each `zk_proof_*` entry in an attested artifact contains:
+| Verification type | What you can confirm | What you still trust |
+|-------------------|----------------------|----------------------|
+| **Proof math** | Groth16 valid for public inputs under the VK | Nothing (cryptographic) |
+| **VK lineage** | Transcript hashes match published manifests (Tier B) | Operator did not swap keys after signing |
+| **Setup honesty** | — | Operator destroyed toxic waste (unless you self-host) |
+
+Self-hosters who run their own `setup_first_run` verify against **their** keys and trust **themselves** for setup. Verifying **someone else's** artifacts uses **their** VKs — you trust their one-time setup.
+
+See [CEREMONY.md](CEREMONY.md) and [ASSUMPTIONS.md](ASSUMPTIONS.md).
+
+## What gets verified on `--real-zk`
+
+`verify_attestation --real-zk` runs:
+
+1. Python-side provenance and governance checks
+2. VK integrity (`vk_hex` vs manifest on disk or bundle)
+3. Independent Groth16 verify for:
+   - **Governance (3):** `redaction`, `rule-binding`, `pipeline`
+   - **Entity (present in artifact):** typically `redaction-v1`, `core-redaction`, optional `batch-merkle`, optional `voice-redaction`
+
+Not every entity circuit in the crate appears on every artifact. See [CIRCUITS.md](CIRCUITS.md).
+
+## Proof bundle format
+
+Each proof entry contains:
 
 ```json
 {
-  "circuit": "redaction",
-  "circuit_version": "1.1.0",
+  "circuit": "redaction-v1",
+  "circuit_version": "1.0.0",
   "vk_hash": "sha256-of-on-disk-vk-bytes",
   "proof_hex": "...",
   "vk_hex": "...",
@@ -32,7 +56,7 @@ Each `zk_proof_*` entry in an attested artifact contains:
 }
 ```
 
-## Verification Steps
+## Verification steps
 
 ### Option A — Full APXV1 verifier (recommended)
 
@@ -41,37 +65,31 @@ python -m scripts.verify_attestation --real-zk
 python -m scripts.verify_attestation path/to/artifact.json --real-zk
 ```
 
-This runs:
-1. Python-side provenance/governance checks
-2. VK integrity check against manifest
-3. Independent Groth16 verification for all three circuits
-
 ### Option B — Standalone bundle verifier
 
 ```bash
 python -m scripts.apx_verify_bundle managed/artifacts/attested_result_pipeline_with_zk_*.json
 ```
 
-### Option C — Rust binary only (no Python runtime)
+### Option C — Rust binary only
 
 ```bash
-# Build once
-cargo build --release --manifest-path rust/Cargo.toml
-
-# Export a proof bundle (must include proof_hex, vk_hex, public_inputs)
-apx-circuits verify redaction --proof proof_bundle.json
+cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk
+# Proof JSON must include proof_hex, vk_hex, and circuit inputs (see apx-zk verify --inputs)
 ```
 
-## VK Integrity (Wrong Key Detection)
+### Option D — Release verifier bundle
 
-Before cryptographic verification, APXV1 checks that the `vk_hex` in the proof bundle matches the authoritative VK on disk listed in `manifest.json`. This detects:
+1. Obtain `apxv1-verifier-bundle` from GitHub Releases (VKs + manifests + optional signed transcript).
+2. Confirm transcript `content_hash` / signature (Tier B).
+3. Run Option A with APXV1 installed, or compare artifact `vk_hex` to bundle VK bytes.
 
-- Stale proofs from an older circuit version
-- Tampered verification keys
-- Accidental key mismatch after re-setup
+## VK integrity
 
-## What Verification Proves
+Before Groth16 verify, APXV1 checks that `vk_hex` matches the authoritative VK in the manifest. This detects stale proofs, tampered keys, or re-setup drift.
 
-See `docs/cryptography/ASSUMPTIONS.md` for the precise cryptographic claims and limitations.
+## What verification proves
 
-Verification confirms: *a valid Groth16 proof exists for the claimed public inputs under the published VK*. It does **not** prove the public inputs accurately represent real-world execution.
+See [ASSUMPTIONS.md](ASSUMPTIONS.md).
+
+Verification confirms: *a valid Groth16 proof exists for the claimed public inputs under the published VK*. It does **not** prove Python redaction logic was semantically correct or that public inputs match real-world data.

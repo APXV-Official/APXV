@@ -1,7 +1,7 @@
 # APXV1 v1.0.0 Migration Plan
 
-**Status:** Complete — **v1.0.1** (Phases 0–4 + 6; Phase 5 voice deferred to v1.1)
-**Branch:** `apx-v1-migration` merged to `main`; tags `v1.0.0`, `v1.0.1`
+**Status:** Complete through **v1.1.0** (Phases 0–6 including voice + ceremony tooling)
+**Branch:** `main`; tags `v1.0.0`, `v1.0.1`, `v1.1.0`
 **Canonical workspace:** `C:\APXV1`  
 **Date:** June 2026
 
@@ -173,11 +173,17 @@ agents/zk/
 
 ---
 
-### Phase 5 — Voice module (v1.1, deferred)
+### Phase 5 — Voice module (v1.1) — complete
 
 **Destination:** `agents/voice/` with `APXSTTProvider` / `APXTTSProvider`
 
-Not required for v1.0.0.
+- Simulated STT/TTS for CI (`APX_VOICE_MODE=simulated`)
+- Local offline: Vosk + pyttsx3 via `[voice]` extras + `setup_voice`
+- `run_apx --voice-transcript` / `--voice-file` + `voice-redaction` entity proof
+- Ceremony: `ceremony_transcript.py`, `export_verifier_bundle.py`, Tier B docs
+
+**Tests:** `tests/test_voice_suite.py`, `tests/test_voice_e2e.py`, `tests/test_ceremony_transcript.py`  
+**Gate:** **306 pytest passed** (2026-06-22); voice E2E + ceremony verify green.
 
 ---
 
@@ -228,6 +234,7 @@ Every phase:
 | After Phase 2 | **278** | — |
 | After Phase 3 | **288** | **57** (apx-zk) |
 | After Phase 4 | **295** | **57** |
+| After Phase 5 (v1.1) | **306** | **57+** (apx-zk) |
 
 ---
 
@@ -247,7 +254,8 @@ Every phase:
 | 1 | Redaction placeholder style | Keep APXV1 `[REDACTED-EMAIL]` for rule compat |
 | 2 | Encryption default | Opt-in (`--encrypt`) |
 | 3 | Rust layout | Sibling crate `rust/apx-zk/` |
-| 4 | v1.0.0 scope | Redaction + encryption + dual ZK; voice in v1.1 |
+| 4 | v1.0.0 scope | Redaction + encryption + dual ZK |
+| 5 | v1.1.0 scope | Voice suite + Tier B ceremony + entity propagation fix |
 
 ---
 
@@ -260,5 +268,5 @@ Every phase:
 | 2 | 2026-06-20 | 2026-06-20 | APXE2EE + `--encrypt`; 278 pytest |
 | 3 | 2026-06-20 | 2026-06-20 | rust/apx-zk workspace; 57 Rust + 288 pytest |
 | 4 | 2026-06-20 | 2026-06-20 | Dual ZK bridge; 295 pytest |
-| 5 | — | — | Voice deferred to v1.1 |
+| 5 | 2026-06-22 | 2026-06-22 | Voice + ceremony; 306 pytest |
 | 6 | 2026-06-20 | 2026-06-20 | v1.0.0 release hygiene, CI, docs |

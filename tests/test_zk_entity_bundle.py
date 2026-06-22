@@ -63,6 +63,11 @@ def test_prepare_entity_inputs_from_attested(poseidon_client: PoseidonClient):
     assert prepared["redaction-v1"]["original_data_hash"]
     assert prepared["redaction-v1"]["redacted_data_hash"]
     assert len(prepared["redaction-v1"]["leaf_commitments"]) == 8
+    entities = attested["proposed_artifact"]["output"]["entities"]
+    assert entities
+    assert any(entity.get("value") for entity in entities)
+    extracted = bridge._extract_entities(attested)
+    assert any(entity.get("value") for entity in extracted)
 
 
 def test_dual_proof_bundle_structure():
@@ -80,6 +85,83 @@ def test_dual_proof_bundle_structure():
     assert "entity_proofs" in dual
     assert "redaction" in dual["governance_proofs"]["proofs"]
     assert "redaction_v1" in dual["entity_proofs"]["proofs"]
+
+
+@pytest.mark.skipif(
+    not (ROOT / "rust" / "Cargo.toml").exists(),
+    reason="Rust workspace not available",
+)
+def test_voice_redaction_proof_via_bridge():
+    import os
+
+    os.environ["APX_VOICE_MODE"] = "simulated"
+    from agents.voice import VoicePrivacyPipeline
+
+    attested = run_pipeline(input_text=SAMPLE_INPUT)
+    pipeline = VoicePrivacyPipeline(base_path=ROOT, voice_mode="simulated")
+    voice = pipeline.process_transcript(
+        "Contact John at john.doe@example.com or call (555) 123-4567."
+    )
+    attested["voice_session"] = pipeline.build_voice_session(voice, source="transcript")
+
+    from scripts.setup_entity_zk import ensure_entity_zk_setup
+
+    ensure_entity_zk_setup(base_path=ROOT)
+    bridge = EntityZKBridge(base_path=ROOT)
+    bundle = bridge.generate_entity_proofs(attested)
+    assert "voice_redaction" in bundle.get("proofs", {})
+    assert bundle["proofs"]["voice_redaction"].get("verification_result") is True
+
+
+VOICE_TWO_ENTITY_SAMPLE = (
+    "Contact John at john.doe@example.com or call (555) 123-4567."
+)
+
+VOICE_THREE_ENTITY_SAMPLE = (
+    "Contact John at john.doe@example.com or call (555) 123-4567. "
+    "SSN: 123-45-6789."
+)
+
+
+@pytest.mark.skipif(
+    not (ROOT / "rust" / "Cargo.toml").exists(),
+    reason="Rust workspace not available",
+)
+def test_batch_merkle_two_entity_voice_sample(poseidon_client: PoseidonClient):
+    """Regression: two-entity voice/text inputs must prove batch-merkle (decimal field JSON)."""
+    attested = run_pipeline(input_text=VOICE_TWO_ENTITY_SAMPLE)
+    bridge = EntityZKBridge(base_path=ROOT)
+    bridge.poseidon = poseidon_client
+    prepared = bridge.prepare_entity_inputs(attested)
+    assert prepared["entity_count"] == 2
+    assert "batch-merkle" in prepared
+
+    from scripts.setup_entity_zk import ensure_entity_zk_setup
+
+    ensure_entity_zk_setup(base_path=ROOT)
+
+    proof = bridge.prove_circuit("batch-merkle", prepared["batch-merkle"])
+    assert proof.get("verification_result") is True, proof
+
+
+@pytest.mark.skipif(
+    not (ROOT / "rust" / "Cargo.toml").exists(),
+    reason="Rust workspace not available",
+)
+def test_redaction_v1_three_entity_voice_sample(poseidon_client: PoseidonClient):
+    """Regression: three-entity voice inputs must use real entities, not category summaries."""
+    attested = run_pipeline(input_text=VOICE_THREE_ENTITY_SAMPLE)
+    bridge = EntityZKBridge(base_path=ROOT)
+    bridge.poseidon = poseidon_client
+    prepared = bridge.prepare_entity_inputs(attested)
+    assert prepared["entity_count"] == 3
+
+    from scripts.setup_entity_zk import ensure_entity_zk_setup
+
+    ensure_entity_zk_setup(base_path=ROOT)
+
+    proof = bridge.prove_circuit("redaction-v1", prepared["redaction-v1"])
+    assert proof.get("verification_result") is True, proof
 
 
 @pytest.mark.skipif(

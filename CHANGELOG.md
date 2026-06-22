@@ -6,8 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-22
+
+**APXV1 v1.1.0** — public launch: voice privacy suite, Tier B ceremony transparency, entity propagation fix for ZK proofs.
+
+### Added
+
+- `agents/voice/` — voice privacy pipeline (simulated STT/TTS for CI; local Vosk + pyttsx3 via `[voice]` extras)
+- `scripts/setup_voice.py`, `scripts/run_voice_demo.py` — offline Vosk model setup and standalone demo
+- `run_apx.py` flags: `--voice-file`, `--voice-transcript`, `--voice-mode`, `--voice-synthesize`
+- `voice-redaction` entity proof wired in dual attestation when `voice_session` is present
+- `scripts/ceremony_transcript.py` — Tier A/B ceremony transcript (manifest aggregation + optional Ed25519 signature)
+- `scripts/export_verifier_bundle.py` — publishable VK-only bundle for third-party verification
+- `docs/cryptography/CEREMONY.md` — ceremony tiers, trust model, operator workflow
+- Tests: `tests/test_voice_suite.py`, `tests/test_voice_e2e.py`, `tests/test_ceremony_transcript.py`
+
 ### Fixed
 
+- Agent 2 now propagates `entities[]` into proposed artifacts (fixes `redaction-v1` proofs for multi-entity voice/text inputs)
+- Entity ZK bridge skips category-only `redactions_applied` summaries when building commitments
 - CI: run doctor/integrity before pytest to avoid audit-chain pollution on shared runners
 - Linux CI: `run_with_timeout` no longer uses `signal.alarm` (breaks sub-second float timeouts on Ubuntu)
 - API server tests wait for `/health` instead of a fixed sleep (fewer flakes on slow runners)
@@ -15,9 +32,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- `apx_doctor` validates ceremony transcript when `managed/config/ceremony-transcript.json` exists
+- CI installs `[dev,voice]`, runs ceremony write/verify, sets `APX_VOICE_MODE=simulated`
 - `scripts/rust_bins.py` — shared binary-first resolver for `apx-circuits` and `apx-zk`
-- Setup scripts, Dockerfile, and operator docs aligned with dual-track ZK + release binaries
 - Rust `[profile.release]` moved to workspace root (removes per-crate profile warnings)
+
+### Security
+
+- Documented trust model: self-hosters trust themselves; verifying operator releases trusts operator setup (not MPC/PoT)
+- Verifier bundle exports VKs only — proving keys remain operator-local
 
 ## [1.0.1] - 2026-06-20
 
@@ -96,6 +119,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, ZK `.pk`/`.vk`) excluded from version control via `.gitignore`
 - Maintainer-only paths gitignored (`docs/internal/`, `docs/resume/`)
 
+[1.1.0]: https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0
 [1.0.1]: https://github.com/apxv1dev/APXV1/releases/tag/v1.0.1
 [1.0.0]: https://github.com/apxv1dev/APXV1/releases/tag/v1.0.0
 [0.3.0]: https://github.com/apxv1dev/APXV1/releases/tag/v0.3.0

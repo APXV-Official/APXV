@@ -2,7 +2,7 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** governed agent platform.
 
-**Version:** 1.0.1 · **License:** Apache 2.0
+**Version:** 1.1.0 · **License:** Apache 2.0
 
 This guide describes the repository layout, core components, and where to find operator documentation. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
@@ -21,7 +21,9 @@ APXV1 is a **local, air-gapped platform** for building governed agent systems. C
 | **Approval workflow** | Propose → approve → apply for governance changes |
 | **Redaction engine v3** | Format-aware pattern redaction with `entities[]` output |
 | **Optional E2EE** | `APXE2EE` encryption (`--encrypt` on pipeline) |
-| **Dual-track ZK** | Governance proofs (3 circuits) + entity proofs (8 circuits) |
+| **Dual-track ZK** | 3 governance circuits + up to 4 entity proofs per attest (8 entity circuits in crate) |
+| **Voice privacy** | STT → redact → attest (`agents/voice/`; simulated or local Vosk/pyttsx3) |
+| **Ceremony (Tier B)** | Signed VK transcript + exportable verifier bundle |
 | **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
 | **Pluggable LLMs** | Optional backends (Ollama example included) |
 
@@ -36,10 +38,11 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 | Cryptography & ZK attestation | Complete |
 | Governed runtime core | Complete |
 | Privacy migration (redaction, E2EE, dual ZK) | Complete |
+| Voice suite + ceremony transparency (v1.1) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
-| Current release | **v1.0.1** |
+| Current version | **v1.1.0** |
 
-The reference 3-agent pipeline (redact → orchestrate → attest) and dual-track Groth16 verification path are implemented and covered by **295+ automated tests**.
+The reference 3-agent pipeline (redact → orchestrate → attest), voice path, and dual-track Groth16 verification are covered by **306 automated tests** (see `python -m pytest tests/ -q`).
 
 ---
 
@@ -63,7 +66,8 @@ The reference 3-agent pipeline (redact → orchestrate → attest) and dual-trac
 | Component | Role |
 |-----------|------|
 | `apx-circuits/` | Governance Groth16 circuits: redaction, rule-binding, pipeline |
-| `apx-zk/` | Entity Groth16 circuits (8): redaction-v1, batch-merkle, compliance, etc. |
+| `apx-zk/` | Entity Groth16 circuits (8 in crate; 3–4 + voice on default attest — see `docs/cryptography/CIRCUITS.md`) |
+| `voice/` | Voice privacy pipeline (STT/TTS providers, `VoicePrivacyPipeline`) |
 | `apx-circuits/keys/` | Governance `.pk`/`.vk`; `manifest.json` committed |
 | `apx-zk/keys/` | Entity `.pk`/`.vk`; `entity-manifest.json` committed |
 
@@ -76,8 +80,12 @@ The reference 3-agent pipeline (redact → orchestrate → attest) and dual-trac
 | `setup_entity_zk.py` | Entity circuit trusted setup only |
 | `apx_doctor.py` | Prerequisites and health check |
 | `apx_ctl.py` | Integrity, API keys, governance, backups |
-| `run_apx.py` | Full pipeline (`--attest`, optional `--encrypt`) |
+| `run_apx.py` | Full pipeline (`--attest`, `--voice-transcript`, `--voice-file`, optional `--encrypt`) |
 | `verify_attestation.py` | Independent dual-track ZK verification (`--real-zk`) |
+| `ceremony_transcript.py` | Tier A/B ceremony transcript write/verify |
+| `export_verifier_bundle.py` | Publishable VK-only bundle for releases |
+| `setup_voice.py` | Download Vosk model for local STT |
+| `run_voice_demo.py` | Standalone voice privacy demo |
 | `apx_serve.py` | Local HTTP API |
 
 ### Examples & templates
@@ -103,9 +111,9 @@ The reference 3-agent pipeline (redact → orchestrate → attest) and dual-trac
 
 | Check | Coverage |
 |-------|----------|
-| Unit & integration tests | `tests/` (295+ tests) |
-| Rust tests | `cargo test` in `apx-circuits` + `apx-zk` (57 entity tests) |
-| CI | `.github/workflows/ci.yml` — pytest, workspace build/test, setup, doctor, integrity |
+| Unit & integration tests | `tests/` (306 tests; voice, ceremony, dual ZK E2E) |
+| Rust tests | `cargo test` in `apx-circuits` + `apx-zk` |
+| CI | `.github/workflows/ci.yml` — pytest, voice extras, ceremony, setup, doctor, integrity |
 | Independent ZK verify | `python -m scripts.verify_attestation --real-zk` |
 
 If `apx_doctor` reports a broken audit chain on a long-lived dev tree, reset local audit state and re-run setup:
@@ -130,8 +138,9 @@ Fresh installs and CI environments should report **HEALTHY** without this step.
 | [docs/DOCKER.md](docs/DOCKER.md) | Container deployment |
 | [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain |
-| [docs/cryptography/](docs/cryptography/) | ZK setup and verification |
-| [docs/APX-V1-MIGRATION-PLAN.md](docs/APX-V1-MIGRATION-PLAN.md) | Migration record (v1.0.0 → v1.0.1) |
+| [docs/cryptography/](docs/cryptography/) | ZK setup, circuits, ceremony, verification |
+| [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md) | v1.1 release gates |
+| [docs/APX-V1-MIGRATION-PLAN.md](docs/APX-V1-MIGRATION-PLAN.md) | Migration record (Phases 0–6 + voice) |
 | [SECURITY.md](SECURITY.md) | Threat model |
 | [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |

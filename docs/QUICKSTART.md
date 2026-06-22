@@ -32,6 +32,13 @@ python -m scripts.apx_doctor
 
 Save any API keys or signing PEMs printed during setup.
 
+Optional voice extras (local STT/TTS or CI-simulated mode):
+
+```bash
+pip install -e ".[dev,voice]"
+python -m scripts.setup_voice    # downloads Vosk model (~40 MB) for local STT
+```
+
 ## Verify
 
 ```bash
@@ -41,6 +48,27 @@ python -m scripts.verify_attestation --real-zk
 ```
 
 Expected: `HEALTHY`, `ATTESTED`, `Entity proofs: VALID`, and `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]`.
+
+### Voice attest (v1.1)
+
+```bash
+# Simulated STT (no model) — same as CI
+APX_VOICE_MODE=simulated python -m scripts.run_apx \
+  --voice-transcript "Email me at user@example.com" --attest
+python -m scripts.verify_attestation --real-zk
+```
+
+### Ceremony transcript (v1.1, optional)
+
+After setup, commit VK lineage for releases:
+
+```bash
+python -m scripts.ceremony_transcript --write --tier B
+python -m scripts.ceremony_transcript --verify
+python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
+```
+
+See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
 
 ## Run the local API
 

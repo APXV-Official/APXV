@@ -140,6 +140,8 @@ class WorkflowOrchestrator:
             source_text = redactor_output.get("redacted_text", "")
             redactions_applied = redactor_output.get("redactions_applied", [])
             total_redactions = redactor_output.get("total_redactions", 0)
+            entities = redactor_output.get("entities", [])
+            entity_count = redactor_output.get("entity_count", len(entities))
             original_input_hash = redactor_output.get("input_hash")
             upstream_agent = redactor_output.get("agent_id")
         elif input_text is not None:
@@ -148,6 +150,8 @@ class WorkflowOrchestrator:
             source_text = redaction_result["redacted_text"]
             redactions_applied = redaction_result["redactions_applied"]
             total_redactions = redaction_result["total_redactions"]
+            entities = redaction_result.get("entities", [])
+            entity_count = redaction_result.get("entity_count", len(entities))
             original_input_hash = hashlib.sha256(input_text.encode()).hexdigest()
             upstream_agent = None
         else:
@@ -191,6 +195,8 @@ class WorkflowOrchestrator:
                 "redacted_text": source_text,
                 "redactions_applied": redactions_applied,
                 "total_redactions": total_redactions,
+                "entities": entities,
+                "entity_count": entity_count,
             },
             "execution_trace": execution_trace,
             "governance_notes": "Followed APX-WF-001 exactly. All redactions deterministic per APX-RULE-001.",

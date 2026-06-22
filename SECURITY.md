@@ -4,6 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
+| 1.1.x   | Yes       |
 | 1.0.x   | Yes       |
 | 0.3.x   | No        |
 
@@ -28,6 +29,7 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 - **Unsigned capability policy changes** (Ed25519-signed local policy)
 - **Accidental data egress via APXV1 itself** (localhost-only API, no built-in telemetry)
 - **Unverifiable processing claims** (Groth16 proofs bind execution to rule hashes; use `run_apx --attest` and `verify_attestation --real-zk`)
+- **Undocumented verification key lineage** (Tier B ceremony transcript + verifier bundle — see `docs/cryptography/CEREMONY.md`)
 
 ### APXV1 Does NOT Protect Against
 
@@ -58,6 +60,24 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 | `managed/config/e2ee-keypair.json` | Optional E2EE keypair (when `--encrypt` is used) |
 
 Treat these as secrets. They are gitignored by default.
+
+## ZK ceremony and trust (v1.1)
+
+APXV1 uses **single-party Groth16 trusted setup** per circuit. v1.1 adds **Tier B ceremony transparency**:
+
+- `python -m scripts.ceremony_transcript --write` commits VK/PK hashes from both manifests
+- `python -m scripts.export_verifier_bundle` publishes VKs only (safe for GitHub Releases)
+- **Self-host:** run your own `setup_first_run` — you trust your setup, not the maintainer
+- **Verify our demo/release:** use our verifier bundle — you trust our setup honesty for those VKs
+
+We do **not** claim Powers of Tau, MPC, or trustless setup in v1.1. See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
+
+## Voice privacy (v1.1)
+
+- Voice audio/transcripts flow through local STT (Vosk or simulated) then the same redaction engine as text
+- `voice-redaction` ZK circuit binds entity count, policy id, and document hashes — not raw audio in the proof bundle
+- CI uses `APX_VOICE_MODE=simulated`; local offline mode requires `pip install -e ".[voice]"` and `python -m scripts.setup_voice`
+- Voice entities may appear in `voice_session` for ZK commitment generation — treat attested artifacts as sensitive
 
 ## Disclaimer
 

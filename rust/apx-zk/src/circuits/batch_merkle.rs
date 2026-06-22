@@ -216,6 +216,249 @@ mod tests {
         (root, all_leaves, all_path_elements, all_path_indices)
     }
     
+    /// Two-leaf tree (entity_count=2) — matches Python witness layout for small trees.
+    fn build_two_leaf_tree() -> (Fr, [Fr; BATCH_SIZE], [[Fr; MERKLE_DEPTH]; BATCH_SIZE], [[Fr; MERKLE_DEPTH]; BATCH_SIZE]) {
+        let poseidon = Poseidon::new();
+        let leaf_domain = Fr::from(1u64);
+        let padding_sentinel = poseidon.hash_two(&leaf_domain, &Fr::from(0xDEADBEEFu64));
+
+        let unique_leaves = [Fr::from(1001u64), Fr::from(2002u64)];
+        let level0 = [
+            poseidon.hash_two(&leaf_domain, &unique_leaves[0]),
+            poseidon.hash_two(&leaf_domain, &unique_leaves[1]),
+        ];
+        let level1_0 = poseidon.hash_two(&level0[0], &level0[1]);
+
+        let mut current = level1_0;
+        for _ in 1..MERKLE_DEPTH {
+            current = poseidon.hash_two(&current, &padding_sentinel);
+        }
+        let root = current;
+
+        let mut all_path_elements = [[Fr::zero(); MERKLE_DEPTH]; BATCH_SIZE];
+        let mut all_path_indices = [[Fr::zero(); MERKLE_DEPTH]; BATCH_SIZE];
+
+        for i in 0..2 {
+            all_path_elements[i][0] = if i % 2 == 0 { level0[1] } else { level0[0] };
+            all_path_indices[i][0] = Fr::from((i % 2) as u64);
+            for j in 1..MERKLE_DEPTH {
+                all_path_elements[i][j] = padding_sentinel;
+                all_path_indices[i][j] = Fr::from(0u64);
+            }
+        }
+
+        let mut all_leaves = [unique_leaves[0]; BATCH_SIZE];
+        all_leaves[1] = unique_leaves[1];
+        let path0 = all_path_elements[0];
+        let index0 = all_path_indices[0];
+        all_path_elements[2] = path0;
+        all_path_indices[2] = index0;
+        all_path_elements[3] = path0;
+        all_path_indices[3] = index0;
+
+        (root, all_leaves, all_path_elements, all_path_indices)
+    }
+
+    #[test]
+    fn test_batch_merkle_two_leaves() {
+        let cs = ConstraintSystem::<Fr>::new_ref();
+        let (root, leaves, path_elements, path_indices) = build_two_leaf_tree();
+
+        let circuit = BatchMerkleCircuit {
+            merkle_root: root,
+            entity_count: Fr::from(2u64),
+            leaves,
+            path_elements,
+            path_indices,
+        };
+
+        circuit.generate_constraints(cs.clone()).unwrap();
+        assert!(
+            cs.is_satisfied().unwrap(),
+            "Two-leaf batch Merkle witness should satisfy constraints"
+        );
+    }
+
+    #[test]
+    fn test_batch_merkle_two_leaves_large_witness() {
+        use std::str::FromStr;
+
+        let cs = ConstraintSystem::<Fr>::new_ref();
+        let parse = |s: &str| Fr::from_str(s).expect("field parse");
+
+        let leaves: [Fr; BATCH_SIZE] = [
+            parse("15382628245329902328488720123966492580078151237751517830093443171714567146672"),
+            parse("5998614240544134825742125857168009767985760510198609165668532965428582373101"),
+            parse("15382628245329902328488720123966492580078151237751517830093443171714567146672"),
+            parse("15382628245329902328488720123966492580078151237751517830093443171714567146672"),
+        ];
+        let path_elements: [[Fr; MERKLE_DEPTH]; BATCH_SIZE] = [
+            [
+                parse("1818148000594136623491068188893524766913980420423211175730487732567362819161"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+            ],
+            [
+                parse("11410342269017457867118117488176980790176000173098527340755116042115079889081"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+            ],
+            [
+                parse("1818148000594136623491068188893524766913980420423211175730487732567362819161"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+            ],
+            [
+                parse("1818148000594136623491068188893524766913980420423211175730487732567362819161"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+                parse("6081948211206909571661796151401404170434217939084388726494409250960347177098"),
+            ],
+        ];
+        let path_indices: [[Fr; MERKLE_DEPTH]; BATCH_SIZE] = [
+            [
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+            ],
+            [
+                Fr::from(1u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+            ],
+            [
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+            ],
+            [
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+            ],
+        ];
+
+        let circuit = BatchMerkleCircuit {
+            merkle_root: parse("2862918569173112766094126527019364875969889606363215992501500333050626925766"),
+            entity_count: Fr::from(2u64),
+            leaves,
+            path_elements,
+            path_indices,
+        };
+
+        circuit.generate_constraints(cs.clone()).unwrap();
+        assert!(
+            cs.is_satisfied().unwrap(),
+            "Production two-leaf witness should satisfy constraints"
+        );
+    }
+
+    #[test]
+    fn test_batch_merkle_two_leaves_large_groth16_round_trip() {
+        use ark_bn254::Bn254;
+        use ark_groth16::Groth16;
+        use ark_snark::SNARK;
+        use ark_std::rand::rngs::StdRng;
+        use ark_std::rand::SeedableRng;
+        use std::str::FromStr;
+
+        let parse = |s: &str| Fr::from_str(s).expect("field parse");
+        let leaves: [Fr; BATCH_SIZE] = [
+            parse("15382628245329902328488720123966492580078151237751517830093443171714567146672"),
+            parse("5998614240544134825742125857168009767985760510198609165668532965428582373101"),
+            parse("15382628245329902328488720123966492580078151237751517830093443171714567146672"),
+            parse("15382628245329902328488720123966492580078151237751517830093443171714567146672"),
+        ];
+        let padding = parse("6081948211206909571661796151401404170434217939084388726494409250960347177098");
+        let path_elements: [[Fr; MERKLE_DEPTH]; BATCH_SIZE] = [
+            [
+                parse("1818148000594136623491068188893524766913980420423211175730487732567362819161"),
+                padding, padding, padding, padding, padding, padding, padding,
+            ],
+            [
+                parse("11410342269017457867118117488176980790176000173098527340755116042115079889081"),
+                padding, padding, padding, padding, padding, padding, padding,
+            ],
+            [
+                parse("1818148000594136623491068188893524766913980420423211175730487732567362819161"),
+                padding, padding, padding, padding, padding, padding, padding,
+            ],
+            [
+                parse("1818148000594136623491068188893524766913980420423211175730487732567362819161"),
+                padding, padding, padding, padding, padding, padding, padding,
+            ],
+        ];
+        let path_indices: [[Fr; MERKLE_DEPTH]; BATCH_SIZE] = [
+            [Fr::from(0u64); MERKLE_DEPTH],
+            [
+                Fr::from(1u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+                Fr::from(0u64),
+            ],
+            [Fr::from(0u64); MERKLE_DEPTH],
+            [Fr::from(0u64); MERKLE_DEPTH],
+        ];
+        let merkle_root = parse("2862918569173112766094126527019364875969889606363215992501500333050626925766");
+
+        let circuit = BatchMerkleCircuit {
+            merkle_root,
+            entity_count: Fr::from(2u64),
+            leaves,
+            path_elements,
+            path_indices,
+        };
+
+        let mut rng = StdRng::seed_from_u64(42);
+        let (pk, vk) = Groth16::<Bn254>::circuit_specific_setup(circuit.clone(), &mut rng).unwrap();
+        let proof = Groth16::<Bn254>::prove(&pk, circuit, &mut rng).expect("prove");
+        let valid = Groth16::<Bn254>::verify(&vk, &[merkle_root, Fr::from(2u64)], &proof).unwrap();
+        assert!(valid, "Large two-leaf witness should produce a valid Groth16 proof");
+    }
+
     #[test]
     fn test_batch_merkle_valid() {
         let cs = ConstraintSystem::<Fr>::new_ref();

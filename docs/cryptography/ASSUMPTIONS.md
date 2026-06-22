@@ -2,7 +2,8 @@
 
 **Status:** Phase 1 Criterion #5 — Living Document  
 **Date:** 2026-06-17  
-**Circuit Version:** 1.1.0
+**Circuit Version:** 1.1.0  
+**Ceremony:** Tier B (signed transcript + verifier bundle)
 
 ---
 
@@ -69,18 +70,28 @@
 
 ## 2. Trusted Setup Assumptions
 
-**Model:** Single-party honest setup (Phase 1)
+**Model:** Single-party honest setup with Tier B transparency (v1.1)
 
-**Process:** See `docs/cryptography/SETUP.md`
+**Process:** See `docs/cryptography/SETUP.md` and `docs/cryptography/CEREMONY.md`
+
+### Who trusts whom
+
+| Deployment | Setup trust |
+|------------|-------------|
+| Operator clones APXV1 and runs `setup_first_run` locally | Operator trusts themselves |
+| Third party verifies maintainer's attested artifacts | Third party trusts maintainer's one-time setup for those VKs |
+
+Tier B adds a signed ceremony transcript and publishable verifier bundle so VK lineage is hash-committed and auditable. It does **not** cryptographically prove toxic waste was destroyed.
 
 **Assumptions:**
-- Setup operator is honest and destroys toxic waste
+- Setup operator is honest and destroys toxic waste (for that operator's keys)
 - Persisted keys in `rust/apx-circuits/keys/` and `rust/apx-zk/keys/` are not tampered with after creation
-- `manifest.json` accurately records VK hashes for the active circuit version
+- Manifests accurately record VK hashes for the active circuit version
 - Verifier uses the VK matching the proof bundle's `vk_hex` and manifest entry
+- Ceremony transcript `content_hash` matches on-disk manifests when transcript is used
 
 **Limitations:**
-- Not a multi-party ceremony
+- Not a multi-party ceremony (Tier C / Powers of Tau deferred to v1.2+)
 - Malicious setup operator could forge proofs if toxic waste is retained
 - No HSM protection for proving keys
 
@@ -121,5 +132,7 @@ A forgery is a verifying Groth16 proof where:
 | #7 No overstated claims | README and docs state research-prototype status |
 
 ---
+
+For which entity circuits run on the default attest path, see [CIRCUITS.md](CIRCUITS.md).
 
 **This is a living document.** Update when circuit version, setup model, or proof claims change.
