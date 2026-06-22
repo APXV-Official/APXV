@@ -1,12 +1,11 @@
-# Historical Planning Documents
+# Archive — historical planning documents
 
-> **Do not use these files for current product status or installation guidance.**
+Files in this directory are **retained for history only**. They reflect earlier research, migration, and roadmap thinking (2026) and are **not** the authoritative description of APXV1 v1.1.0.
 
-This folder contains **archived development plans and roadmaps** from early APX/APXV1 work. They are kept for historical reference only.
+Some archive pages state that APX v1 is "not production-ready" or describe future MPC/Powers of Tau work — that may contradict the current release narrative. For public readers, use instead:
 
-**For current documentation, use:**
+- [README.md](../../README.md) and [SECURITY.md](../../SECURITY.md) — scope and limits today
+- [docs/cryptography/](../cryptography/) — circuits, ceremony, verification, assumptions
+- [CHANGELOG.md](../../CHANGELOG.md) and [docs/RELEASE-v1.1.0.md](../RELEASE-v1.1.0.md) — what shipped in v1.1.0
 
-- [../QUICKSTART.md](../QUICKSTART.md) — getting started
-- [../BUILDING.md](../BUILDING.md) — extension patterns
-- [../../README.md](../../README.md) — project overview
-- [../../SECURITY.md](../../SECURITY.md) — threat model
+Do not cite archive docs in launch materials unless you explicitly label them as historical context.

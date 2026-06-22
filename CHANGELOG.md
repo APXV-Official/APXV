@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [1.1.0] - 2026-06-22
 
-**APXV1 v1.1.0** — public launch: voice privacy suite, Tier B ceremony transparency, entity propagation fix for ZK proofs.
+**APXV1 v1.1.0** — voice privacy suite, Tier A/B ceremony transparency, entity propagation fix for ZK proofs.
 
 ### Added
 

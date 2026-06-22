@@ -23,7 +23,7 @@ APXV1 is a **local, air-gapped platform** for building governed agent systems. C
 | **Optional E2EE** | `APXE2EE` encryption (`--encrypt` on pipeline) |
 | **Dual-track ZK** | 3 governance circuits + up to 4 entity proofs per attest (8 entity circuits in crate) |
 | **Voice privacy** | STT → redact → attest (`agents/voice/`; simulated or local Vosk/pyttsx3) |
-| **Ceremony (Tier B)** | Signed VK transcript + exportable verifier bundle |
+| **Ceremony (Tier A/B)** | VK manifest transcript (+ signature when signing keys exist) + exportable verifier bundle |
 | **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
 | **Pluggable LLMs** | Optional backends (Ollama example included) |
 

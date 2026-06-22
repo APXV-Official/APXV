@@ -20,7 +20,7 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 
 **v1.1 live walkthrough:** voice attest + ceremony checks — follow [docs/DEMO-SCRIPT-V1.1.md](docs/DEMO-SCRIPT-V1.1.md) (~3 min scripted terminal demo). A re-recorded video is optional; the script is the canonical v1.1 narrative.
 
-**Verifier bundle (VKs only):** download `apxv1-verifier-bundle-v1.1.0.zip` from the [v1.1.0 release](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0) or run `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
+**Verifier bundle (VKs only):** after we publish the GitHub Release, download `apxv1-verifier-bundle-v1.1.0.zip` from [Releases](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
 
 ## Who This Is For
 
@@ -41,7 +41,7 @@ APXV1 is a **foundation to build on** — not a finished end-user product.
 - **Optional E2EE** — X25519 + XSalsa20-Poly1305 payload encryption (`--encrypt`)
 - **Dual-track Groth16 ZK** — 3 governance circuits + up to 4 entity proofs per attest (8 entity circuits in crate; see [docs/cryptography/CIRCUITS.md](docs/cryptography/CIRCUITS.md))
 - **Voice privacy suite** — STT → redact → attest with `voice-redaction` proof (simulated or local Vosk/pyttsx3)
-- **Ceremony transparency (Tier B)** — signed VK lineage transcript + publishable verifier bundle
+- **Ceremony transparency (Tier A/B)** — VK manifest transcript (+ Ed25519 signature after `setup_first_run`) + publishable verifier bundle
 - **Local HTTP API** — localhost only, no cloud, no telemetry
 - **Pluggable LLMs** — bring Ollama or any backend via `LLMBackend` (optional)
 
@@ -56,7 +56,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **307 automated tests** (1 optional skip for local Vosk) cover text, voice, ceremony, and ZK paths. See [CHANGELOG.md](CHANGELOG.md) and [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md).
+**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier A/B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **307 automated tests** (1 optional skip for local Vosk) cover text, voice, ceremony, and ZK paths. See [CHANGELOG.md](CHANGELOG.md) and [docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md](docs/V1.1-PUBLIC-LAUNCH-CHECKLIST.md).
 
 ### Trust model
 

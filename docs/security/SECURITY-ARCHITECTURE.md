@@ -34,7 +34,7 @@ Supplements the operator-facing threat model in [SECURITY.md](../../SECURITY.md)
 - Unified runtime with integrity check (`apx_ctl integrity`)
 - No network dependencies — suitable for air-gapped deployment
 - Dual-track Groth16 attestation independently verifiable via `verify_attestation --real-zk`
-- Tier B ceremony transcript + exportable verifier bundle (VK lineage)
+- Tier A/B ceremony transcript + exportable verifier bundle (VK lineage; signature when signing keys exist)
 - Voice path with simulated (CI) or local offline STT/TTS backends
 - Optional E2EE for pipeline payloads (`--encrypt`)
 

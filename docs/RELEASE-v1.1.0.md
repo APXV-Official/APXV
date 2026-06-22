@@ -5,12 +5,12 @@
 
 ## Summary
 
-Public launch bar: voice privacy suite, Tier B ceremony transparency, and entity ZK fixes on top of v1.0.x dual-track attestation.
+v1.1.0 release: voice privacy suite, Tier A/B ceremony transparency, and entity ZK fixes on top of v1.0.x dual-track attestation. Repository visibility and the GitHub Release page are operator steps separate from this tag.
 
 ## Highlights
 
 - **Voice:** STT → redact → attest with `voice-redaction` proof (simulated in CI; local Vosk + pyttsx3 via `[voice]` extras)
-- **Ceremony:** Tier B transcript tooling + publishable verifier bundle (VKs only, no PKs)
+- **Ceremony:** Tier A/B transcript tooling + publishable verifier bundle (VKs only, no PKs)
 - **Fixes:** Entity propagation for multi-entity proofs; `apx-zk` `json_fr` decimal Merkle root parsing (`batch-merkle` for two-entity documents)
 
 ## Artifacts
@@ -18,7 +18,7 @@ Public launch bar: voice privacy suite, Tier B ceremony transparency, and entity
 | Artifact | How to obtain |
 |----------|----------------|
 | Source | `git checkout v1.1.0` |
-| Verifier bundle | GitHub Release asset `apxv1-verifier-bundle-v1.1.0.zip`, or `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run` |
+| Verifier bundle | GitHub Release asset `apxv1-verifier-bundle-v1.1.0.zip` (when published), or `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run` |
 
 ## Verify a published attestation
 

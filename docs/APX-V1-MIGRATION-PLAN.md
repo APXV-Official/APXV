@@ -242,8 +242,7 @@ Every phase:
 
 - Legacy reference folders: **gitignored, never pushed**
 - Only converted APX code in commits
-- Migration branch: local until merge-ready
-- Push `main` only when launching a release
+- Historical: migration work merged to `main` for v1.0.0 / v1.1.0
 
 ---
 

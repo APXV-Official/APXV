@@ -29,7 +29,7 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 - **Unsigned capability policy changes** (Ed25519-signed local policy)
 - **Accidental data egress via APXV1 itself** (localhost-only API, no built-in telemetry)
 - **Unverifiable processing claims** (Groth16 proofs bind execution to rule hashes; use `run_apx --attest` and `verify_attestation --real-zk`)
-- **Undocumented verification key lineage** (Tier B ceremony transcript + verifier bundle — see `docs/cryptography/CEREMONY.md`)
+- **Undocumented verification key lineage** (Tier A/B ceremony transcript + verifier bundle — see `docs/cryptography/CEREMONY.md`)
 
 ### APXV1 Does NOT Protect Against
 
@@ -63,9 +63,9 @@ Treat these as secrets. They are gitignored by default.
 
 ## ZK ceremony and trust (v1.1)
 
-APXV1 uses **single-party Groth16 trusted setup** per circuit. v1.1 adds **Tier B ceremony transparency**:
+APXV1 uses **single-party Groth16 trusted setup** per circuit. v1.1 adds **Tier A/B ceremony transparency**:
 
-- `python -m scripts.ceremony_transcript --write` commits VK/PK hashes from both manifests
+- `python -m scripts.ceremony_transcript --write` commits VK/PK hashes from both manifests (+ Ed25519 signature when signing keys exist)
 - `python -m scripts.export_verifier_bundle` publishes VKs only (safe for GitHub Releases)
 - **Self-host:** run your own `setup_first_run` — you trust your setup, not the maintainer
 - **Verify our demo/release:** use our verifier bundle — you trust our setup honesty for those VKs

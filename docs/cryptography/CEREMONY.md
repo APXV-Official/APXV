@@ -1,6 +1,6 @@
 # APXV1 — ZK Ceremony Transparency (v1.1)
 
-APXV1 uses Groth16 with a **one-time trusted setup** per circuit. This document defines what we mean by "ceremony" for public launch and how operators publish verifiable transparency artifacts.
+APXV1 uses Groth16 with a **one-time trusted setup** per circuit. This document defines what we mean by "ceremony" for v1.1 releases and how operators publish verifiable transparency artifacts.
 
 ## Trust model (read this first)
 
@@ -9,7 +9,7 @@ APXV1 uses Groth16 with a **one-time trusted setup** per circuit. This document 
 | **Self-host** — clone APXV1, run `setup_first_run`, attest your own data | Yourself (your setup, your keys) |
 | **Verify our release** — our artifacts + verifier bundle from GitHub Releases | Our one-time setup honesty + published VK lineage |
 
-Tier B ceremony does **not** replace multi-party setup. It commits verification-key hashes and (optionally) signs that commitment. Anyone can verify Groth16 proofs mathematically; setup honesty for **our** keys still requires trust or self-hosting.
+Tier B ceremony does **not** replace multi-party setup. It commits verification-key hashes and signs that commitment when operator Ed25519 signing keys exist (created by default in `setup_first_run`). Without signing keys, you have Tier A (hash-committed manifests only). Anyone can verify Groth16 proofs mathematically; setup honesty for **our** keys still requires trust or self-hosting.
 
 ## Tiers
 
@@ -24,20 +24,21 @@ Tier B ceremony does **not** replace multi-party setup. It commits verification-
 
 **Public claim:** "Proofs are verifiable against published verification keys; setup was operator-run with an auditable transcript."
 
-### Tier B — Attested ceremony (v1.1 target)
+### Tier B — Attested ceremony (v1.1 when signing keys exist)
 
 Everything in Tier A, plus:
 
-- Transcript body signed with Ed25519 (operator capability key or dedicated ceremony key).
-- Transcript published alongside releases (GitHub Release asset).
+- Transcript body signed with Ed25519 using the operator capability signing key (from `setup_first_run`).
+- If signing keys are absent, `ceremony_transcript --write` records `"signature": null` — treat as **Tier A**, not Tier B.
+- Transcript may be published alongside GitHub Releases (operator choice).
 - `python -m scripts.ceremony_transcript --verify` passes in CI after setup.
 
-**Public claim:** "Verification key lineage is hash-committed and signed by the operator identity."
+**Public claim (Tier B only):** "Verification key lineage is hash-committed and signed by the operator identity."
 
 ### Tier C — Multi-party ceremony (v1.2+, optional)
 
 - Collaborative MPC setup (e.g. Powers of Tau + per-circuit phase 2).
-- Not required for v1.1 public launch.
+- Not required for v1.1.
 
 **Do not imply Tier C unless implemented.**
 

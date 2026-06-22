@@ -3,7 +3,7 @@
 **Status:** Phase 1 Criterion #5 — Living Document  
 **Date:** 2026-06-17  
 **Circuit Version:** 1.1.0  
-**Ceremony:** Tier B (signed transcript + verifier bundle)
+**Ceremony:** Tier A/B (manifest transcript + verifier bundle; Ed25519 signature when operator signing keys exist)
 
 ---
 
@@ -70,7 +70,7 @@
 
 ## 2. Trusted Setup Assumptions
 
-**Model:** Single-party honest setup with Tier B transparency (v1.1)
+**Model:** Single-party honest setup with Tier A/B transparency (v1.1)
 
 **Process:** See `docs/cryptography/SETUP.md` and `docs/cryptography/CEREMONY.md`
 
@@ -81,7 +81,7 @@
 | Operator clones APXV1 and runs `setup_first_run` locally | Operator trusts themselves |
 | Third party verifies maintainer's attested artifacts | Third party trusts maintainer's one-time setup for those VKs |
 
-Tier B adds a signed ceremony transcript and publishable verifier bundle so VK lineage is hash-committed and auditable. It does **not** cryptographically prove toxic waste was destroyed.
+Tier A commits VK hashes in manifests and an optional ceremony transcript. Tier B adds an Ed25519 signature on that transcript when operator signing keys exist. A publishable verifier bundle lets third parties check VK lineage. None of this cryptographically proves toxic waste was destroyed.
 
 **Assumptions:**
 - Setup operator is honest and destroys toxic waste (for that operator's keys)

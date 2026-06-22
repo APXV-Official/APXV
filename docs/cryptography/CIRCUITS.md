@@ -60,4 +60,4 @@ Entity:     redaction-v1, core-redaction, batch-merkle (if applicable), voice-re
 - [SETUP.md](SETUP.md) — trusted setup commands
 - [VERIFICATION.md](VERIFICATION.md) — third-party verify paths
 - [ASSUMPTIONS.md](ASSUMPTIONS.md) — precise cryptographic claims
-- [CEREMONY.md](CEREMONY.md) — Tier B transcript + verifier bundle
+- [CEREMONY.md](CEREMONY.md) — Tier A/B transcript + verifier bundle

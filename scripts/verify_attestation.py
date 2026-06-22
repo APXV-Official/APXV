@@ -384,7 +384,7 @@ def main():
 
     if report["overall_status"] == "VERIFIED":
         print("\n✓ All Python-side checks passed.")
-        print("  The attested_result is internally consistent with the living markdown specs.")
+        print("  The attested_result is consistent with the living markdown specs (hash/provenance checks).")
     else:
         print("\n✗ Python-side verification failed. See checks above.")
 
