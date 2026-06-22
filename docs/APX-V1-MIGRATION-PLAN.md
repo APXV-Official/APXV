@@ -183,7 +183,7 @@ agents/zk/
 - Ceremony: `ceremony_transcript.py`, `export_verifier_bundle.py`, Tier B docs
 
 **Tests:** `tests/test_voice_suite.py`, `tests/test_voice_e2e.py`, `tests/test_ceremony_transcript.py`  
-**Gate:** **306 pytest passed** (2026-06-22); voice E2E + ceremony verify green.
+**Gate:** **307 pytest passed** (2026-06-22); voice E2E + ceremony verify green.
 
 ---
 
@@ -234,7 +234,7 @@ Every phase:
 | After Phase 2 | **278** | — |
 | After Phase 3 | **288** | **57** (apx-zk) |
 | After Phase 4 | **295** | **57** |
-| After Phase 5 (v1.1) | **306** | **57+** (apx-zk) |
+| After Phase 5 (v1.1) | **307** | **61** (apx-zk) |
 
 ---
 
@@ -268,5 +268,5 @@ Every phase:
 | 2 | 2026-06-20 | 2026-06-20 | APXE2EE + `--encrypt`; 278 pytest |
 | 3 | 2026-06-20 | 2026-06-20 | rust/apx-zk workspace; 57 Rust + 288 pytest |
 | 4 | 2026-06-20 | 2026-06-20 | Dual ZK bridge; 295 pytest |
-| 5 | 2026-06-22 | 2026-06-22 | Voice + ceremony; 306 pytest |
+| 5 | 2026-06-22 | 2026-06-22 | Voice + ceremony; 307 pytest |
 | 6 | 2026-06-20 | 2026-06-20 | v1.0.0 release hygiene, CI, docs |

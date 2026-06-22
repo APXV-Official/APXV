@@ -25,7 +25,7 @@ cargo test --manifest-path rust/Cargo.toml
 
 | Suite | Expected | Actual | Date |
 |-------|----------|--------|------|
-| pytest | 51 passed | **306 passed** (v1.1: voice + ceremony + dual ZK E2E) | 2026-06-22 |
+| pytest | 51 passed | **307 passed** (v1.1: voice + ceremony + dual ZK E2E) | 2026-06-22 |
 | rust workspace | builds clean | apx-zk + apx-circuits tests pass in CI | 2026-06-22 |
 
 ## Notes

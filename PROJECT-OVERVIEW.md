@@ -42,7 +42,7 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
 | Current version | **v1.1.0** |
 
-The reference 3-agent pipeline (redact → orchestrate → attest), voice path, and dual-track Groth16 verification are covered by **306 automated tests** (see `python -m pytest tests/ -q`).
+The reference 3-agent pipeline (redact → orchestrate → attest), voice path, and dual-track Groth16 verification are covered by **307 automated tests** (see `python -m pytest tests/ -q`).
 
 ---
 
@@ -111,7 +111,7 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 
 | Check | Coverage |
 |-------|----------|
-| Unit & integration tests | `tests/` (306 tests; voice, ceremony, dual ZK E2E) |
+| Unit & integration tests | `tests/` (307 tests; voice, ceremony, dual ZK E2E) |
 | Rust tests | `cargo test` in `apx-circuits` + `apx-zk` |
 | CI | `.github/workflows/ci.yml` — pytest, voice extras, ceremony, setup, doctor, integrity |
 | Independent ZK verify | `python -m scripts.verify_attestation --real-zk` |

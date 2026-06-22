@@ -4,7 +4,7 @@
 
 **APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
 
-> **Version:** 1.1.0 — see [CHANGELOG.md](CHANGELOG.md).
+> **Version:** 1.1.0 — see [CHANGELOG.md](CHANGELOG.md) and [docs/RELEASE-v1.1.0.md](docs/RELEASE-v1.1.0.md).
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
