@@ -214,6 +214,14 @@ APXV1 is open source (Apache 2.0).
 
 Community support is best-effort. Start with [docs/QUICKSTART.md](docs/QUICKSTART.md) and [docs/BUILDING.md](docs/BUILDING.md).
 
+## Attribution
+
+**APXV1** is the project name used by this repository. It is **not** a registered trademark. If you build on APXV1, we appreciate (but do not require) a credit such as:
+
+**Built with [APXV1](https://github.com/apxv1dev/APXV1)** — *Attested Proof Execution Verified*
+
+Please do not name your product "APXV1" or imply that your project is an official APXV1 product unless you have a separate agreement with the maintainer.
+
 ## License
 
-Copyright © 2026 [apxv1dev](https://github.com/apxv1dev). Licensed under the [Apache License, Version 2.0](LICENSE).
+Copyright © 2026 [apxv1dev](https://github.com/apxv1dev). Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) for redistribution attribution.
