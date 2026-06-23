@@ -56,6 +56,7 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 | Redaction v3 | `redaction/` | Format parser, patterns, `APXRedactionEngine` |
 | Encryption | `encryption_engine.py` | `APXE2EE` (optional pipeline encryption) |
 | ZK bridge | `zk/` | Entity commitments, Merkle tree, dual proof bundle |
+| Voice privacy | `voice/` | STT/TTS providers, `VoicePrivacyPipeline` |
 | Runtime | `runtime.py` | Store, audit, capabilities, governance |
 | Local API | `local_api.py` | Auth, jobs, pipeline, health |
 | LLM integration | `llm_backend.py`, `llm_reasoner.py` | Pluggable model backends |
@@ -67,7 +68,6 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 |-----------|------|
 | `apx-circuits/` | Governance Groth16 circuits: redaction, rule-binding, pipeline |
 | `apx-zk/` | Entity Groth16 circuits (8 in crate; 3–4 + voice on default attest — see `docs/cryptography/CIRCUITS.md`) |
-| `voice/` | Voice privacy pipeline (STT/TTS providers, `VoicePrivacyPipeline`) |
 | `apx-circuits/keys/` | Reference governance `.pk`/`.vk` + `manifest.json` (re-run setup for your own keys) |
 | `apx-zk/keys/` | Reference entity `.pk`/`.vk` + `entity-manifest.json` (re-run setup for your own keys) |
 
