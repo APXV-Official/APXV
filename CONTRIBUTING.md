@@ -5,10 +5,10 @@ Thank you for your interest in **APXV1** (*Attested Proof Execution Verified*, 1
 ## Getting Started
 
 1. Fork the repository and clone your fork.
-2. Install dependencies:
+2. Install dependencies (include `voice` for the full test suite):
 
    ```bash
-   pip install -e ".[dev]"
+   pip install -e ".[dev,voice]"
    ```
 
 3. Run first-time setup (includes ZK keys — requires Rust):
@@ -19,11 +19,13 @@ Thank you for your interest in **APXV1** (*Attested Proof Execution Verified*, 1
 
    See [docs/BUILDING.md](docs/BUILDING.md) for extension patterns.
 
-4. Run tests:
+4. Run tests (voice tests use simulated STT/TTS unless you install a local Vosk model):
 
    ```bash
    python -m pytest tests/ -v
    ```
+
+   For CI parity on voice paths: `APX_VOICE_MODE=simulated python -m pytest tests/ -v`
 
 ## Development Principles
 
