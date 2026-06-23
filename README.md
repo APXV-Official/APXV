@@ -20,7 +20,7 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 
 **v1.1 walkthrough:** voice attest + ceremony checks — [docs/QUICKSTART.md](docs/QUICKSTART.md) (Voice attest and Ceremony transcript sections). A re-recorded video is optional; the v1.0 demo video above covers text/E2EE only.
 
-**Verifier bundle (VKs only):** download `apxv1-verifier-bundle-v1.1.0.zip` from [GitHub Releases](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0) when available, or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
+**Verifier bundle (VKs only):** download [`apxv1-verifier-bundle-v1.1.0.zip`](https://github.com/apxv1dev/APXV1/releases/download/v1.1.0/apxv1-verifier-bundle-v1.1.0.zip) from the [v1.1.0 release](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
 
 ## Who This Is For
 
