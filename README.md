@@ -30,6 +30,14 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 
 APXV1 is a **foundation to build on** — not a finished end-user product.
 
+## Extend APXV1
+
+APXV1 is the **base platform**. Vertical work loads on top as **agent packs** — bundles of rules, workflows, agents, and capability policy for a use case (e.g. document processing). Install only the packs you need; mix and match on one runtime.
+
+**Available today:** [governance-libraries/](governance-libraries/) (e.g. AI governance template). Build custom agents and governance with [docs/BUILDING.md](docs/BUILDING.md).
+
+**Roadmap:** official and community agent packs (governance + agents + install manifest). The core repo stays the runtime; packs extend it without bloating the base.
+
 ## What You Get
 
 - **Governed agents** — read living markdown rules, workflows, and knowledge at runtime
