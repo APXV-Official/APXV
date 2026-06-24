@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/apxv1dev/APXV1/actions/workflows/ci.yml/badge.svg)](https://github.com/apxv1dev/APXV1/actions/workflows/ci.yml)
 
-**APXV1** — *Attested Proof Execution Verified* — **1st-generation** open-source, air-gapped platform for building governed agent systems.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. **APXV1** is the first-generation open-source implementation.
 
 > **Version:** 1.1.0 — see [CHANGELOG.md](CHANGELOG.md).
 

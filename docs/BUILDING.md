@@ -1,6 +1,6 @@
 # Building On APXV1
 
-APXV1 (*Attested Proof Execution Verified*, 1st generation) is a **local platform** for devs and companies to build governed agent systems. You bring your agents, rules, and (optionally) LLMs. APXV1 provides governance, audit, artifacts, and cryptographic attestation.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. **APXV1** is the first-generation open-source implementation. You bring your agents, rules, and (optionally) LLMs; APXV1 provides governance, audit, artifacts, and cryptographic attestation.
 
 ## Core Concepts
 

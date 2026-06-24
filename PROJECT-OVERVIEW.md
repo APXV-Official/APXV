@@ -1,6 +1,6 @@
 # APXV1 — Project Guide
 
-**APXV1** — *Attested Proof Execution Verified* — **1st-generation** governed agent platform.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **APXV1** is the first-generation open-source implementation.
 
 **Version:** 1.1.0 · **License:** Apache 2.0
 
@@ -10,7 +10,7 @@ This guide describes the repository layout, core components, and documentation i
 
 ## What APXV1 Provides
 
-APXV1 is a **local, air-gapped platform** for building governed agent systems. Code modules use the `APX` prefix; the product name is **APXV1**.
+APXV (Attested Proof Execution Verified) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. APXV1 is the first-generation open-source implementation. Code modules use the `APX` prefix; the product name is **APXV1**.
 
 | Capability | Description |
 |------------|-------------|

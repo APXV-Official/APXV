@@ -1,6 +1,6 @@
 # Contributing to APXV1
 
-Thank you for your interest in **APXV1** (*Attested Proof Execution Verified*, 1st generation). This is an open-source, air-gapped governed agent runtime.
+Thank you for your interest in **APXV1**. **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. **APXV1** is the first-generation open-source implementation.
 
 ## Getting Started
 
