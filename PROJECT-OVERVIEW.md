@@ -37,7 +37,7 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 |-----------|--------|
 | Cryptography & ZK attestation | Complete |
 | Governed runtime core | Complete |
-| Privacy migration (redaction, E2EE, dual ZK) | Complete |
+| Privacy features (redaction, E2EE, dual ZK) | Complete |
 | Voice suite + ceremony transparency (v1.1) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
 | Current version | **v1.1.0** |
@@ -95,7 +95,7 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 | `examples/hello-agent/` | Minimal custom governed agent |
 | `examples/api-client/` | Python API client |
 | `examples/llm-ollama/` | Local LLM via Ollama |
-| `governance-libraries/` | Reusable governance templates |
+| `governance-libraries/` | Governance templates; foundation for future agent packs |
 
 ### Deployment
 

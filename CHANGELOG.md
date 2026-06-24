@@ -58,7 +58,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [1.0.0] - 2026-06-20
 
-**APXV1 v1.0.0** — privacy migration complete (Phases 0–4). Governance spine unchanged; native redaction, optional E2EE, and dual-track ZK attestation added.
+**APXV1 v1.0.0** — adds native privacy layer: redaction engine v3, optional E2EE, and dual-track ZK attestation. Governance spine unchanged.
 
 ### Added
 
@@ -80,7 +80,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Security
 
-- Legacy vendor naming removed from tracked source; reference folders remain gitignored
+- Repository naming and public docs aligned with APXV1; local-only reference material stays out of tracked source
 - E2EE keypair at `managed/config/e2ee-keypair.json` (gitignored)
 - Separate VK manifests for governance and entity circuits
 

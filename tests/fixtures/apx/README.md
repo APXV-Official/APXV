@@ -1,13 +1,13 @@
-# APX migration test fixtures
+# APXV1 test fixtures
 
-Ported test vectors from legacy redaction and ZK suites land here during Phases 1 and 4.
+Test vectors for redaction and ZK paths used by the pytest suite.
 
-## Layout (planned)
+## Layout
 
 ```
 tests/fixtures/apx/
-  redaction/     # sample inputs + expected entities (Phase 1)
-  zk/            # circuit inputs + expected verify (Phase 4)
+  redaction/     # sample inputs + expected entities (when present)
+  zk/            # circuit inputs + expected verify results (when present)
 ```
 
-Phase 0 creates this directory only. Fixtures are added phase by phase.
+Fixtures are added as coverage expands; not all subdirectories exist in every release.

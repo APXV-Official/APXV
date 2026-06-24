@@ -14,7 +14,7 @@ See [../docs/cryptography/CIRCUITS.md](../docs/cryptography/CIRCUITS.md) for whi
 ## Build & test
 
 ```powershell
-cd C:\APXV1
+# From repository root (directory containing rust/ and pyproject.toml)
 cargo test --manifest-path rust/Cargo.toml
 cargo build --release --manifest-path rust/Cargo.toml -p apx-circuits -p apx-zk
 ```

@@ -20,7 +20,7 @@
 - Number of artifacts written per day
 - Capability check failure rate
 - Agent execution success/failure rate
-- Cost and latency of LLM agents (if using Phase 3 components)
+- Cost and latency of LLM agents (if enabled)
 
 ### Health Check Command
 
