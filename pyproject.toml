@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "apx-v1"
-version = "1.1.0"
+version = "1.1.1"
 description = "APXV1 — first-generation open-source APXV (Attested Proof Execution Verified): air-gapped governed agents, Groth16 proofs, local API"
 readme = "README.md"
 requires-python = ">=3.9"

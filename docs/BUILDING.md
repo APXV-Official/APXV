@@ -62,9 +62,11 @@ output = agent.execute({"prompt": "Your task here"})
 
 LLM agents must return structured `AgenticOutput` — never raw ungoverned text as final output.
 
-### 4. Custom governance packs
+### 4. Agent packs and governance templates
 
-Copy templates from `governance-libraries/` into `managed/`, then apply via approval workflow:
+**Official pack:** [Reference Redaction Pack](../governance-libraries/apxv-pack-reference-redaction/README.md) — install governance via approval workflow, run `examples/run_pack_demo.py`, complete `ACCEPTANCE.md`.
+
+**Governance templates** (e.g. `ai-governance-template/`) are markdown starters — not full packs. Copy into `managed/`, then apply via approval workflow:
 
 ```bash
 python -m scripts.apx_ctl governance-propose --spec rule --file my-rule.md

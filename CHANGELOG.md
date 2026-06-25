@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-25
+
+**APXV1 v1.1.1** — first official agent pack and honest extend documentation.
+
+### Added
+
+- `governance-libraries/apxv-pack-reference-redaction/` — Reference Redaction Pack v0.1.0 (governance bundle, demo, acceptance)
+- `governance-libraries/README.md` — index distinguishing packs vs templates
+- `tests/test_reference_redaction_pack.py` — pack layout, governance hash lock, demo smoke test
+
+### Changed
+
+- README, BUILDING.md, PROJECT-OVERVIEW.md — packs vs governance templates; no implied vaporware for unreleased verticals
+
 ## [1.1.0] - 2026-06-22
 
 **APXV1 v1.1.0** — voice privacy suite, Tier A/B ceremony transparency, entity propagation fix for ZK proofs.
@@ -120,6 +134,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.1.1]: https://github.com/apxv1dev/APXV1/releases/tag/v1.1.1
 [1.1.0]: https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0
 [1.0.1]: https://github.com/apxv1dev/APXV1/releases/tag/v1.0.1
 [1.0.0]: https://github.com/apxv1dev/APXV1/releases/tag/v1.0.0

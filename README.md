@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. **APXV1** is the first-generation open-source implementation.
 
-> **Version:** 1.1.0 — see [CHANGELOG.md](CHANGELOG.md).
+> **Version:** 1.1.1 — see [CHANGELOG.md](CHANGELOG.md).
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
@@ -32,11 +32,16 @@ APXV1 is a **foundation to build on** — not a finished end-user product.
 
 ## Extend APXV1
 
-APXV1 is the **base platform**. Vertical work loads on top as **agent packs** — bundles of rules, workflows, agents, and capability policy for a use case (e.g. document processing). Install only the packs you need; mix and match on one runtime.
+APXV1 is the **base platform**. Vertical work loads on top as **agent packs** — bundles of rules, workflows, agents, and capability policy for a use case. Install only the packs you need; mix and match on one runtime.
 
-**Available today:** [governance-libraries/](governance-libraries/) (e.g. AI governance template). Build custom agents and governance with [docs/BUILDING.md](docs/BUILDING.md).
+**Available today:**
 
-**Roadmap:** official and community agent packs (governance + agents + install manifest). The core repo stays the runtime; packs extend it without bloating the base.
+- [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) — official pack (governance + demo + acceptance)
+- [Governance templates](governance-libraries/) — e.g. AI governance starter markdown (not a pack)
+
+Build custom agents with [docs/BUILDING.md](docs/BUILDING.md).
+
+**Roadmap:** AI Governance pack, document-processing pack, community packs. The core repo stays the runtime; packs extend it without bloating the base.
 
 ## What You Get
 
@@ -129,7 +134,7 @@ python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
 | [examples/hello-agent/](examples/hello-agent/) | Minimal custom governed agent |
 | [examples/api-client/](examples/api-client/) | Python API client |
 | [examples/llm-ollama/](examples/llm-ollama/) | Plug in a local Ollama LLM |
-| [governance-libraries/](governance-libraries/) | Reusable governance templates |
+| [governance-libraries/](governance-libraries/) | Official packs and governance templates |
 
 ## Docker
 

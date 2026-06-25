@@ -2,7 +2,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **APXV1** is the first-generation open-source implementation.
 
-**Version:** 1.1.0 · **License:** Apache 2.0
+**Version:** 1.1.1 · **License:** Apache 2.0
 
 This guide describes the repository layout, core components, and documentation index. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
@@ -40,7 +40,7 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 | Privacy features (redaction, E2EE, dual ZK) | Complete |
 | Voice suite + ceremony transparency (v1.1) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
-| Current version | **v1.1.0** |
+| Current version | **v1.1.1** |
 
 The reference 3-agent pipeline (redact → orchestrate → attest), voice path, and dual-track Groth16 verification are covered by **307 automated tests** (see `python -m pytest tests/ -q`).
 
@@ -95,7 +95,7 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 | `examples/hello-agent/` | Minimal custom governed agent |
 | `examples/api-client/` | Python API client |
 | `examples/llm-ollama/` | Local LLM via Ollama |
-| `governance-libraries/` | Governance templates; foundation for future agent packs |
+| `governance-libraries/` | Official packs (`apxv-pack-reference-redaction`) and governance templates |
 
 ### Deployment
 

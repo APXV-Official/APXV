@@ -1,0 +1,35 @@
+# APXV Agent Pack manifest — Pack Spec v0.1
+pack_id: apxv-pack-reference-redaction
+name: Reference Redaction Pack
+version: 0.1.0
+requires_apxv1: ">=1.1.0"
+author: apxv1dev
+license: Apache-2.0
+description: >-
+  Official reference vertical for governed text redaction, orchestration, and
+  attestation using APXV1 core agents APX-AGENT-001 through APX-AGENT-003.
+
+agents:
+  - id: APX-AGENT-001
+    type: deterministic
+    module: agents.agent1
+  - id: APX-AGENT-002
+    type: deterministic
+    module: agents.agent2
+  - id: APX-AGENT-003
+    type: deterministic
+    module: agents.agent3
+
+governance:
+  rules:
+    - governance/rules/RULE-RED-001.md
+  workflows:
+    - governance/workflows/WORKFLOW-RED-001.md
+  knowledge:
+    - governance/knowledge/KB-RED-001.md
+
+capabilities:
+  policy_delta: capabilities/policy-delta.json
+
+examples:
+  - examples/run_pack_demo.py
