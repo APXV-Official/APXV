@@ -113,4 +113,8 @@ See [DOCKER.md](DOCKER.md). Use **fresh volumes** — do not mount a dev `manage
 python -m scripts.apx_doctor
 ```
 
+If `apx_doctor` or `apx_ctl integrity` fails after heavy local testing (broken audit chain), use a **fresh** instance: re-run `python -m scripts.setup_first_run` on a clean tree, or remove `managed/audit/` and run setup again — do not hand-edit audit logs.
+
+First `run_apx --attest` can take 1–3 minutes while Rust compiles; `apx_doctor` may show `apx-circuits=no` until binaries are on PATH even when attest works.
+
 See [SECURITY.md](../SECURITY.md) for what APXV1 does and does not protect.
