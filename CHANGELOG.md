@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - README, BUILDING.md, PROJECT-OVERVIEW.md — packs vs governance templates; no implied vaporware for unreleased verticals
+- Public repo migrated to **APXV-Official/APXV** (org APXV Official; maintainer @APXVdev)
+- `docs/QUICKSTART.md` — troubleshooting for audit-chain pollution and slow first attestation
 
 ## [1.1.0] - 2026-06-22
 

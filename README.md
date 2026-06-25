@@ -69,7 +69,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier A/B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **307 automated tests** (1 optional skip for local Vosk) cover text, voice, ceremony, and ZK paths. See [CHANGELOG.md](CHANGELOG.md).
+**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier A/B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **311 automated tests pass in CI** (312 collected, 1 optional skip for local Vosk) covering text, voice, ceremony, packs, and ZK paths. See [CHANGELOG.md](CHANGELOG.md).
 
 ### Trust model
 
