@@ -223,7 +223,7 @@ APXV1 is open source (Apache 2.0).
 
 - **Bugs and how-to:** [GitHub Issues](https://github.com/APXV-Official/APXV/issues) — include `python -m scripts.apx_doctor` output
 - **Security:** [SECURITY.md](SECURITY.md) — do not post vulnerabilities in public issues
-- **Contact:** [@APXV-Official](https://github.com/APXV-Official) · [APXVdev@protonmail.com](mailto:APXVdev@protonmail.com)
+- **Contact:** [@APXVdev](https://github.com/APXVdev) · [APXVdev@protonmail.com](mailto:APXVdev@protonmail.com)
 
 Community support is best-effort. Start with [docs/QUICKSTART.md](docs/QUICKSTART.md) and [docs/BUILDING.md](docs/BUILDING.md).
 

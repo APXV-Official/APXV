@@ -2,7 +2,7 @@
 name = "apx-zk"
 version = "1.0.0"
 edition = "2021"
-authors = ["APXV Official"]
+authors = ["APXVdev"]
 license = "Apache-2.0"
 description = "APXV1 entity Groth16 zero-knowledge proof circuits (BN254)"
 
