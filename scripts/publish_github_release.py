@@ -22,7 +22,7 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_REPO = "apxv1dev/APXV1"
+DEFAULT_REPO = "APXV-Official/APXV"
 CHANGELOG_PATH = ROOT / "CHANGELOG.md"
 
 

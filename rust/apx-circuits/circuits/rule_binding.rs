@@ -1,5 +1,5 @@
 // APX v1 — Rule Binding Circuit
-// Copyright 2026 apxv1dev
+// Copyright 2026 APXV Official
 // Licensed under the Apache License, Version 2.0
 //
 // Public inputs:

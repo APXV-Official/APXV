@@ -1,10 +1,11 @@
-APXV1
-Copyright 2026 apxv1dev
+APXV
+Copyright 2026 APXV Official
 
-https://github.com/apxv1dev/APXV1
+https://github.com/APXV-Official/APXV
 
-This product includes software from the APXV1 project
-(Attested Proof Execution Verified, 1st generation),
+This product includes software from the APXV project
+(Attested Proof Execution Verified),
+shipping APXV1 as the first-generation open-source implementation,
 licensed under the Apache License, Version 2.0.
 
 See the LICENSE file for the full license text.

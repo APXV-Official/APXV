@@ -7,7 +7,7 @@ APXV1 is designed to run fully offline after initial download.
 On a machine with internet access:
 
 ```bash
-git clone https://github.com/apxv1dev/APXV1.git
+git clone https://github.com/APXV-Official/APXV.git
 cd APXV1
 pip download -d ./offline-wheels -e ".[dev]"
 ```

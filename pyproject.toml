@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "Apache-2.0"}
 authors = [
-  {name = "apxv1dev"}
+  {name = "APXV Official"}
 ]
 dependencies = [
     "cryptography>=41.0.0",
@@ -18,9 +18,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/apxv1dev/APXV1"
-Documentation = "https://github.com/apxv1dev/APXV1/blob/main/docs/QUICKSTART.md"
-Repository = "https://github.com/apxv1dev/APXV1"
+Homepage = "https://github.com/APXV-Official/APXV"
+Documentation = "https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md"
+Repository = "https://github.com/APXV-Official/APXV"
 
 [project.optional-dependencies]
 dev = [

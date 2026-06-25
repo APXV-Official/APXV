@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
-    url: https://github.com/apxv1dev/APXV1/blob/main/SECURITY.md
+    url: https://github.com/APXV-Official/APXV/blob/main/SECURITY.md
     about: Read SECURITY.md — do not post exploit details in public issues
   - name: Questions & how-to
-    url: https://github.com/apxv1dev/APXV1/blob/main/docs/QUICKSTART.md
+    url: https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md
     about: Start with QUICKSTART.md and BUILDING.md before opening a bug report

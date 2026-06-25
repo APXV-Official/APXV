@@ -1,8 +1,8 @@
-# APXV1
+# APXV
 
-[![CI](https://github.com/apxv1dev/APXV1/actions/workflows/ci.yml/badge.svg)](https://github.com/apxv1dev/APXV1/actions/workflows/ci.yml)
+[![CI](https://github.com/APXV-Official/APXV/actions/workflows/ci.yml/badge.svg)](https://github.com/APXV-Official/APXV/actions/workflows/ci.yml)
 
-**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. **APXV1** is the first-generation open-source implementation.
+This repository is **APXV** (*Attested Proof Execution Verified*) — an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. It ships **APXV1**, the first-generation open-source implementation.
 
 > **Version:** 1.1.1 — see [CHANGELOG.md](CHANGELOG.md).
 
@@ -12,15 +12,15 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 
 **Video (v1.0.x):** text pipeline, dual-track Groth16 attestation, independent verify, optional E2EE (~2 min).
 
-<a href="https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4">
+<a href="https://github.com/APXV-Official/APXV/blob/main/apxv1-demo.mp4">
   <img src="docs/assets/apxv1-demo-thumb.jpg" alt="APXV1 end-to-end demo — click to watch" width="800">
 </a>
 
-**▶ [Watch demo video](https://github.com/apxv1dev/APXV1/blob/main/apxv1-demo.mp4)**
+**▶ [Watch demo video](https://github.com/APXV-Official/APXV/blob/main/apxv1-demo.mp4)**
 
 **v1.1 walkthrough:** voice attest + ceremony checks — [docs/QUICKSTART.md](docs/QUICKSTART.md) (Voice attest and Ceremony transcript sections). The v1.0 demo video above covers text/E2EE only.
 
-**Verifier bundle (VKs only):** download [`apxv1-verifier-bundle-v1.1.0.zip`](https://github.com/apxv1dev/APXV1/releases/download/v1.1.0/apxv1-verifier-bundle-v1.1.0.zip) from the [v1.1.0 release](https://github.com/apxv1dev/APXV1/releases/tag/v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
+**Verifier bundle (VKs only):** download [`apxv1-verifier-bundle-v1.1.0.zip`](https://github.com/APXV-Official/APXV/releases/download/v1.1.0/apxv1-verifier-bundle-v1.1.0.zip) from the [v1.1.0 release](https://github.com/APXV-Official/APXV/releases/tag/v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
 
 ## Who This Is For
 
@@ -221,20 +221,20 @@ Back up `managed/`, `rust/apx-circuits/keys/`, and `rust/apx-zk/keys/` regularly
 
 APXV1 is open source (Apache 2.0).
 
-- **Bugs and how-to:** [GitHub Issues](https://github.com/apxv1dev/APXV1/issues) — include `python -m scripts.apx_doctor` output
+- **Bugs and how-to:** [GitHub Issues](https://github.com/APXV-Official/APXV/issues) — include `python -m scripts.apx_doctor` output
 - **Security:** [SECURITY.md](SECURITY.md) — do not post vulnerabilities in public issues
-- **Contact:** [@apxv1dev](https://github.com/apxv1dev) · [apxv1dev@protonmail.com](mailto:apxv1dev@protonmail.com)
+- **Contact:** [@APXV-Official](https://github.com/APXV-Official) · [APXVdev@protonmail.com](mailto:APXVdev@protonmail.com)
 
 Community support is best-effort. Start with [docs/QUICKSTART.md](docs/QUICKSTART.md) and [docs/BUILDING.md](docs/BUILDING.md).
 
 ## Attribution
 
-**APXV1** is the project name used by this repository. It is **not** a registered trademark. If you build on APXV1, we appreciate (but do not require) a credit such as:
+**APXV** is the platform; **APXV1** is the implementation line shipped from this repository. Neither is a registered trademark. If you build on APXV1, we appreciate (but do not require) a credit such as:
 
-**Built with [APXV1](https://github.com/apxv1dev/APXV1)** — *Attested Proof Execution Verified*
+**Built with [APXV / APXV1](https://github.com/APXV-Official/APXV)** — *Attested Proof Execution Verified*
 
-Please do not name your product "APXV1" or imply that your project is an official APXV1 product unless you have a separate agreement with the maintainer.
+Please do not imply your project is an official APXV product unless you have a separate agreement with the maintainer.
 
 ## License
 
-Copyright © 2026 [apxv1dev](https://github.com/apxv1dev). Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) for redistribution attribution.
+Copyright © 2026 [APXV Official](https://github.com/APXV-Official). Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) for redistribution attribution.

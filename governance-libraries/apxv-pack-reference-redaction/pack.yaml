@@ -3,7 +3,7 @@ pack_id: apxv-pack-reference-redaction
 name: Reference Redaction Pack
 version: 0.1.0
 requires_apxv1: ">=1.1.0"
-author: apxv1dev
+author: APXV-Official
 license: Apache-2.0
 description: >-
   Official reference vertical for governed text redaction, orchestration, and
