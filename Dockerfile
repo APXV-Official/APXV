@@ -45,6 +45,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY pyproject.toml ./
 COPY agents ./agents
 COPY scripts ./scripts
+COPY governance-libraries ./governance-libraries
 
 # Install the Python package
 RUN pip install --no-cache-dir -e .

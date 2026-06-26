@@ -47,6 +47,7 @@ setup-voice = "scripts.setup_voice:main"
 run-voice-demo = "scripts.run_voice_demo:main"
 ceremony-transcript = "scripts.ceremony_transcript:main"
 export-verifier-bundle = "scripts.export_verifier_bundle:main"
+apx-onboard = "scripts.onboard:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

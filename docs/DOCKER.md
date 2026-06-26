@@ -2,7 +2,16 @@
 
 Run APXV1 as a local API service for team/company use.
 
-## Quick start
+## Quick start (no local Python or Rust)
+
+```bash
+./scripts/install-docker.sh
+curl http://127.0.0.1:8741/health
+```
+
+This builds the image, runs full onboarding in a one-off container (pack demo + attest + verify), then starts the API.
+
+Manual equivalent:
 
 ```bash
 docker compose up -d --build

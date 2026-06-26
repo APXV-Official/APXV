@@ -16,7 +16,14 @@ Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on
 | **Pack** | [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) v0.1.0 — governance bundle, runnable demo, acceptance tests |
 | **Docs** | Honest packs-vs-templates guidance; no implied vaporware for unreleased verticals |
 
-**Fastest proof it works:** [docs/QUICKSTART.md](docs/QUICKSTART.md) → install → pack demo → `run_apx --attest`.
+**One command (after clone):**
+
+| You have | Run |
+|----------|-----|
+| Python 3.9+ and Rust | `.\scripts\install.ps1` (Windows) or `./scripts/install.sh` (macOS/Linux) |
+| **Docker only** (no local Python/Rust) | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` |
+
+Both run full onboarding: setup → pack demo → attest → independent ZK verify. See [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ## Demo
 
@@ -96,22 +103,13 @@ Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest
 
 ## Quickstart
 
-**Start here:** [docs/QUICKSTART.md](docs/QUICKSTART.md) (~15 minutes)
+**Start here:** [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
 ```bash
-# Install (Windows: .\scripts\install.ps1)
-./scripts/install.sh
-python -m scripts.apx_doctor
-
-# v1.1.1 — Reference Redaction Pack
-python governance-libraries/apxv-pack-reference-redaction/examples/run_pack_demo.py
-
-# Platform attest + verify
-python -m scripts.run_apx --attest
-python -m scripts.verify_attestation --real-zk
+./scripts/install.sh          # or install-docker.sh if you only have Docker
 ```
 
-Optional: voice attest, ceremony transcript, local API, Docker — all in [QUICKSTART](docs/QUICKSTART.md).
+Re-run proof path anytime: `python -m scripts.onboard` (add `--skip-setup` if already initialized).
 
 ## Build On APXV1
 

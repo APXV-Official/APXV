@@ -1,65 +1,41 @@
 # APXV1 Quickstart (15 Minutes)
 
-**APXV** is the platform; **APXV1** is this open-source implementation. **v1.1.1** ships the runtime plus the [Reference Redaction Pack](../governance-libraries/apxv-pack-reference-redaction/) — start here to prove both work on your machine.
+**APXV** is the platform; **APXV1** is this open-source implementation. **v1.1.1** ships the runtime plus the [Reference Redaction Pack](../governance-libraries/apxv-pack-reference-redaction/).
 
-## Prerequisites
+## One command
 
-- Python 3.9+
-- Rust toolchain ([install guide](INSTALL-RUST.md))
+Pick the path that matches your machine:
 
-## Install (one command)
+| Path | Prerequisites | Command |
+|------|---------------|---------|
+| **Native** | Python 3.9+, Rust ([install guide](INSTALL-RUST.md)) | `.\scripts\install.ps1` or `./scripts/install.sh` |
+| **Docker** | Docker + Compose only | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` |
 
-**Windows (PowerShell):**
+Both run the same onboarding: `setup` → doctor → integrity → **pack demo** → `run_apx --attest` → `verify_attestation --real-zk`.
 
-```powershell
-.\scripts\install.ps1
-```
+Expected finale:
 
-**macOS / Linux:**
+- `Pack demo complete: final_status=ATTESTED, total_redactions=4`
+- `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]`
+
+First native install may take a few minutes while Rust compiles. Docker build is slower once, then cached.
+
+Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
+
+Docker with a polluted `managed/` folder: `.\scripts\install-docker.ps1 -Fresh`
+
+## Manual install (step by step)
 
 ```bash
-chmod +x scripts/install.sh
-./scripts/install.sh
-```
-
-**Manual path:**
-
-```bash
-pip install -e ".[dev]"
-python -m scripts.setup_first_run
-python -m scripts.apx_doctor
+pip install -e ".[dev,voice]"
+python -m scripts.onboard
 ```
 
 Save any API keys or signing PEMs printed during setup.
 
-Optional voice extras (local STT/TTS or CI-simulated mode):
+Optional voice model: `python -m scripts.setup_voice` (~40 MB Vosk download).
 
-```bash
-pip install -e ".[dev,voice]"
-python -m scripts.setup_voice    # downloads Vosk model (~40 MB) for local STT
-```
-
-## Verify the platform
-
-```bash
-python -m scripts.apx_ctl integrity
-python -m scripts.run_apx --attest
-python -m scripts.verify_attestation --real-zk
-```
-
-Expected: `HEALTHY`, `ATTESTED`, `Entity proofs: VALID`, and `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]`.
-
-## Try the Reference Redaction Pack (v1.1.1)
-
-Official agent pack — governance rules, workflow, knowledge, and a runnable demo on the core 3-agent pipeline:
-
-```bash
-python governance-libraries/apxv-pack-reference-redaction/examples/run_pack_demo.py
-```
-
-Expected: `final_status=ATTESTED` with redactions applied. See the pack's [ACCEPTANCE.md](../governance-libraries/apxv-pack-reference-redaction/ACCEPTANCE.md) for criteria.
-
-More packs and templates: [governance-libraries/README.md](../governance-libraries/README.md). Custom agents: [BUILDING.md](BUILDING.md).
+More packs: [governance-libraries/README.md](../governance-libraries/README.md). Custom agents: [BUILDING.md](BUILDING.md).
 
 ### Voice attest (platform)
 
