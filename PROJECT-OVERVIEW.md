@@ -194,6 +194,7 @@ Fresh installs and CI environments should report **HEALTHY** without this step.
 | [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
+| [ROADMAP.md](ROADMAP.md) | Public direction |
 | [RUNBOOKS/](RUNBOOKS/) | Deployment and operations |
 
 ---

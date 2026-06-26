@@ -90,7 +90,7 @@ Capability framework       +    Vertical binding for that use case
 | Local LLM (Ollama) | [examples/llm-ollama/](examples/llm-ollama/) |
 | New vertical / community pack | BUILDING.md + pack layout in [governance-libraries/README.md](governance-libraries/README.md) |
 
-**Roadmap:** AI Governance pack, document-processing pack, community packs. The core repo stays the runtime; packs extend it without bloating the base.
+**Direction:** [ROADMAP.md](ROADMAP.md) — packs through v1.3, then a local control plane UI.
 
 ## What it does not do
 
@@ -181,6 +181,7 @@ See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for repository layout and compone
 | [docs/LOCAL-API.md](docs/LOCAL-API.md) | API reference |
 | [SECURITY.md](SECURITY.md) | Threat model |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
+| [ROADMAP.md](ROADMAP.md) | Where we're headed |
 
 ## Docker
 
