@@ -46,6 +46,55 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 
 ---
 
+## Architecture
+
+```mermaid
+flowchart TB
+  subgraph governance [Governance]
+    Rules[rules / workflows / knowledge]
+    Approval[propose → approve → apply]
+  end
+
+  subgraph runtime [APXV1 Runtime]
+    API[Local API :8741]
+    Cap[Signed capabilities]
+    Redact[RedactionEngine v3]
+    Agents[3-agent reference pipeline]
+    Store[(SQLite + CAS artifacts)]
+    Audit[(Chained audit logs)]
+  end
+
+  subgraph crypto [Attestation]
+    ZKA[Governance ZK — apx-circuits]
+    ZKB[Entity ZK — apx-zk]
+    Verify[Independent verify]
+  end
+
+  Rules --> Agents
+  Approval --> Rules
+  Cap --> Agents
+  Redact --> Agents
+  Agents --> Store
+  Agents --> Audit
+  Agents --> ZKA
+  Agents --> ZKB
+  ZKA --> Verify
+  ZKB --> Verify
+  API --> Agents
+```
+
+| Layer | Components |
+|-------|------------|
+| **Privacy** | `APXRedactionEngine`, optional `APXE2EE` |
+| **Deterministic core** | RuleGovernedRedactor, WorkflowOrchestrator, AttestationCoordinator |
+| **Agentic layer** | `LLMBackend`, `LLMReasoner`, `ToolUser`, `AgenticContract` |
+| **Governance & control** | CapabilityChecker, AuditLogger, GovernanceRegistry |
+| **Cryptographic layer** | Dual Groth16 tracks over BN254 (arkworks) |
+
+**Packs vs platform:** APXV1 core provides the runtime and 3-agent pipeline pattern. [Agent packs](governance-libraries/) supply governance specs, install steps, and acceptance for a vertical — they bind to core agents rather than replacing the runtime. See [README.md](README.md#agent-packs--extend-the-foundation).
+
+---
+
 ## Repository Layout
 
 ### Runtime (`agents/`)
@@ -75,7 +124,9 @@ The reference 3-agent pipeline (redact → orchestrate → attest), voice path, 
 
 | Command | Purpose |
 |---------|---------|
-| `install.ps1` / `install.sh` | Cross-platform install |
+| `install.ps1` / `install.sh` | Native one-command install (`-Fresh` / `--fresh`) |
+| `install-docker.ps1` / `install-docker.sh` | Docker-only one-command install |
+| `onboard.py` | Guided onboarding (setup → pack → attest → verify) |
 | `setup_first_run.py` | First-run setup (governance + entity ZK by default) |
 | `setup_entity_zk.py` | Entity circuit trusted setup only |
 | `apx_doctor.py` | Prerequisites and health check |

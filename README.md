@@ -2,80 +2,97 @@
 
 [![CI](https://github.com/APXV-Official/APXV/actions/workflows/ci.yml/badge.svg)](https://github.com/APXV-Official/APXV/actions/workflows/ci.yml)
 
-This repository is **APXV** (*Attested Proof Execution Verified*) — an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. It ships **APXV1**, the first-generation open-source implementation.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV1**, the first open-source implementation.
 
-> **Current release:** [APXV1 v1.1.2](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) — one-command onboarding + [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/). See [CHANGELOG.md](CHANGELOG.md) for history.
+> **Current release:** [v1.1.2](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) — runtime + [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/). [CHANGELOG](CHANGELOG.md)
 
-Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
+Clone the repo, run one command, and you get a working instance: setup, health checks, the reference pack pipeline, a full attestation, and independent ZK verification. Everything stays on your machine.
 
-## What's in v1.1.2
+## One command
 
-| Layer | What you get |
-|-------|----------------|
-| **Platform** | Governed 3-agent pipeline, dual-track Groth16, voice privacy, ceremony tooling, local API |
-| **Pack** | [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) v0.1.0 — governance bundle, runnable demo, acceptance tests |
-| **Docs** | Honest packs-vs-templates guidance; no implied vaporware for unreleased verticals |
+Pick the path that matches your machine:
 
-**One command (after clone):**
-
-| You have | Run |
-|----------|-----|
-| Python 3.9+ and Rust | `.\scripts\install.ps1` (Windows) or `./scripts/install.sh` (macOS/Linux) |
+| You have | Command |
+|----------|---------|
+| **Python 3.9+ and Rust** | `.\scripts\install.ps1` (Windows) or `./scripts/install.sh` (macOS/Linux) |
 | **Docker only** (no local Python/Rust) | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` |
 
-Both run full onboarding: setup → pack demo → attest → independent ZK verify. See [docs/QUICKSTART.md](docs/QUICKSTART.md).
+Polluted from prior experiments? Add `-Fresh` (PowerShell) or `--fresh` (shell).
 
-## Demo
+**What it runs:** `setup` → doctor → integrity → **Reference Redaction Pack** → `run_apx --attest` → `verify_attestation --real-zk`
 
-**Platform demo (text + E2EE):** ~2 min video — dual-track Groth16 attestation, independent verify, optional encryption. Does not show voice or the redaction pack; use QUICKSTART for those.
+**You should see:**
 
-<a href="https://github.com/APXV-Official/APXV/blob/main/apxv1-demo.mp4">
-  <img src="docs/assets/apxv1-demo-thumb.jpg" alt="APXV1 platform demo — text pipeline and attestation" width="800">
-</a>
+```
+Pack demo complete: final_status=ATTESTED, total_redactions=4
+ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]
+```
 
-**▶ [Watch platform demo](https://github.com/APXV-Official/APXV/blob/main/apxv1-demo.mp4)**
+First native install may take a few minutes (Rust compile). Docker build is slower once, then cached.
 
-**Pack walkthrough (no video yet):** `python governance-libraries/apxv-pack-reference-redaction/examples/run_pack_demo.py` after install — see [QUICKSTART](docs/QUICKSTART.md).
+Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
 
-**Verifier bundle (VKs only):** download from the [v1.1.2 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) (`apxv1-verifier-bundle-v1.1.0.zip` — VKs unchanged since v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle` after `setup_first_run`.
+Details: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
-## Who This Is For
+## The foundation
 
-- **Developers** building privacy-preserving agent pipelines on local infrastructure
-- **Companies** prototyping self-hosted governance without cloud dependency
-- **Teams** that need auditable rule changes, immutable artifacts, and verifiable execution
+APXV1 is a **runtime you build on** — not a finished end-user product. The core repo gives you:
 
-APXV1 is a **foundation to build on** — not a finished end-user product.
+| Capability | What it means |
+|------------|---------------|
+| **Living governance** | Agents read `managed/rules`, `workflows`, and `knowledge` at runtime — not hardcoded prompts |
+| **Controlled change** | Rule updates go through propose → approve → apply; audit chain records every action |
+| **Signed capabilities** | Each agent is granted explicit permissions; policy is verified before execution |
+| **Immutable artifacts** | Pipeline outputs land in SQLite + content-addressable storage |
+| **Dual-track Groth16 ZK** | Governance proofs (3 circuits) + entity proofs (up to 4 per attest) over BN254 |
+| **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
+| **Optional voice + E2EE** | Voice privacy suite and payload encryption when you need them |
 
-## Extend APXV1
+The **3-agent reference pipeline** (redactor → orchestrator → attestation coordinator) is the pattern packs plug into. Core ships the agent machinery; packs supply the governance and vertical logic for a use case.
 
-APXV1 is the **base platform**. Vertical work loads on top as **agent packs** — bundles of rules, workflows, agents, and capability policy for a use case. Install only the packs you need; mix and match on one runtime.
+**Who this is for:** developers and teams building privacy-preserving agent pipelines on local infrastructure — with auditable rule changes, immutable artifacts, and cryptographically verifiable execution.
 
-**Available today:**
+## Agent packs — extend the foundation
 
-- [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) — official pack (governance + demo + acceptance)
-- [Governance templates](governance-libraries/) — e.g. AI governance starter markdown (not a pack)
+A **pack** is a vertical bundle on top of APXV1: governance specs, install steps, a runnable acceptance path, capability notes, and an acceptance checklist. You install only what you need; multiple packs can share one runtime.
 
-Build custom agents with [docs/BUILDING.md](docs/BUILDING.md).
+**Packs are not the platform.** The platform is the runtime (store, audit, capabilities, ZK, API). A pack is how you turn that runtime into something specific — e.g. governed redaction.
+
+### What's available today
+
+| Artifact | Type | What you get |
+|----------|------|--------------|
+| [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) | **Official pack** | Rules, workflow, knowledge for sensitive-text redaction → orchestration → attestation. Runnable acceptance path + acceptance tests. |
+| [AI governance template](governance-libraries/ai-governance-template/) | **Template** | Starter markdown only — copy into `managed/` and customize. No agents or acceptance tests. |
+| [governance-libraries/](governance-libraries/) | **Index** | Packs vs templates — read before assuming something is a full pack |
+
+The Reference Redaction Pack agents ship in **APXV1 core** (`agents/agent1.py` … `agent3.py`). The pack provides the **governance bundle** that binds those agents to a real vertical — not duplicate agent code.
+
+### How packs fit in
+
+```
+APXV1 core (this repo)          Agent pack (e.g. reference redaction)
+─────────────────────────       ─────────────────────────────────────
+Runtime, audit, store, ZK  +    Rules / workflows / knowledge
+3-agent pipeline pattern   +    Install + acceptance + capability notes
+Capability framework       +    Vertical binding for that use case
+```
+
+**Onboarding already applies the reference pack** — `install.ps1` / `install-docker.ps1` run the pack pipeline as proof the stack works. For production, follow the pack's own install flow (governance propose → approve → apply) in [apxv-pack-reference-redaction/README.md](governance-libraries/apxv-pack-reference-redaction/README.md).
+
+### Build your own
+
+| Goal | Start here |
+|------|------------|
+| Custom agent on the runtime | [docs/BUILDING.md](docs/BUILDING.md) |
+| Minimal worked example | [examples/hello-agent/](examples/hello-agent/) |
+| API integration | [examples/api-client/](examples/api-client/) |
+| Local LLM (Ollama) | [examples/llm-ollama/](examples/llm-ollama/) |
+| New vertical / community pack | BUILDING.md + pack layout in [governance-libraries/README.md](governance-libraries/README.md) |
 
 **Roadmap:** AI Governance pack, document-processing pack, community packs. The core repo stays the runtime; packs extend it without bloating the base.
 
-## What You Get
-
-- **Governed agents** — read living markdown rules, workflows, and knowledge at runtime
-- **Immutable artifacts** — SQLite + content-addressable storage
-- **Chained audit logs** — every action recorded and verifiable
-- **Signed capability policies** — agents only do what they're granted
-- **Governance approval workflow** — propose → approve → apply rule changes
-- **Redaction engine v3** — format-aware pattern redaction with structured `entities[]` output
-- **Optional E2EE** — X25519 + XSalsa20-Poly1305 payload encryption (`--encrypt`)
-- **Dual-track Groth16 ZK** — 3 governance circuits + up to 4 entity proofs per attest (8 entity circuits in crate; see [docs/cryptography/CIRCUITS.md](docs/cryptography/CIRCUITS.md))
-- **Voice privacy suite** — STT → redact → attest with `voice-redaction` proof (simulated or local Vosk/pyttsx3)
-- **Ceremony transparency (Tier A/B)** — VK manifest transcript (+ Ed25519 signature after `setup_first_run`) + publishable verifier bundle
-- **Local HTTP API** — localhost only, no cloud, no telemetry
-- **Pluggable LLMs** — bring Ollama or any backend via `LLMBackend` (optional)
-
-## What It Does NOT Do
+## What it does not do
 
 - Not HIPAA, SOC2, or GDPR certified
 - Not full DLP-grade PII protection (pattern-based redaction)
@@ -84,51 +101,26 @@ Build custom agents with [docs/BUILDING.md](docs/BUILDING.md).
 
 See [SECURITY.md](SECURITY.md) for the full threat model.
 
-## Status
+## Verify without re-running
 
-**v1.1.2 (current)** — one-command onboarding (native + Docker), install-path fixes; includes v1.1.1 pack + docs. Repository home: **APXV-Official/APXV**.
+**Verifier bundle (VKs only):** [v1.1.2 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) (`apxv1-verifier-bundle-v1.1.0.zip` — VKs unchanged since v1.1.0), or export your own after `setup_first_run`:
 
-**Platform underneath (unchanged VKs):** v1.1.x adds voice privacy and ceremony transparency; v1.0.x adds redaction v3, E2EE, and dual-track attestation. **311 tests pass in CI** (312 collected, 1 optional Vosk skip). Prior releases: [CHANGELOG.md](CHANGELOG.md).
-
-### Trust model
+```bash
+python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
+```
 
 | You want to… | Trust |
 |--------------|-------|
 | Run APXV1 yourself (`setup_first_run`, your keys) | **Yourself** |
 | Verify artifacts from a published release | **Publisher's setup** for those VKs (proof math is self-checking; setup honesty is separate) |
 
-See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md). APXV1 v1.1.x uses single-party Groth16 trusted setup.
+See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
 
 Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest works out of the box. For your own trust boundary, run `setup_first_run` and protect your proving keys — see [SECURITY.md](SECURITY.md) and [docs/cryptography/SETUP.md](docs/cryptography/SETUP.md).
 
-## Quickstart
+## Status
 
-**Start here:** [docs/QUICKSTART.md](docs/QUICKSTART.md)
-
-```bash
-./scripts/install.sh          # or install-docker.sh if you only have Docker
-```
-
-Re-run proof path anytime: `python -m scripts.onboard` (add `--skip-setup` if already initialized).
-
-## Build On APXV1
-
-| Resource | Description |
-|----------|-------------|
-| [docs/BUILDING.md](docs/BUILDING.md) | **Start here** — agents, API, LLMs, deployment |
-| [examples/hello-agent/](examples/hello-agent/) | Minimal custom governed agent |
-| [examples/api-client/](examples/api-client/) | Python API client |
-| [examples/llm-ollama/](examples/llm-ollama/) | Plug in a local Ollama LLM |
-| [governance-libraries/](governance-libraries/) | Official packs and governance templates |
-
-## Docker
-
-See [docs/DOCKER.md](docs/DOCKER.md). Use **fresh volumes** for clean deploys.
-
-```bash
-docker compose up -d --build
-curl http://127.0.0.1:8741/health
-```
+**v1.1.2 (current)** — one-command onboarding (native + Docker), install-path fixes. **311 tests pass in CI** (312 collected, 1 optional Vosk skip). Prior releases: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 
@@ -175,24 +167,29 @@ flowchart TB
 | **Governance & control** | CapabilityChecker, AuditLogger, GovernanceRegistry |
 | **Cryptographic layer** | Dual Groth16 tracks over BN254 (arkworks) |
 
+See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for repository layout and component index.
+
 ## Documentation
 
 | Doc | Purpose |
 |-----|---------|
-| [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) | Repository layout and components |
-| [docs/QUICKSTART.md](docs/QUICKSTART.md) | Getting started |
-| [docs/BUILDING.md](docs/BUILDING.md) | Extension patterns |
-| [docs/INSTALL-RUST.md](docs/INSTALL-RUST.md) | Rust toolchain setup |
+| [docs/QUICKSTART.md](docs/QUICKSTART.md) | Install, troubleshoot, re-run onboarding |
+| [docs/BUILDING.md](docs/BUILDING.md) | Custom agents, API, LLMs, deployment |
+| [governance-libraries/](governance-libraries/) | Official packs and templates |
+| [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) | Repository layout and architecture |
 | [docs/DOCKER.md](docs/DOCKER.md) | Container deployment |
-| [docs/AIR-GAP-INSTALL.md](docs/AIR-GAP-INSTALL.md) | Offline install |
 | [docs/LOCAL-API.md](docs/LOCAL-API.md) | API reference |
 | [SECURITY.md](SECURITY.md) | Threat model |
-| [docs/cryptography/CIRCUITS.md](docs/cryptography/CIRCUITS.md) | Which circuits exist vs which run on `--attest` |
-| [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md) | ZK ceremony tiers and trust model |
-| [docs/security/SECURITY-ARCHITECTURE.md](docs/security/SECURITY-ARCHITECTURE.md) | Security architecture |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute |
-| [RUNBOOKS/](RUNBOOKS/) | Deployment and operations |
+
+## Docker
+
+See [docs/DOCKER.md](docs/DOCKER.md). Prefer `install-docker.ps1` / `install-docker.sh` for first-time setup; use **fresh volumes** for production-like deploys.
+
+```bash
+docker compose up -d --build
+curl http://127.0.0.1:8741/health
+```
 
 ## Backup
 
