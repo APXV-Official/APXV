@@ -1,6 +1,6 @@
 # APXV1 Quickstart (15 Minutes)
 
-*Attested Proof Execution Verified* — 1st-generation platform. Get from zero to a verified governed pipeline.
+**APXV** is the platform; **APXV1** is this open-source implementation. **v1.1.1** ships the runtime plus the [Reference Redaction Pack](../governance-libraries/apxv-pack-reference-redaction/) — start here to prove both work on your machine.
 
 ## Prerequisites
 
@@ -39,7 +39,7 @@ pip install -e ".[dev,voice]"
 python -m scripts.setup_voice    # downloads Vosk model (~40 MB) for local STT
 ```
 
-## Verify
+## Verify the platform
 
 ```bash
 python -m scripts.apx_ctl integrity
@@ -49,7 +49,19 @@ python -m scripts.verify_attestation --real-zk
 
 Expected: `HEALTHY`, `ATTESTED`, `Entity proofs: VALID`, and `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]`.
 
-### Voice attest (v1.1)
+## Try the Reference Redaction Pack (v1.1.1)
+
+Official agent pack — governance rules, workflow, knowledge, and a runnable demo on the core 3-agent pipeline:
+
+```bash
+python governance-libraries/apxv-pack-reference-redaction/examples/run_pack_demo.py
+```
+
+Expected: `final_status=ATTESTED` with redactions applied. See the pack's [ACCEPTANCE.md](../governance-libraries/apxv-pack-reference-redaction/ACCEPTANCE.md) for criteria.
+
+More packs and templates: [governance-libraries/README.md](../governance-libraries/README.md). Custom agents: [BUILDING.md](BUILDING.md).
+
+### Voice attest (platform)
 
 ```bash
 # Simulated STT (no model) — same as CI
@@ -58,7 +70,7 @@ APX_VOICE_MODE=simulated python -m scripts.run_apx \
 python -m scripts.verify_attestation --real-zk
 ```
 
-### Ceremony transcript (v1.1, optional)
+### Ceremony transcript (optional)
 
 After setup, commit VK lineage for releases:
 
@@ -68,7 +80,7 @@ python -m scripts.ceremony_transcript --verify
 python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
 ```
 
-See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
+Verifier VKs are unchanged since v1.1.0 — download from [v1.1.1 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.1) or export your own. See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
 
 ## Run the local API
 

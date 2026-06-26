@@ -4,23 +4,33 @@
 
 This repository is **APXV** (*Attested Proof Execution Verified*) — an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. It ships **APXV1**, the first-generation open-source implementation.
 
-> **Version:** 1.1.1 — see [CHANGELOG.md](CHANGELOG.md).
+> **Current release:** [APXV1 v1.1.1](https://github.com/APXV-Official/APXV/releases/tag/v1.1.1) — runtime + [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/). See [CHANGELOG.md](CHANGELOG.md) for history.
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
+## What's in v1.1.1
+
+| Layer | What you get |
+|-------|----------------|
+| **Platform** | Governed 3-agent pipeline, dual-track Groth16, voice privacy, ceremony tooling, local API |
+| **Pack** | [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) v0.1.0 — governance bundle, runnable demo, acceptance tests |
+| **Docs** | Honest packs-vs-templates guidance; no implied vaporware for unreleased verticals |
+
+**Fastest proof it works:** [docs/QUICKSTART.md](docs/QUICKSTART.md) → install → pack demo → `run_apx --attest`.
+
 ## Demo
 
-**Video (v1.0.x):** text pipeline, dual-track Groth16 attestation, independent verify, optional E2EE (~2 min).
+**Platform demo (text + E2EE):** ~2 min video — dual-track Groth16 attestation, independent verify, optional encryption. Does not show voice or the redaction pack; use QUICKSTART for those.
 
 <a href="https://github.com/APXV-Official/APXV/blob/main/apxv1-demo.mp4">
-  <img src="docs/assets/apxv1-demo-thumb.jpg" alt="APXV1 end-to-end demo — click to watch" width="800">
+  <img src="docs/assets/apxv1-demo-thumb.jpg" alt="APXV1 platform demo — text pipeline and attestation" width="800">
 </a>
 
-**▶ [Watch demo video](https://github.com/APXV-Official/APXV/blob/main/apxv1-demo.mp4)**
+**▶ [Watch platform demo](https://github.com/APXV-Official/APXV/blob/main/apxv1-demo.mp4)**
 
-**v1.1 walkthrough:** voice attest + ceremony checks — [docs/QUICKSTART.md](docs/QUICKSTART.md) (Voice attest and Ceremony transcript sections). The v1.0 demo video above covers text/E2EE only.
+**Pack walkthrough (no video yet):** `python governance-libraries/apxv-pack-reference-redaction/examples/run_pack_demo.py` after install — see [QUICKSTART](docs/QUICKSTART.md).
 
-**Verifier bundle (VKs only):** download [`apxv1-verifier-bundle-v1.1.0.zip`](https://github.com/APXV-Official/APXV/releases/download/v1.1.0/apxv1-verifier-bundle-v1.1.0.zip) from the [v1.1.0 release](https://github.com/APXV-Official/APXV/releases/tag/v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0` after `setup_first_run`.
+**Verifier bundle (VKs only):** download from the [v1.1.1 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.1) (`apxv1-verifier-bundle-v1.1.0.zip` — VKs unchanged since v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle` after `setup_first_run`.
 
 ## Who This Is For
 
@@ -69,7 +79,9 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-**v1.1.0** adds voice privacy (STT/TTS pipeline), Tier A/B ceremony tooling, and entity propagation fixes for multi-entity ZK proofs — on top of v1.0.x redaction, E2EE, and dual-track attestation. **311 automated tests pass in CI** (312 collected, 1 optional skip for local Vosk) covering text, voice, ceremony, packs, and ZK paths. See [CHANGELOG.md](CHANGELOG.md).
+**v1.1.1 (current)** — first official agent pack ([Reference Redaction](governance-libraries/apxv-pack-reference-redaction/)), packs-vs-templates docs, repository home at **APXV-Official/APXV**.
+
+**Platform underneath (unchanged VKs):** v1.1.x adds voice privacy and ceremony transparency; v1.0.x adds redaction v3, E2EE, and dual-track attestation. **311 tests pass in CI** (312 collected, 1 optional Vosk skip). Prior releases: [CHANGELOG.md](CHANGELOG.md).
 
 ### Trust model
 
@@ -78,53 +90,28 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 | Run APXV1 yourself (`setup_first_run`, your keys) | **Yourself** |
 | Verify artifacts from a published release | **Publisher's setup** for those VKs (proof math is self-checking; setup honesty is separate) |
 
-See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md). v1.1.0 uses single-party Groth16 trusted setup.
+See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md). APXV1 v1.1.x uses single-party Groth16 trusted setup.
 
 Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest works out of the box. For your own trust boundary, run `setup_first_run` and protect your proving keys — see [SECURITY.md](SECURITY.md) and [docs/cryptography/SETUP.md](docs/cryptography/SETUP.md).
 
 ## Quickstart
 
-**Start here:** [docs/QUICKSTART.md](docs/QUICKSTART.md) (15 minutes)
-
-### One-command install
-
-**Windows:** `.\scripts\install.ps1`  
-**macOS/Linux:** `./scripts/install.sh`
-
-Requires Python 3.9+ and Rust ([install guide](docs/INSTALL-RUST.md)).
-
-### Health check
+**Start here:** [docs/QUICKSTART.md](docs/QUICKSTART.md) (~15 minutes)
 
 ```bash
+# Install (Windows: .\scripts\install.ps1)
+./scripts/install.sh
 python -m scripts.apx_doctor
-python -m scripts.apx_ctl integrity
-```
 
-### API keys
+# v1.1.1 — Reference Redaction Pack
+python governance-libraries/apxv-pack-reference-redaction/examples/run_pack_demo.py
 
-```bash
-python -m scripts.apx_ctl api-key create my-app
-export APX_API_KEY="<key>"
-python -m scripts.apx_serve
-```
-
-### Attestation (dual ZK)
-
-```bash
+# Platform attest + verify
 python -m scripts.run_apx --attest
-python -m scripts.run_apx --attest --encrypt   # optional E2EE
 python -m scripts.verify_attestation --real-zk
 ```
 
-### Voice + ceremony (v1.1)
-
-```bash
-pip install -e ".[dev,voice]"
-python -m scripts.setup_voice                    # Vosk model for local STT
-python -m scripts.run_apx --voice-transcript "Contact Jane at jane@example.com" --attest
-python -m scripts.ceremony_transcript --write --tier B
-python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
-```
+Optional: voice attest, ceremony transcript, local API, Docker — all in [QUICKSTART](docs/QUICKSTART.md).
 
 ## Build On APXV1
 
