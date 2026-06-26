@@ -8,7 +8,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 Write-Host "============================================================"
-Write-Host "APXV1 Docker onboarding (v1.1.1)"
+Write-Host "APXV1 Docker onboarding (v1.1.2)"
 Write-Host "Requires: Docker Desktop + Docker Compose"
 Write-Host "============================================================"
 

@@ -4,11 +4,11 @@
 
 This repository is **APXV** (*Attested Proof Execution Verified*) — an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. It ships **APXV1**, the first-generation open-source implementation.
 
-> **Current release:** [APXV1 v1.1.1](https://github.com/APXV-Official/APXV/releases/tag/v1.1.1) — runtime + [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/). See [CHANGELOG.md](CHANGELOG.md) for history.
+> **Current release:** [APXV1 v1.1.2](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) — one-command onboarding + [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/). See [CHANGELOG.md](CHANGELOG.md) for history.
 
 Run APXV1 locally. Your rules, data, artifacts, and cryptographic proofs stay on your machine. Build your own agents, workflows, and integrations on your infrastructure.
 
-## What's in v1.1.1
+## What's in v1.1.2
 
 | Layer | What you get |
 |-------|----------------|
@@ -37,7 +37,7 @@ Both run full onboarding: setup → pack demo → attest → independent ZK veri
 
 **Pack walkthrough (no video yet):** `python governance-libraries/apxv-pack-reference-redaction/examples/run_pack_demo.py` after install — see [QUICKSTART](docs/QUICKSTART.md).
 
-**Verifier bundle (VKs only):** download from the [v1.1.1 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.1) (`apxv1-verifier-bundle-v1.1.0.zip` — VKs unchanged since v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle` after `setup_first_run`.
+**Verifier bundle (VKs only):** download from the [v1.1.2 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) (`apxv1-verifier-bundle-v1.1.0.zip` — VKs unchanged since v1.1.0), or build your own with `python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle` after `setup_first_run`.
 
 ## Who This Is For
 
@@ -86,7 +86,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Status
 
-**v1.1.1 (current)** — first official agent pack ([Reference Redaction](governance-libraries/apxv-pack-reference-redaction/)), packs-vs-templates docs, repository home at **APXV-Official/APXV**.
+**v1.1.2 (current)** — one-command onboarding (native + Docker), install-path fixes; includes v1.1.1 pack + docs. Repository home: **APXV-Official/APXV**.
 
 **Platform underneath (unchanged VKs):** v1.1.x adds voice privacy and ceremony transparency; v1.0.x adds redaction v3, E2EE, and dual-track attestation. **311 tests pass in CI** (312 collected, 1 optional Vosk skip). Prior releases: [CHANGELOG.md](CHANGELOG.md).
 

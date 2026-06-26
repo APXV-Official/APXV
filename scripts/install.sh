@@ -11,7 +11,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 echo "============================================================"
-echo "APXV1 — clone to running (v1.1.1)"
+echo "APXV1 — clone to running (v1.1.2)"
 echo "No Python/Rust? Use: ./scripts/install-docker.sh"
 echo "============================================================"
 

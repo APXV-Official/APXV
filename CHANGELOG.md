@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-06-26
+
+**APXV1 v1.1.2** — one-command onboarding (native + Docker) and install-path fixes. Verifier VKs unchanged since v1.1.0.
+
+> **Note:** If you tagged or downloaded **v1.1.1** expecting `install.ps1` / `install-docker.ps1`, use **v1.1.2** — onboarding shipped after the v1.1.1 tag.
+
+### Added
+
+- `scripts/onboard.py` — guided onboarding: setup → doctor → integrity → pack demo → attest → `verify_attestation --real-zk`
+- `scripts/install.ps1` / `scripts/install.sh` — native one-command install (`-Fresh` / `--fresh` for polluted runtime state)
+- `scripts/install-docker.ps1` / `scripts/install-docker.sh` — Docker-only install (no local Python/Rust)
+- `scripts/fresh_reset.py` — reset runtime dirs while preserving governance templates (`managed/rules`, `workflows`, `knowledge`)
+- Dockerfile: `COPY governance-libraries` for in-container pack demo
+
+### Fixed
+
+- `-Fresh` no longer moves entire `managed/` (Docker build requires governance templates in build context)
+- Docker install seeds ZK keys from image before compose run (host volume mounts hide baked-in keys)
+- `rust_bins.py` resolves `apx-zk` / `apx-circuits` from PATH (containers use `/usr/local/bin`, not `cargo run`)
+- `apx_doctor` accepts baked binaries when `APX_CONTAINER_BIND=1`
+- `install-docker.ps1`: `$Args` parameter shadowing, ASCII-only banners for `-File` parser
+- `install.ps1`: `-Fresh`, early Rust missing exit, `$LASTEXITCODE` after pip/onboard
+- `install-docker.ps1` / `.sh`: stop existing container when port 8741 is in use
+- `onboard.py`: suppress noisy subprocess `RuntimeWarning`
+
+### Changed
+
+- README, QUICKSTART — v1.1.2-first onboarding; `-Fresh` clears runtime only
+
 ## [1.1.1] - 2026-06-25
 
 **APXV1 v1.1.1** — first official agent pack and honest extend documentation.
@@ -136,6 +165,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.1.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.2
 [1.1.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.1
 [1.1.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.0
 [1.0.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.0.1

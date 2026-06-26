@@ -63,7 +63,7 @@ def main() -> int:
     step = 1
 
     print("=" * 60)
-    print("APXV1 onboarding (v1.1.1)")
+    print("APXV1 onboarding (v1.1.2)")
     print("Platform setup → Reference Redaction Pack → attest → verify")
     print("=" * 60)
 

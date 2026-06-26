@@ -1,6 +1,6 @@
 # APXV1 Quickstart (15 Minutes)
 
-**APXV** is the platform; **APXV1** is this open-source implementation. **v1.1.1** ships the runtime plus the [Reference Redaction Pack](../governance-libraries/apxv-pack-reference-redaction/).
+**APXV** is the platform; **APXV1** is this open-source implementation. **v1.1.2** ships one-command onboarding plus the [Reference Redaction Pack](../governance-libraries/apxv-pack-reference-redaction/).
 
 ## One command
 
@@ -56,7 +56,7 @@ python -m scripts.ceremony_transcript --verify
 python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
 ```
 
-Verifier VKs are unchanged since v1.1.0 — download from [v1.1.1 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.1) or export your own. See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
+Verifier VKs are unchanged since v1.1.0 — download from [v1.1.2 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) or export your own. See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
 
 ## Run the local API
 
