@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -42,15 +43,17 @@ def _check_rust() -> dict:
 
     circuits_bin = resolve_apx_circuits_binary(ROOT) or shutil.which("apx-circuits")
     zk_bin = resolve_apx_zk_binary(ROOT) or shutil.which("apx-zk")
-    ok = cargo and rustc
+    container = os.environ.get("APX_CONTAINER_BIND") == "1"
+    ok = (cargo and rustc) or (container and circuits_bin and zk_bin)
     return {
         "name": "rust_toolchain",
         "ok": ok,
         "detail": (
             f"cargo={'yes' if cargo else 'no'}, rustc={'yes' if rustc else 'no'}, "
             f"apx-circuits={'yes' if circuits_bin else 'no'}, apx-zk={'yes' if zk_bin else 'no'}"
+            + (", container=1" if container else "")
         ),
-        "required": "cargo + rustc (for ZK setup and proofs)",
+        "required": "cargo + rustc (native) or baked binaries (Docker)",
     }
 
 

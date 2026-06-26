@@ -22,7 +22,7 @@ First native install may take a few minutes while Rust compiles. Docker build is
 
 Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
 
-Docker with a polluted `managed/` folder: `.\scripts\install-docker.ps1 -Fresh`
+Polluted runtime state from prior experiments: `.\scripts\install.ps1 -Fresh` or `.\scripts\install-docker.ps1 -Fresh` (clears audit/config/store; keeps governance templates)
 
 ## Manual install (step by step)
 

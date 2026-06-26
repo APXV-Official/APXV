@@ -31,8 +31,10 @@ def _run(label: str, args: list[str], *, step: int, total: int) -> None:
     print("=" * 60)
     print(f"[{step}/{total}] {label}")
     print("=" * 60)
-    result = subprocess.run(args, cwd=ROOT)
+    env = {**dict(__import__("os").environ), "PYTHONWARNINGS": "ignore::RuntimeWarning"}
+    result = subprocess.run(args, cwd=ROOT, env=env)
     if result.returncode != 0:
+        print(f"\nFAILED: {label} (exit {result.returncode})", file=sys.stderr)
         raise SystemExit(result.returncode)
 
 

@@ -2,6 +2,11 @@
 # APXV1 — one-command onboarding (Unix). Requires Python 3.9+ and Rust.
 set -euo pipefail
 
+FRESH=0
+if [[ "${1:-}" == "--fresh" ]]; then
+  FRESH=1
+fi
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
@@ -20,8 +25,13 @@ PY_VERSION="$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.vers
 echo "Python: $PY_VERSION"
 
 if ! command -v cargo >/dev/null 2>&1 || ! command -v rustc >/dev/null 2>&1; then
-  echo "WARNING: Rust not found — ZK setup will fail. See docs/INSTALL-RUST.md"
-  echo "Or use ./scripts/install-docker.sh"
+  echo "ERROR: Rust not found. Install Rust (docs/INSTALL-RUST.md) or run ./scripts/install-docker.sh"
+  exit 1
+fi
+
+if [[ "$FRESH" -eq 1 ]]; then
+  echo "Resetting runtime state (keeping governance templates)..."
+  python3 -m scripts.fresh_reset
 fi
 
 echo "[1/2] Installing Python package (dev + voice extras)..."

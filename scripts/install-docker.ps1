@@ -1,4 +1,4 @@
-# APXV1 — Docker-only onboarding (no local Python or Rust required).
+# APXV1 - Docker-only onboarding (no local Python or Rust required).
 param(
     [switch]$Fresh
 )
@@ -25,23 +25,80 @@ if ($LASTEXITCODE -eq 0) {
 }
 
 function Invoke-Compose {
-    param([string[]]$Args)
+    param([string[]]$ComposeArgs)
     if ($useComposePlugin) {
-        & docker compose @Args
+        & docker compose @ComposeArgs
     } else {
-        & docker-compose @Args
+        & docker-compose @ComposeArgs
     }
-    if ($LASTEXITCODE -ne 0) { throw "docker compose failed: $Args" }
+    if ($LASTEXITCODE -ne 0) { throw "docker compose failed: $ComposeArgs" }
 }
 
-if ($Fresh -and (Test-Path "managed")) {
-    $bak = "managed.bak.$(Get-Date -Format 'yyyyMMddHHmmss')"
-    Write-Host "Moving existing managed/ to $bak"
-    Move-Item -LiteralPath "managed" -Destination $bak
+function Reset-ApxFreshRuntime {
+    $dirs = @(
+        "managed\artifacts", "managed\audit", "managed\backups", "managed\config", "managed\store",
+        "rust\apx-circuits\keys", "rust\apx-zk\keys"
+    )
+    foreach ($d in $dirs) {
+        if (Test-Path $d) {
+            Write-Host "Removing $d"
+            Remove-Item -LiteralPath $d -Recurse -Force
+        }
+    }
 }
 
-Write-Host "[1/3] Building image (Rust + Python + ZK keys — may take several minutes)..."
+function Ensure-GovernanceTemplates {
+    $required = @("managed\rules", "managed\workflows", "managed\knowledge")
+    $missing = $required | Where-Object { -not (Test-Path $_) }
+    if ($missing.Count -eq 0) { return }
+
+    Write-Host "Restoring governance templates..."
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        & git checkout -- managed/rules managed/workflows managed/knowledge managed/config/.gitkeep 2>$null
+        $missing = $required | Where-Object { -not (Test-Path $_) }
+        if ($missing.Count -eq 0) { return }
+    }
+
+    $pack = "governance-libraries\apxv-pack-reference-redaction\governance"
+    New-Item -ItemType Directory -Force -Path "managed\rules", "managed\workflows", "managed\knowledge" | Out-Null
+    Copy-Item "$pack\rules\RULE-RED-001.md" "managed\rules\rule1.md" -Force
+    Copy-Item "$pack\workflows\WORKFLOW-RED-001.md" "managed\workflows\workflow1.md" -Force
+    Copy-Item "$pack\knowledge\KB-RED-001.md" "managed\knowledge\knowledge1.md" -Force
+}
+
+if ($Fresh) {
+    Write-Host "Resetting runtime state (keeping governance templates)..."
+    Reset-ApxFreshRuntime
+}
+Ensure-GovernanceTemplates
+
+if (Get-NetTCPConnection -LocalPort 8741 -State Listen -ErrorAction SilentlyContinue) {
+    Write-Host "Port 8741 in use - stopping any existing apx-v1 container..."
+    try { Invoke-Compose @("down") } catch {}
+}
+
+function Seed-ZkKeysFromImage {
+    $circuitsKeys = "rust\apx-circuits\keys"
+    $zkKeys = "rust\apx-zk\keys"
+    $circuitsEmpty = -not (Test-Path $circuitsKeys) -or -not (Get-ChildItem $circuitsKeys -ErrorAction SilentlyContinue)
+    $zkEmpty = -not (Test-Path $zkKeys) -or -not (Get-ChildItem $zkKeys -ErrorAction SilentlyContinue)
+    if (-not $circuitsEmpty -and -not $zkEmpty) { return }
+
+    Write-Host "Seeding ZK keys from image (volume mounts hide baked-in keys)..."
+    New-Item -ItemType Directory -Force -Path "rust\apx-circuits", "rust\apx-zk" | Out-Null
+    $cid = docker create apx-v1:latest
+    try {
+        docker cp "${cid}:/app/rust/apx-circuits/keys" "rust/apx-circuits/"
+        docker cp "${cid}:/app/rust/apx-zk/keys" "rust/apx-zk/"
+        if ($LASTEXITCODE -ne 0) { throw "docker cp failed seeding ZK keys" }
+    } finally {
+        docker rm $cid | Out-Null
+    }
+}
+
+Write-Host "[1/3] Building image (Rust + Python + ZK keys - may take several minutes)..."
 Invoke-Compose @("build")
+Seed-ZkKeysFromImage
 
 Write-Host "[2/3] Onboarding in container (pack demo, attest, verify)..."
 Invoke-Compose @("run", "--rm", "apx-v1", "python", "-m", "scripts.onboard", "--skip-zk")

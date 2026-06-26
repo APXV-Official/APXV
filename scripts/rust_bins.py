@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 from pathlib import Path
 from typing import Optional
 
@@ -20,7 +21,8 @@ def resolve_apx_circuits_binary(base_path: Optional[Path] = None) -> Optional[Pa
         candidate = rust_dir / name
         if candidate.exists():
             return candidate
-    return None
+    which = shutil.which("apx-circuits")
+    return Path(which) if which else None
 
 
 def resolve_apx_zk_binary(base_path: Optional[Path] = None) -> Optional[Path]:
@@ -34,7 +36,8 @@ def resolve_apx_zk_binary(base_path: Optional[Path] = None) -> Optional[Path]:
         candidate = rust_dir / name
         if candidate.exists():
             return candidate
-    return None
+    which = shutil.which("apx-zk")
+    return Path(which) if which else None
 
 
 def build_apx_circuits_command(base_path: Path, *args: str) -> tuple[list[str], str]:
