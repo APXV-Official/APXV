@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV1**, the first open-source implementation.
 
-> **Current release:** [v1.1.2](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) — runtime + [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/). [CHANGELOG](CHANGELOG.md)
+> **Current release:** [v1.1.2](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) — runtime + [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
 
 Clone the repo, run one command, and you get a working instance: setup, health checks, the reference pack pipeline, a full attestation, and independent ZK verification. Everything stays on your machine.
 
