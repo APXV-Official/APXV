@@ -1,5 +1,5 @@
 // APX v1 — Pipeline Attestation Circuit
-// Copyright 2026 APXV Official
+// Copyright 2026 APXVdev
 // Licensed under the Apache License, Version 2.0
 //
 // Public inputs:

@@ -220,4 +220,4 @@ Please do not imply your project is an official APXV product unless you have a s
 
 ## License
 
-Copyright © 2026 [APXV Official](https://github.com/APXV-Official). Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) for redistribution attribution.
+Copyright © 2026 [APXVdev](https://github.com/APXVdev). Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) for redistribution attribution. Repository hosted under the [APXV Official](https://github.com/APXV-Official) GitHub organization.

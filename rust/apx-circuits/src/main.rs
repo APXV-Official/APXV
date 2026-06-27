@@ -1,5 +1,5 @@
 // APX v1 — Rust Prover / Verifier Binary
-// Copyright 2026 APXV Official
+// Copyright 2026 APXVdev
 // Licensed under the Apache License, Version 2.0
 //
 // Minimal integration binary for Step 7.
