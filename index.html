@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="APXV1 — governed local agents, agent packs, Groth16 proofs, local API. Open source on GitHub. No telemetry.">
+  <meta name="theme-color" content="#06080c">
+  <meta property="og:title" content="APXV1 — Governed Local Agents">
+  <meta property="og:description" content="APXV — air-gapped governed agents with Groth16 proofs. Runtime + official agent packs on your infrastructure.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://apxv-official.github.io/APXV/">
+  <title>APXV1 — Attested Proof Execution Verified</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="#top" aria-label="APXV home">APXV</a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#about" data-nav>About</a>
+        <a href="#platform" data-nav>Platform</a>
+        <a href="#packs" data-nav>Packs</a>
+        <a href="#roadmap" data-nav>Roadmap</a>
+        <a href="#start" data-nav>Docs</a>
+        <a href="#services" data-nav>Services</a>
+        <a href="#contact" data-nav>Contact</a>
+      </nav>
+      <a class="btn btn-sm btn-ghost header-github" href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">GitHub</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">Apache 2.0 · Local · No telemetry · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Open source</a></p>
+          <h1>Governed local agents with cryptographic attestation</h1>
+          <p class="lead">
+            <strong>APXV</strong> is the platform; <strong>APXV1</strong> is the open-source runtime on your infrastructure.
+            Clone the repo, run one install command, and get setup, health checks, a reference agent pack, attest, and independent ZK verify — all local.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">View on GitHub</a>
+            <a class="btn btn-secondary" href="https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md" rel="noopener noreferrer">Quickstart</a>
+            <a class="btn btn-secondary" href="https://github.com/APXV-Official/APXV/releases" rel="noopener noreferrer">Releases</a>
+          </div>
+          <dl class="hero-meta">
+            <div><dt>Source</dt><dd><a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">APXV-Official/APXV</a></dd></div>
+            <div><dt>API</dt><dd><code>127.0.0.1:8741</code></dd></div>
+            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">311 tests</a></dd></div>
+          </dl>
+        </div>
+        <div class="hero-aside reveal">
+          <div class="install-card">
+            <p class="install-card-label">One command</p>
+            <pre class="install-snippet"><code># Native (Python + Rust)
+./scripts/install.sh
+
+# Docker only
+./scripts/install-docker.sh</code></pre>
+            <p class="install-card-foot">
+              Full path: setup → doctor → pack → attest → verify.
+              <a href="https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md" rel="noopener noreferrer">QUICKSTART</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="trust-bar" aria-hidden="true">
+      <div class="trust-marquee-track">
+        <span>One-command install</span>
+        <span>Reference Redaction Pack</span>
+        <span>Dual-track Groth16 · BN254</span>
+        <span>Voice privacy · ceremony tooling</span>
+        <span>Local only · no telemetry</span>
+        <span>Docker · air-gap ready</span>
+        <span>One-command install</span>
+        <span>Reference Redaction Pack</span>
+        <span>Dual-track Groth16 · BN254</span>
+        <span>Voice privacy · ceremony tooling</span>
+        <span>Local only · no telemetry</span>
+        <span>Docker · air-gap ready</span>
+      </div>
+    </div>
+
+    <section id="about" class="section">
+      <div class="wrap narrow reveal">
+        <h2>About APXV</h2>
+        <p class="prose">
+          <strong>APXV</strong> (Attested Proof Execution Verified) is an air-gapped governed agent platform:
+          markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs.
+          <strong>APXV1</strong> is the first-generation open-source implementation — a <strong>foundation to build on</strong>, not a finished vertical product.
+        </p>
+        <p class="prose">
+          Teams are adding AI everywhere, but rarely adding <strong>governed execution</strong> —
+          runtime policy, approval workflows, audit chains, and proofs you can verify without a cloud vendor.
+        </p>
+        <ul class="pill-row" role="list">
+          <li>Local control</li>
+          <li>Runtime governance</li>
+          <li>Verifiable attestation</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="platform" class="section section-alt">
+      <div class="wrap reveal">
+        <div class="section-head">
+          <h2>Platform</h2>
+          <p>The runtime: store, audit, capabilities, ZK, API. <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Full docs on GitHub</a>.</p>
+        </div>
+        <ul class="feature-grid" role="list">
+          <li class="tile"><h3>Governed agents</h3><p>Living markdown rules, workflows, and knowledge at runtime.</p></li>
+          <li class="tile"><h3>Signed capabilities</h3><p>Per-agent permissions enforced before actions run.</p></li>
+          <li class="tile"><h3>Governance approval</h3><p>Propose → approve → apply for policy changes.</p></li>
+          <li class="tile"><h3>Redaction v3</h3><p>Format-aware pattern redaction with structured <code>entities[]</code> output.</p></li>
+          <li class="tile"><h3>Immutable artifacts</h3><p>SQLite index and content-addressable storage.</p></li>
+          <li class="tile"><h3>Chained audit logs</h3><p>Structured JSON events linked for verification.</p></li>
+          <li class="tile"><h3>Dual-track Groth16</h3><p>3 governance + up to 4 entity proofs per attest — independently verifiable.</p></li>
+          <li class="tile"><h3>Voice privacy</h3><p>STT → redact → attest with <code>voice-redaction</code> proof (simulated or local Vosk).</p></li>
+          <li class="tile"><h3>Ceremony transparency</h3><p>Tier A/B VK transcript + publishable verifier bundle (VKs only).</p></li>
+        </ul>
+        <p class="stack-line">
+          Python 3.9+, Rust / arkworks, optional E2EE (<code>--encrypt</code>), stdlib HTTP API, Docker
+        </p>
+
+        <div class="diagram-block">
+          <h3 class="diagram-title">Architecture</h3>
+          <p class="diagram-intro">How governance, runtime, and attestation connect — same diagram as the repo README.</p>
+          <div class="diagram-wrap">
+            <pre class="mermaid">
+flowchart TB
+  subgraph governance [Governance]
+    Rules[rules / workflows / knowledge]
+    Approval[propose → approve → apply]
+  end
+
+  subgraph runtime [APXV1 Runtime]
+    API[Local API :8741]
+    Cap[Signed capabilities]
+    Redact[RedactionEngine v3]
+    Agents[3-agent reference pipeline]
+    Store[(SQLite + CAS artifacts)]
+    Audit[(Chained audit logs)]
+  end
+
+  subgraph crypto [Attestation]
+    ZKA[Governance ZK — apx-circuits]
+    ZKB[Entity ZK — apx-zk]
+    Verify[Independent verify]
+  end
+
+  Rules --> Agents
+  Approval --> Rules
+  Cap --> Agents
+  Redact --> Agents
+  Agents --> Store
+  Agents --> Audit
+  Agents --> ZKA
+  Agents --> ZKB
+  ZKA --> Verify
+  ZKB --> Verify
+  API --> Agents
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="packs" class="section">
+      <div class="wrap reveal">
+        <div class="section-head">
+          <h2>Agent packs</h2>
+          <p>Packs are not the platform. They are vertical bundles on top — governance specs, install steps, and acceptance for a use case.</p>
+        </div>
+
+        <div class="pack-split">
+          <div class="pack-col">
+            <h3>APXV1 core</h3>
+            <ul>
+              <li>Runtime, audit, store, ZK, local API</li>
+              <li>3-agent pipeline pattern (redact → orchestrate → attest)</li>
+              <li>Signed capability framework</li>
+            </ul>
+          </div>
+          <div class="pack-plus" aria-hidden="true">+</div>
+          <div class="pack-col pack-col--accent">
+            <h3>Agent pack</h3>
+            <ul>
+              <li>Rules, workflows, knowledge for a vertical</li>
+              <li>Install path + acceptance checklist</li>
+              <li>Binds core agents to a real use case</li>
+            </ul>
+          </div>
+        </div>
+
+        <ol class="pack-flow" role="list">
+          <li>
+            <span class="pack-step-num">1</span>
+            <div>
+              <strong>Governance bundle</strong>
+              <p>Pack ships markdown specs — e.g. redaction rules, workflow steps, knowledge base.</p>
+            </div>
+          </li>
+          <li>
+            <span class="pack-step-num">2</span>
+            <div>
+              <strong>Apply to runtime</strong>
+              <p>Onboarding runs the reference pack out of the box. Production uses propose → approve → apply.</p>
+            </div>
+          </li>
+          <li>
+            <span class="pack-step-num">3</span>
+            <div>
+              <strong>Pipeline executes</strong>
+              <p>Agents read living specs at runtime, write immutable artifacts, record chained audit.</p>
+            </div>
+          </li>
+          <li>
+            <span class="pack-step-num">4</span>
+            <div>
+              <strong>Attest and verify</strong>
+              <p>Dual-track Groth16 proofs; anyone can verify with serialized proof + VK — no re-proving.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="scope-grid">
+          <div class="scope-col">
+            <h3>Available today</h3>
+            <ul>
+              <li><a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries/apxv-pack-reference-redaction" rel="noopener noreferrer">Reference Redaction Pack</a> — first official pack (governance + acceptance)</li>
+              <li><a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries" rel="noopener noreferrer">Governance templates</a> — starter markdown (not full packs)</li>
+              <li><a href="https://github.com/APXV-Official/APXV/tree/main/examples/llm-ollama" rel="noopener noreferrer">Ollama example</a> — plug in a local LLM</li>
+            </ul>
+          </div>
+          <div class="scope-col scope-col--muted">
+            <h3>Build your own</h3>
+            <ul>
+              <li><a href="https://github.com/APXV-Official/APXV/blob/main/docs/BUILDING.md" rel="noopener noreferrer">Building guide</a> — custom agents and API</li>
+              <li><a href="https://github.com/APXV-Official/APXV/tree/main/examples/hello-agent" rel="noopener noreferrer">Hello agent</a> — minimal example</li>
+              <li><a href="https://github.com/APXV-Official/APXV/blob/main/governance-libraries/README.md" rel="noopener noreferrer">Pack layout</a> — official pack conventions</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="roadmap" class="section section-alt">
+      <div class="wrap reveal">
+        <div class="section-head">
+          <h2>Roadmap</h2>
+          <p>Direction, not a fixed schedule. <a href="https://github.com/APXV-Official/APXV/blob/main/ROADMAP.md" rel="noopener noreferrer">Full roadmap on GitHub</a> · <a href="https://github.com/APXV-Official/APXV/blob/main/CHANGELOG.md" rel="noopener noreferrer">Changelog</a> for what shipped.</p>
+        </div>
+        <div class="roadmap-phases">
+          <article class="roadmap-phase">
+            <h3>Shipped</h3>
+            <ul>
+              <li>Governed runtime — rules, audit, artifacts, dual-track Groth16, local API</li>
+              <li>Reference Redaction Pack — first official agent pack</li>
+              <li>One-command install — native and Docker</li>
+            </ul>
+          </article>
+          <article class="roadmap-phase">
+            <h3>Through v1.3</h3>
+            <ul>
+              <li>More official agent packs (AI governance, document processing)</li>
+              <li>Pack catalog — curated index for official and community packs</li>
+              <li>Remaining platform depth as modules mature</li>
+            </ul>
+          </article>
+          <article class="roadmap-phase roadmap-phase--muted">
+            <h3>After v1.3</h3>
+            <ul>
+              <li>Local control plane UI — governance, pipelines, artifacts, health</li>
+              <li>CLI/API and packs first; UI when the foundation is solid</li>
+            </ul>
+          </article>
+        </div>
+        <p class="roadmap-foot">Not building: cloud SaaS, certification claims, bundled LLM, or “magic compliance.”</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap reveal">
+        <div class="section-head">
+          <h2>Scope</h2>
+          <p>Honest about what ships today.</p>
+        </div>
+        <div class="scope-grid">
+          <div class="scope-col">
+            <h3>Includes</h3>
+            <ul>
+              <li>Local API on <code>127.0.0.1:8741</code></li>
+              <li>Pipeline: redact → orchestrate → attest → verify</li>
+              <li>Reference Redaction Pack</li>
+              <li>Dual-track ZK, optional E2EE, voice attest path</li>
+              <li>Ceremony transcript + verifier bundle export</li>
+              <li>Pluggable LLM backends (Ollama example)</li>
+              <li>Install scripts, doctor, integrity checks</li>
+            </ul>
+          </div>
+          <div class="scope-col scope-col--muted">
+            <h3>Does not include</h3>
+            <ul>
+              <li>HIPAA, SOC2, or GDPR certification</li>
+              <li>Enterprise DLP-grade redaction</li>
+              <li>Multi-party MPC trusted setup (single-party Groth16 today)</li>
+              <li>Protection against malicious insiders</li>
+              <li>Bundled LLM — you add your own</li>
+            </ul>
+            <p class="scope-foot"><a href="https://github.com/APXV-Official/APXV/blob/main/SECURITY.md" rel="noopener noreferrer">Threat model</a> · <a href="https://github.com/APXV-Official/APXV/blob/main/docs/cryptography/CEREMONY.md" rel="noopener noreferrer">Ceremony tiers</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="start" class="section section-alt">
+      <div class="wrap reveal">
+        <div class="section-head">
+          <h2>Documentation</h2>
+          <p>Clone → run <code>install.sh</code> or <code>install-docker.sh</code> → done. This site is the overview; the repo is the manual.</p>
+        </div>
+        <div class="doc-links">
+          <a href="https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md" rel="noopener noreferrer">Quickstart</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/README.md" rel="noopener noreferrer">README</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/ROADMAP.md" rel="noopener noreferrer">Roadmap</a>
+          <a href="https://github.com/APXV-Official/APXV/releases" rel="noopener noreferrer">Releases</a>
+          <a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries/apxv-pack-reference-redaction" rel="noopener noreferrer">Redaction pack</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/docs/cryptography/CIRCUITS.md" rel="noopener noreferrer">Circuit inventory</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/docs/cryptography/CEREMONY.md" rel="noopener noreferrer">Ceremony</a>
+          <a href="https://github.com/APXV-Official/APXV/tree/main/examples/hello-agent" rel="noopener noreferrer">Hello agent</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/docs/BUILDING.md" rel="noopener noreferrer">Building guide</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/docs/LOCAL-API.md" rel="noopener noreferrer">Local API</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/docs/DOCKER.md" rel="noopener noreferrer">Docker</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/SECURITY.md" rel="noopener noreferrer">Threat model</a>
+          <a class="doc-links-mid" href="https://github.com/APXV-Official/APXV/issues" rel="noopener noreferrer">Issues</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="section">
+      <div class="wrap reveal">
+        <div class="section-head">
+          <h2>Services</h2>
+          <p>APXV1 is free and open source. Paid work is implementation and support — not selling the runtime.</p>
+        </div>
+        <ul class="service-list" role="list">
+          <li><strong>Setup &amp; deploy</strong> — install, Docker or air-gap, first pipeline run</li>
+          <li><strong>Custom agents</strong> — governance templates and one agent on APXV1</li>
+          <li><strong>Agent packs</strong> — Reference Redaction Pack install + customization</li>
+          <li><strong>Integration</strong> — API wiring, LLM backends, ops runbooks</li>
+          <li><strong>Advisory</strong> — architecture review for local governed AI stacks</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="contact" class="section section-alt">
+      <div class="wrap narrow reveal">
+        <h2>Contact</h2>
+        <p class="prose">
+          For bugs and how-to, open an issue and include <code>python -m scripts.apx_doctor</code> output.
+          For services or collaboration, email or use Issues.
+        </p>
+        <div class="contact-links">
+          <a href="mailto:APXVdev@protonmail.com">APXVdev@protonmail.com</a>
+          <a href="https://github.com/APXV-Official/APXV/issues" rel="noopener noreferrer">GitHub Issues</a>
+          <a href="https://github.com/APXV-Official/APXV/issues/new" rel="noopener noreferrer">Open an issue</a>
+          <a href="https://github.com/APXVdev" rel="noopener noreferrer">@APXVdev</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© 2026 <a href="https://github.com/APXV-Official" rel="noopener noreferrer">APXV Official</a> · <a href="https://github.com/APXVdev" rel="noopener noreferrer">@APXVdev</a> · <a href="https://github.com/APXV-Official/APXV/blob/main/LICENSE" rel="noopener noreferrer">Apache 2.0</a></p>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Repository</a>
+        <a href="https://github.com/APXV-Official/APXV/releases" rel="noopener noreferrer">Releases</a>
+        <a href="https://github.com/APXV-Official/APXV/blob/main/ROADMAP.md" rel="noopener noreferrer">Roadmap</a>
+        <a href="https://github.com/APXV-Official/APXV/issues" rel="noopener noreferrer">Issues</a>
+        <a href="mailto:APXVdev@protonmail.com">Email</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "dark",
+      themeVariables: {
+        primaryColor: "#10141c",
+        primaryTextColor: "#eef2f6",
+        primaryBorderColor: "#4a9eff",
+        lineColor: "#5c6b80",
+        secondaryColor: "#0a0d12",
+        tertiaryColor: "#06080c",
+        fontFamily: "Inter, system-ui, sans-serif",
+      },
+    });
+  </script>
+  <script src="main.js" defer></script>
+</body>
+</html>
