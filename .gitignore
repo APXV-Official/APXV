@@ -23,6 +23,7 @@ rust/keys/*.pk
 rust/keys/*.vk
 
 # Runtime state — generated locally, never commit
+managed.bak.*/
 managed/*.json
 !managed/config/.gitkeep
 managed/artifacts/

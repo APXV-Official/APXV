@@ -1,4 +1,4 @@
-# APXV1 — one-command onboarding (Windows). Requires Python 3.9+ and Rust.
+# APXV1 - one-command onboarding (Windows). Requires Python 3.9+ and Rust.
 param(
     [switch]$Fresh
 )
@@ -8,7 +8,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 Write-Host "============================================================"
-Write-Host "APXV1 — clone to running (v1.1.2)"
+Write-Host "APXV1 - clone to running (v1.1.2)"
 Write-Host "No Python/Rust? Use: .\scripts\install-docker.ps1"
 Write-Host "============================================================"
 
