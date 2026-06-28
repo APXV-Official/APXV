@@ -135,3 +135,22 @@ def build_batch_merkle_witness(
         "path_elements": path_elements,
         "path_indices": path_indices,
     }
+
+
+def build_merkle_inclusion_witness(
+    tree: PoseidonMerkleTree,
+    leaf_index: int,
+) -> dict:
+    """Build merkle-inclusion circuit inputs for a single raw leaf."""
+    if leaf_index < 0 or leaf_index >= len(tree.raw_leaves):
+        raise ValueError(
+            f"leaf_index {leaf_index} out of range for {len(tree.raw_leaves)} leaves"
+        )
+
+    path_elements, path_indices = tree.paths[leaf_index].as_decimal_lists()
+    return {
+        "merkle_root": tree.root_decimal,
+        "leaf": field_to_decimal(tree.raw_leaves[leaf_index]),
+        "path_elements": path_elements,
+        "path_indices": path_indices,
+    }

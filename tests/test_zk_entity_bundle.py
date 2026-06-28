@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 
 from agents.zk.bridge import EntityZKBridge
 from agents.zk.bundle import build_dual_proof_bundle, build_governance_proof_bundle
+from agents.zk.compliance_policy import DEFAULT_POLICY_SINGLE_DOC, resolve_compliance_policy_id
 from agents.zk.entity_commitment import create_entity_commitments, string_to_field
 from agents.zk.merkle_tree import build_poseidon_merkle_tree
 from agents.zk.poseidon_client import PoseidonClient
@@ -63,6 +64,11 @@ def test_prepare_entity_inputs_from_attested(poseidon_client: PoseidonClient):
     assert prepared["redaction-v1"]["original_data_hash"]
     assert prepared["redaction-v1"]["redacted_data_hash"]
     assert len(prepared["redaction-v1"]["leaf_commitments"]) == 8
+    assert "merkle-inclusion" in prepared
+    assert len(prepared["merkle-inclusion"]) == prepared["entity_count"]
+    assert "compliance" in prepared
+    assert prepared["compliance_policy_id"] == DEFAULT_POLICY_SINGLE_DOC
+    assert resolve_compliance_policy_id(attested) == DEFAULT_POLICY_SINGLE_DOC
     entities = attested["proposed_artifact"]["output"]["entities"]
     assert entities
     assert any(entity.get("value") for entity in entities)
@@ -121,6 +127,67 @@ VOICE_THREE_ENTITY_SAMPLE = (
     "Contact John at john.doe@example.com or call (555) 123-4567. "
     "SSN: 123-45-6789."
 )
+
+
+@pytest.mark.skipif(
+    not (ROOT / "rust" / "Cargo.toml").exists(),
+    reason="Rust workspace not available",
+)
+def test_merkle_inclusion_prove_leaf_zero(poseidon_client: PoseidonClient):
+    attested = run_pipeline(input_text=SAMPLE_INPUT)
+    bridge = EntityZKBridge(base_path=ROOT)
+    bridge.poseidon = poseidon_client
+    prepared = bridge.prepare_entity_inputs(attested)
+    witness = prepared["merkle-inclusion"][0]
+    assert witness["merkle_root"] == prepared["merkle_root"]
+    assert len(witness["path_elements"]) == 8
+
+    from scripts.setup_entity_zk import ensure_entity_zk_setup
+
+    ensure_entity_zk_setup(base_path=ROOT)
+
+    proof = bridge.prove_circuit("merkle-inclusion", witness)
+    assert proof.get("verification_result") is True, proof
+
+
+@pytest.mark.skipif(
+    not (ROOT / "rust" / "Cargo.toml").exists(),
+    reason="Rust workspace not available",
+)
+def test_compliance_prove_standard_policy(poseidon_client: PoseidonClient):
+    attested = run_pipeline(input_text=SAMPLE_INPUT)
+    bridge = EntityZKBridge(base_path=ROOT)
+    bridge.poseidon = poseidon_client
+    prepared = bridge.prepare_entity_inputs(attested)
+    assert prepared["compliance"]["policy_id"] == DEFAULT_POLICY_SINGLE_DOC
+
+    from scripts.setup_entity_zk import ensure_entity_zk_setup
+
+    ensure_entity_zk_setup(base_path=ROOT)
+
+    proof = bridge.prove_circuit("compliance", prepared["compliance"])
+    assert proof.get("verification_result") is True, proof
+
+
+@pytest.mark.skipif(
+    not (ROOT / "rust" / "Cargo.toml").exists(),
+    reason="Rust workspace not available",
+)
+def test_generate_entity_proofs_includes_v12_circuits(poseidon_client: PoseidonClient):
+    attested = run_pipeline(input_text=SAMPLE_INPUT)
+    bridge = EntityZKBridge(base_path=ROOT)
+    bridge.poseidon = poseidon_client
+
+    from scripts.setup_entity_zk import ensure_entity_zk_setup
+
+    ensure_entity_zk_setup(base_path=ROOT)
+
+    bundle = bridge.generate_entity_proofs(attested)
+    proofs = bundle.get("proofs", {})
+    assert proofs["compliance"].get("verification_result") is True
+    assert proofs["merkle_inclusion_0"].get("verification_result") is True
+    assert bundle["metadata"]["merkle_inclusion_count"] == bundle["metadata"]["entity_count"]
+    assert bundle["metadata"]["compliance_policy_id"] == DEFAULT_POLICY_SINGLE_DOC
 
 
 @pytest.mark.skipif(
@@ -215,3 +282,6 @@ def test_full_dual_attest_and_verify():
     assert "governance_proofs" in attested
     assert "entity_proofs" in attested
     assert attested["entity_proofs"]["metadata"]["entity_count"] >= 1
+    entity_proofs = attested["entity_proofs"]["proofs"]
+    assert entity_proofs["compliance"].get("verification_result") is True
+    assert entity_proofs["merkle_inclusion_0"].get("verification_result") is True

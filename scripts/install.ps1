@@ -8,7 +8,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 Write-Host "============================================================"
-Write-Host "APXV1 - clone to running (v1.1.2)"
+Write-Host "APXV1 - clone to running (v1.2.0)"
 Write-Host "No Python/Rust? Use: .\scripts\install-docker.ps1"
 Write-Host "============================================================"
 
@@ -43,6 +43,7 @@ Write-Host "[2/2] Onboarding (setup, pack demo, attest, verify)..."
 if ($LASTEXITCODE -ne 0) { throw "onboard failed (exit $LASTEXITCODE)" }
 
 Write-Host "============================================================"
-Write-Host "Done. Optional: python -m scripts.setup_voice"
+Write-Host "Done. Quick demo: .\scripts\apx_demo.ps1"
+Write-Host "Optional: python -m scripts.setup_voice"
 Write-Host "Docs: docs/QUICKSTART.md"
 Write-Host "============================================================"

@@ -15,11 +15,24 @@ from .entity_commitment import (
     entities_digest,
     field_to_decimal,
 )
-from .merkle_tree import BATCH_SIZE, build_batch_merkle_witness, build_poseidon_merkle_tree
+from .compliance_policy import build_compliance_witness, resolve_compliance_policy_id
+from .merkle_tree import (
+    BATCH_SIZE,
+    build_batch_merkle_witness,
+    build_merkle_inclusion_witness,
+    build_poseidon_merkle_tree,
+)
 from .poseidon_client import PoseidonClient, build_apx_zk_command
 
-ENTITY_VERSION = "1.0.0"
-PRIMARY_ENTITY_CIRCUITS = ("redaction-v1", "core-redaction", "batch-merkle")
+ENTITY_VERSION = "1.1.0"
+MAX_MERKLE_INCLUSION_PROOFS = 8
+PRIMARY_ENTITY_CIRCUITS = (
+    "redaction-v1",
+    "core-redaction",
+    "batch-merkle",
+    "merkle-inclusion",
+    "compliance",
+)
 
 
 class EntityZKBridge:
@@ -107,6 +120,23 @@ class EntityZKBridge:
         if 1 <= entity_count <= BATCH_SIZE:
             prepared["batch-merkle"] = build_batch_merkle_witness(tree, entity_count)
 
+        inclusion_count = min(entity_count, MAX_MERKLE_INCLUSION_PROOFS)
+        if inclusion_count >= 1:
+            prepared["merkle-inclusion"] = [
+                build_merkle_inclusion_witness(tree, index)
+                for index in range(inclusion_count)
+            ]
+
+        policy_id = resolve_compliance_policy_id(attested)
+        if policy_id is not None:
+            prepared["compliance"] = build_compliance_witness(
+                entity_count=entity_count,
+                policy_id=policy_id,
+                original_hash=original_hash,
+                redacted_hash=redacted_hash,
+            )
+            prepared["compliance_policy_id"] = policy_id
+
         return prepared
 
     def prove_circuit(self, circuit: str, inputs: Dict[str, Any]) -> Dict[str, Any]:
@@ -148,7 +178,7 @@ class EntityZKBridge:
         ensure_entity_zk_setup(base_path=self.base_path)
 
         prepared = self.prepare_entity_inputs(attested)
-        circuits_to_run = ["redaction-v1", "core-redaction"]
+        circuits_to_run: List[str] = ["redaction-v1", "core-redaction"]
         if "batch-merkle" in prepared:
             circuits_to_run.append("batch-merkle")
 
@@ -160,14 +190,35 @@ class EntityZKBridge:
         if isinstance(voice_inputs, dict) and voice_inputs:
             circuits_to_run.append("voice-redaction")
 
+        inclusion_witnesses = prepared.get("merkle-inclusion", [])
+        if isinstance(inclusion_witnesses, list):
+            for index in range(len(inclusion_witnesses)):
+                circuits_to_run.append(f"merkle-inclusion:{index}")
+
+        if "compliance" in prepared:
+            circuits_to_run.append("compliance")
+
         proofs: Dict[str, Any] = {}
-        for circuit in circuits_to_run:
-            if circuit == "voice-redaction":
-                payload = voice_inputs
-            else:
-                payload = prepared[circuit]
-            proof = self.prove_circuit(circuit, payload)
+        for circuit in ["redaction-v1", "core-redaction"]:
+            proof = self.prove_circuit(circuit, prepared[circuit])
             proofs[circuit.replace("-", "_")] = proof
+
+        if "batch-merkle" in prepared:
+            proof = self.prove_circuit("batch-merkle", prepared["batch-merkle"])
+            proofs["batch_merkle"] = proof
+
+        if isinstance(inclusion_witnesses, list):
+            for index, witness in enumerate(inclusion_witnesses):
+                proof = self.prove_circuit("merkle-inclusion", witness)
+                proofs[f"merkle_inclusion_{index}"] = proof
+
+        if "compliance" in prepared:
+            proof = self.prove_circuit("compliance", prepared["compliance"])
+            proofs["compliance"] = proof
+
+        if isinstance(voice_inputs, dict) and voice_inputs:
+            proof = self.prove_circuit("voice-redaction", voice_inputs)
+            proofs["voice_redaction"] = proof
 
         metadata = {
             "version": ENTITY_VERSION,
@@ -177,6 +228,10 @@ class EntityZKBridge:
             "commitments": prepared["commitments"],
             "circuits": circuits_to_run,
         }
+        if isinstance(inclusion_witnesses, list) and inclusion_witnesses:
+            metadata["merkle_inclusion_count"] = len(inclusion_witnesses)
+        if prepared.get("compliance_policy_id") is not None:
+            metadata["compliance_policy_id"] = prepared["compliance_policy_id"]
         if voice_inputs:
             metadata["voice_redaction"] = True
 

@@ -1,0 +1,4 @@
+{
+  "note": "Uses the same APX-AGENT-001/002/003 IDs as the Reference Redaction Pack. setup_first_run grants these by default.",
+  "agents_to_add": {}
+}

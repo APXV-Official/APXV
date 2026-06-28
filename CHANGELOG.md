@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-06-28
+
+**APXV1 v1.2.0** — entity circuit wiring (`merkle-inclusion`, `compliance`), two new official agent packs, BYO ML redaction hook, and easier re-demo path. Verifier VKs unchanged since v1.1.0.
+
+### Added
+
+- **`merkle-inclusion`** and **`compliance`** entity circuits on the default `--attest` path (when conditions apply)
+- `agents/zk/compliance_policy.py` — compliance policy ids 1–5 resolution and witness builder
+- `agents/zk/merkle_tree.py` — `build_merkle_inclusion_witness()` for per-entity inclusion proofs
+- `governance-libraries/apxv-pack-document-processing/` v0.1.0 — batch `.txt` / `.json` folder ingest, manifest, compliance policy id 2
+- `governance-libraries/apxv-pack-ai-governance/` v0.1.0 — redaction + `LLMReasoner` review, compliance policy id 4
+- `agents/redaction/backends.py` — optional `RedactionBackend` registry for BYO ML redaction (audit only; not ZK-proven)
+- `scripts/apx_demo.py`, `scripts/apx_demo.sh`, `scripts/apx_demo.ps1` — pack demo → attest → verify with artifact path
+- `scripts/onboard.py --pack` — `reference`, `document`, `ai`, or `all`
+- Tests: `test_document_processing_pack.py`, `test_ai_governance_pack.py`, `test_redaction_backend.py`, `test_apx_demo.py`; extended `test_zk_entity_bundle.py`
+
+### Changed
+
+- `agents/zk/bridge.py`, `scripts/verify_attestation.py` — per-entity `merkle_inclusion_*` keys and `compliance` verification
+- `scripts/install.sh` — auto `.venv` on Linux/WSL when system pip is restricted; `build-essential` warning
+- README, QUICKSTART — 5-minute `apx_demo` path; Linux/WSL prerequisites; all three official packs documented
+- `docs/cryptography/CIRCUITS.md`, `VERIFICATION.md`, `SECURITY-ARCHITECTURE.md` — v1.2 entity path
+- `docs/BUILDING.md`, `SECURITY.md` — BYO ML redaction honest scope
+
+### Fixed
+
+- Entity proof bundle includes `compliance` when pack or artifact sets `compliance_policy_id`
+
 ## [1.1.2] - 2026-06-26
 
 **APXV1 v1.1.2** — one-command onboarding (native + Docker) and install-path fixes. Verifier VKs unchanged since v1.1.0.
@@ -165,6 +193,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.2.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.0
 [1.1.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.2
 [1.1.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.1
 [1.1.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.0

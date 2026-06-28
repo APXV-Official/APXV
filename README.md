@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV1**, the first open-source implementation.
 
-> **Current release:** [v1.1.2](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) — runtime + [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
+> **Current release:** [v1.2.0](https://github.com/APXV-Official/APXV/releases/tag/v1.2.0) — runtime + three official agent packs. [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
 
 Clone the repo, run one command, and you get a working instance: setup, health checks, the reference pack pipeline, a full attestation, and independent ZK verification. Everything stays on your machine.
 
@@ -34,6 +34,37 @@ Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
 
 Details: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
+## 5-minute path
+
+**Already set up** (`setup_first_run` done)? Run a pack demo, full attest, and independent verify in one step:
+
+| Platform | Command |
+|----------|---------|
+| **Windows** | `.\scripts\apx_demo.ps1` |
+| **macOS / Linux / WSL** | `./scripts/apx_demo.sh` |
+
+Pick a pack (v1.2 adds document batch + AI governance):
+
+```bash
+./scripts/apx_demo.sh --pack reference   # default — same as onboarding
+./scripts/apx_demo.sh --pack document    # batch .txt/.json, compliance policy 2
+./scripts/apx_demo.sh --pack ai          # LLMReasoner review, compliance policy 4
+./scripts/apx_demo.sh --pack all         # all three pack demos, then attest + verify
+```
+
+Equivalent: `python -m scripts.apx_demo --pack document`
+
+On success you get `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]` plus the **artifact path** under `managed/artifacts/`.
+
+**Fresh machine, Docker only** (~5 minutes after the first image build):
+
+```bash
+./scripts/install-docker.sh
+curl http://127.0.0.1:8741/health
+```
+
+No local Python or Rust required. See [docs/DOCKER.md](docs/DOCKER.md).
+
 ## The foundation
 
 APXV1 is a **runtime you build on** — not a finished end-user product. The core repo gives you:
@@ -44,7 +75,7 @@ APXV1 is a **runtime you build on** — not a finished end-user product. The cor
 | **Controlled change** | Rule updates go through propose → approve → apply; audit chain records every action |
 | **Signed capabilities** | Each agent is granted explicit permissions; policy is verified before execution |
 | **Immutable artifacts** | Pipeline outputs land in SQLite + content-addressable storage |
-| **Dual-track Groth16 ZK** | Governance proofs (3 circuits) + entity proofs (up to 4 per attest) over BN254 |
+| **Dual-track Groth16 ZK** | Governance proofs (3 circuits) + entity proofs (subset per attest; `merkle-inclusion`, `compliance`, and more) over BN254 |
 | **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
 | **Optional voice + E2EE** | Voice privacy suite and payload encryption when you need them |
 
@@ -63,7 +94,9 @@ A **pack** is a vertical bundle on top of APXV1: governance specs, install steps
 | Artifact | Type | What you get |
 |----------|------|--------------|
 | [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) | **Official pack** | Rules, workflow, knowledge for sensitive-text redaction → orchestration → attestation. Runnable acceptance path + acceptance tests. |
-| [AI governance template](governance-libraries/ai-governance-template/) | **Template** | Starter markdown only — copy into `managed/` and customize. No agents or acceptance tests. |
+| [Document Processing Pack](governance-libraries/apxv-pack-document-processing/) | **Official pack** | Batch `.txt` / `.json` folder ingest, manifest, compliance policy 2. |
+| [AI Governance Pack](governance-libraries/apxv-pack-ai-governance/) | **Official pack** | Redaction + `LLMReasoner` review, compliance policy 4. |
+| [AI governance template](governance-libraries/ai-governance-template/) | **Template** | Starter markdown only — copy into `managed/` and customize. Prefer the AI Governance Pack for a full install path. |
 | [governance-libraries/](governance-libraries/) | **Index** | Packs vs templates — read before assuming something is a full pack |
 
 The Reference Redaction Pack agents ship in **APXV1 core** (`agents/agent1.py` … `agent3.py`). The pack provides the **governance bundle** that binds those agents to a real vertical — not duplicate agent code.
@@ -90,7 +123,7 @@ Capability framework       +    Vertical binding for that use case
 | Local LLM (Ollama) | [examples/llm-ollama/](examples/llm-ollama/) |
 | New vertical / community pack | BUILDING.md + pack layout in [governance-libraries/README.md](governance-libraries/README.md) |
 
-**Direction:** [ROADMAP.md](ROADMAP.md) — packs through v1.3, then a local control plane UI.
+**Direction:** [ROADMAP.md](ROADMAP.md) — pack catalog through v1.3, then a local control plane UI.
 
 ## What it does not do
 
@@ -103,7 +136,7 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Verify without re-running
 
-**Verifier bundle (VKs only):** [v1.1.2 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) (`apxv1-verifier-bundle-v1.1.0.zip` — VKs unchanged since v1.1.0), or export your own after `setup_first_run`:
+**Verifier bundle (VKs only):** [GitHub Releases](https://github.com/APXV-Official/APXV/releases) (`apxv1-verifier-bundle` — VKs unchanged since v1.1.0), or export your own after `setup_first_run`:
 
 ```bash
 python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
@@ -120,7 +153,7 @@ Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest
 
 ## Status
 
-**v1.1.2 (current)** — one-command onboarding (native + Docker), install-path fixes. **311 tests pass in CI** (312 collected, 1 optional Vosk skip). Prior releases: [CHANGELOG.md](CHANGELOG.md).
+**v1.2.0 (current)** — `merkle-inclusion` + `compliance` on attest path, Document Processing Pack, AI Governance Pack, BYO ML redaction hook, `apx_demo` scripts. **339 tests pass** (1 optional Vosk skip). Prior releases: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 

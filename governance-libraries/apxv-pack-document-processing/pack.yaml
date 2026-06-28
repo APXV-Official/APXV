@@ -1,0 +1,35 @@
+# APXV Agent Pack manifest — Pack Spec v0.1
+pack_id: apxv-pack-document-processing
+name: Document Processing Pack
+version: 0.1.0
+requires_apxv1: ">=1.2.0"
+author: APXV-Official
+license: Apache-2.0
+description: >-
+  Batch .txt and .json document ingestion, governed redaction per file,
+  batch manifest, and attestation with compliance policy id 2.
+
+agents:
+  - id: APX-AGENT-001
+    type: deterministic
+    module: agents.agent1
+  - id: APX-AGENT-002
+    type: deterministic
+    module: agents.agent2
+  - id: APX-AGENT-003
+    type: deterministic
+    module: agents.agent3
+
+governance:
+  rules:
+    - governance/rules/RULE-DOC-001.md
+  workflows:
+    - governance/workflows/WORKFLOW-DOC-001.md
+  knowledge:
+    - governance/knowledge/KB-DOC-001.md
+
+capabilities:
+  policy_delta: capabilities/policy-delta.json
+
+examples:
+  - examples/run_pack_demo.py

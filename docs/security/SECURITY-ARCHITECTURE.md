@@ -103,7 +103,7 @@ See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESP
 
 ## ZK circuit scope (v1.1)
 
-Eight entity circuits exist in `apx-zk`; the default `--attest` path proves a subset (see [../cryptography/CIRCUITS.md](../cryptography/CIRCUITS.md)). `normalization`, `compliance`, `threat`, and `merkle-inclusion` require future product modules.
+Eight entity circuits exist in `apx-zk`; the default `--attest` path proves a subset (see [../cryptography/CIRCUITS.md](../cryptography/CIRCUITS.md)). `merkle-inclusion` and `compliance` are wired from v1.2.0; `normalization` and `threat` remain future modules.
 
 ---
 

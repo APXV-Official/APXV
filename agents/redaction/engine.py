@@ -7,6 +7,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, TypeVar
 
+from .backends import RedactionBackendRegistry
 from .format_parser import FormatParser
 from .patterns import PIIPattern, compile_patterns
 from .unicode_armor import preprocess_for_pii_detection, unicode_armor
@@ -136,8 +137,84 @@ def run_with_timeout(
 class APXRedactionEngine:
     """Expanded redaction engine with entity output for downstream attestation."""
 
-    def __init__(self) -> None:
+    def __init__(self, audit_logger: Any = None) -> None:
         self._patterns: Optional[List[PIIPattern]] = None
+        self._backends = RedactionBackendRegistry()
+        self._audit_logger = audit_logger
+
+    def register_backend(self, name: str, handler: Callable[..., Dict[str, Any]]) -> str:
+        """Register a BYO redaction backend. Returns stable backend_id."""
+        return self._backends.register(name, handler)
+
+    def list_backends(self) -> List[str]:
+        return self._backends.list_ids()
+
+    def _normalize_backend_result(
+        self,
+        raw: Dict[str, Any],
+        *,
+        input_format: str,
+    ) -> Dict[str, Any]:
+        entities = raw.get("entities", [])
+        legacy_counts = {key: 0 for key in LEGACY_CATEGORY_ORDER}
+        for entity in entities:
+            if not isinstance(entity, dict):
+                continue
+            legacy = _legacy_category(entity.get("type", ""))
+            if legacy:
+                legacy_counts[legacy] += 1
+
+        redactions_applied = raw.get("redactions_applied")
+        if not isinstance(redactions_applied, list):
+            redactions_applied = [
+                {"category": category, "count": legacy_counts[category]}
+                for category in LEGACY_CATEGORY_ORDER
+                if legacy_counts[category] > 0
+            ]
+
+        total = raw.get("total_redactions")
+        if not isinstance(total, int):
+            total = sum(legacy_counts.values())
+
+        summary = (
+            "No redactions applied per APX-RULE-001."
+            if total == 0
+            else f"Applied {total} redaction(s) via backend {raw.get('backend_id', 'unknown')}."
+        )
+
+        return {
+            "redacted_text": raw["redacted_text"],
+            "redactions_applied": redactions_applied,
+            "total_redactions": total,
+            "engine_version": REDACTION_ENGINE_VERSION,
+            "redaction_summary": summary,
+            "uncertain_matches": raw.get("uncertain_matches", []),
+            "entities": entities,
+            "entity_count": len(entities),
+            "input_format": input_format,
+            "redaction_backend_id": raw.get("backend_id"),
+            "redaction_input_hash": raw.get("input_hash"),
+        }
+
+    def _apply_via_backend(self, text: str, backend_id: str) -> Dict[str, Any]:
+        parser = FormatParser()
+        parsed = parser.parse(text)
+        fmt = parsed.original_format
+        raw = self._backends.invoke(backend_id, text=text, input_format=fmt)
+        result = self._normalize_backend_result(raw, input_format=fmt)
+
+        if self._audit_logger is not None:
+            self._audit_logger.log_event(
+                "redaction_backend_invoked",
+                {
+                    "backend_id": backend_id,
+                    "input_hash": raw.get("input_hash"),
+                    "input_format": fmt,
+                    "entity_count": result.get("entity_count", 0),
+                    "total_redactions": result.get("total_redactions", 0),
+                },
+            )
+        return result
 
     def _get_patterns(self, *, redact_names: bool) -> List[PIIPattern]:
         return compile_patterns(include_names=redact_names)
@@ -505,7 +582,16 @@ class APXRedactionEngine:
 
         return redacted, entities, summary
 
-    def apply(self, text: str, *, redact_names: bool = False) -> Dict[str, Any]:
+    def apply(
+        self,
+        text: str,
+        *,
+        redact_names: bool = False,
+        backend_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        if backend_id:
+            return self._apply_via_backend(text, backend_id)
+
         if NAME_FLAG_PHRASE in text.lower():
             redact_names = True
 

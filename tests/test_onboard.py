@@ -22,3 +22,11 @@ def test_onboard_module_imports():
     from scripts import onboard
 
     assert callable(onboard.main)
+    assert "document" in onboard.PACK_CHOICES
+
+
+def test_onboard_document_pack_demo_exists():
+    from scripts.onboard import _pack_demo_path
+
+    assert _pack_demo_path("document").is_file()
+    assert _pack_demo_path("ai").is_file()

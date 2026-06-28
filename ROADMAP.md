@@ -1,22 +1,23 @@
 # APXV Roadmap
 
-**Last updated:** 2026-06-26
+**Last updated:** 2026-06-28
 
 APXV1 is a local governed runtime. Verticals ship as **agent packs** on top. This is our direction — not a fixed timeline. See [CHANGELOG.md](CHANGELOG.md) for what has shipped.
 
-## Shipped today (v1.1.2)
+## Shipped today (v1.2.0)
 
 - Governed runtime: rules, audit, artifacts, dual-track Groth16, local API
-- [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) — first official pack
-- One-command install: `install.ps1` / `install-docker.ps1`
+- **Official agent packs:** [Reference Redaction](governance-libraries/apxv-pack-reference-redaction/), [Document Processing](governance-libraries/apxv-pack-document-processing/), [AI Governance](governance-libraries/apxv-pack-ai-governance/)
+- Entity circuits on default attest path: `merkle-inclusion`, `compliance` (plus existing `redaction-v1`, `core-redaction`, `batch-merkle`, optional `voice-redaction`)
+- One-command install: `install.ps1` / `install-docker.ps1`; quick re-demo: `apx_demo.sh` / `apx_demo.ps1`
+- Optional BYO ML redaction backend hook (audit envelope; not ZK-proven)
 
 ## Where we're headed
 
-### Through v1.3 — platform and packs
+### Through v1.3 — platform and catalog
 
-- More **official agent packs** (e.g. AI governance, document processing)
-- **Pack catalog** — a curated index to discover official and community packs (not a paid app store on day one; listings, docs, and install paths first)
-- Remaining **platform depth** already sketched in the codebase (extra ZK circuits, stronger ceremony story) as modules mature
+- **Pack catalog** — curated index to discover official and community packs (listings, docs, install paths)
+- Remaining **platform depth** already sketched in the codebase (`normalization`, `threat` circuits, stronger ceremony story) as modules mature
 
 ### After v1.3 — local control plane UI
 
@@ -28,6 +29,7 @@ APXV1 is a local governed runtime. Verticals ship as **agent packs** on top. Thi
 - Cloud SaaS or hosted APXV
 - HIPAA / SOC2 / GDPR certification claims
 - A bundled LLM or “magic compliance” product
+- PDF / DOCX enterprise DLP in core packs (batch `.txt` / `.json` only today)
 
 ## Feedback
 

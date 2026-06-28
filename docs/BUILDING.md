@@ -62,11 +62,47 @@ output = agent.execute({"prompt": "Your task here"})
 
 LLM agents must return structured `AgenticOutput` — never raw ungoverned text as final output.
 
-### 4. Agent packs and governance templates
+### 4. BYO ML redaction backend (optional)
 
-**Official pack:** [Reference Redaction Pack](../governance-libraries/apxv-pack-reference-redaction/README.md) — install governance via approval workflow, run `examples/run_pack_demo.py`, complete `ACCEPTANCE.md`.
+APXV1 ships **pattern-based** redaction by default. You may register an external model or service as an optional backend — **no model is bundled**.
 
-**Governance templates** (e.g. `ai-governance-template/`) are markdown starters — not full packs. Copy into `managed/`, then apply via approval workflow:
+```python
+from agents.audit_logger import AuditLogger
+from agents.redaction import APXRedactionEngine
+
+def my_model_backend(*, text: str, input_format: str) -> dict:
+    # Your model returns redacted text + entities[] (same envelope as the engine)
+    return {
+        "redacted_text": "...",
+        "entities": [{"type": "email", "value": "...", "start": 0, "category": "EMAIL"}],
+        "total_redactions": 1,
+    }
+
+audit = AuditLogger(log_path="managed/audit/redaction_backend.log")
+engine = APXRedactionEngine(audit_logger=audit)
+backend_id = engine.register_backend("My Model", my_model_backend)
+result = engine.apply(input_text, backend_id=backend_id)
+```
+
+- Audit event: `redaction_backend_invoked` (backend id, input hash, entity count — no raw PII in the log payload you pass).
+- **ZK proofs bind the pattern engine path and `entities[]` you supply** — they do **not** prove your ML model was correct or fair. Document this for auditors.
+- Omit `backend_id` to use the built-in deterministic engine (default for governance demos).
+
+### 5. Agent packs and governance templates
+
+**Official packs (v1.2.0):**
+
+| Pack | Demo |
+|------|------|
+| [Reference Redaction](../governance-libraries/apxv-pack-reference-redaction/README.md) | `python governance-libraries/apxv-pack-reference-redaction/examples/run_pack_demo.py` |
+| [Document Processing](../governance-libraries/apxv-pack-document-processing/README.md) | `python governance-libraries/apxv-pack-document-processing/examples/run_pack_demo.py` |
+| [AI Governance](../governance-libraries/apxv-pack-ai-governance/README.md) | `python governance-libraries/apxv-pack-ai-governance/examples/run_pack_demo.py` |
+
+Quick path (setup already done): `python -m scripts.apx_demo --pack document` (or `reference`, `ai`, `all`).
+
+Install governance via propose → approve → apply per pack `governance/` specs; complete each pack's `ACCEPTANCE.md`.
+
+**Governance templates** (e.g. `ai-governance-template/`) are markdown starters for custom rules — not full packs. For AI governance with agents and acceptance tests, use [apxv-pack-ai-governance](../governance-libraries/apxv-pack-ai-governance/README.md). To roll your own specs, copy a template into `managed/`, then apply via approval workflow:
 
 ```bash
 python -m scripts.apx_ctl governance-propose --spec rule --file my-rule.md

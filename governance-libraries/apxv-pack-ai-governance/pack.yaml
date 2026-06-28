@@ -1,0 +1,38 @@
+# APXV Agent Pack manifest — Pack Spec v0.1
+pack_id: apxv-pack-ai-governance
+name: AI Governance Pack
+version: 0.1.0
+requires_apxv1: ">=1.2.0"
+author: APXV-Official
+license: Apache-2.0
+description: >-
+  Governed redaction plus LLMReasoner review, attestation with compliance
+  policy id 4 (AI governance / regulated metadata).
+
+agents:
+  - id: APX-AGENT-001
+    type: deterministic
+    module: agents.agent1
+  - id: APX-AGENT-002
+    type: deterministic
+    module: agents.agent2
+  - id: APX-AGENT-003
+    type: deterministic
+    module: agents.agent3
+  - id: APX-AGENT-LLM-001
+    type: agentic
+    module: agents.llm_reasoner
+
+governance:
+  rules:
+    - governance/rules/RULE-AI-001.md
+  workflows:
+    - governance/workflows/WORKFLOW-AI-001.md
+  knowledge:
+    - governance/knowledge/KB-AI-001.md
+
+capabilities:
+  policy_delta: capabilities/policy-delta.json
+
+examples:
+  - examples/run_pack_demo.py

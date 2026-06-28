@@ -53,7 +53,7 @@
           <dl class="hero-meta">
             <div><dt>Source</dt><dd><a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">APXV-Official/APXV</a></dd></div>
             <div><dt>API</dt><dd><code>127.0.0.1:8741</code></dd></div>
-            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">311 tests</a></dd></div>
+            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">339 tests</a></dd></div>
           </dl>
         </div>
         <div class="hero-aside reveal">
@@ -79,15 +79,15 @@
     <div class="trust-bar" aria-hidden="true">
       <div class="trust-marquee-track">
         <span>One-command install</span>
-        <span>Reference Redaction Pack</span>
+        <span>Three official agent packs</span>
         <span>Dual-track Groth16 · BN254</span>
-        <span>Voice privacy · ceremony tooling</span>
+        <span>merkle-inclusion · compliance proofs</span>
         <span>Local only · no telemetry</span>
         <span>Docker · air-gap ready</span>
         <span>One-command install</span>
-        <span>Reference Redaction Pack</span>
+        <span>Three official agent packs</span>
         <span>Dual-track Groth16 · BN254</span>
-        <span>Voice privacy · ceremony tooling</span>
+        <span>merkle-inclusion · compliance proofs</span>
         <span>Local only · no telemetry</span>
         <span>Docker · air-gap ready</span>
       </div>
@@ -126,7 +126,7 @@
           <li class="tile"><h3>Redaction v3</h3><p>Format-aware pattern redaction with structured <code>entities[]</code> output.</p></li>
           <li class="tile"><h3>Immutable artifacts</h3><p>SQLite index and content-addressable storage.</p></li>
           <li class="tile"><h3>Chained audit logs</h3><p>Structured JSON events linked for verification.</p></li>
-          <li class="tile"><h3>Dual-track Groth16</h3><p>3 governance + up to 4 entity proofs per attest — independently verifiable.</p></li>
+          <li class="tile"><h3>Dual-track Groth16</h3><p>3 governance + entity proofs per attest (incl. merkle-inclusion, compliance) — independently verifiable.</p></li>
           <li class="tile"><h3>Voice privacy</h3><p>STT → redact → attest with <code>voice-redaction</code> proof (simulated or local Vosk).</p></li>
           <li class="tile"><h3>Ceremony transparency</h3><p>Tier A/B VK transcript + publishable verifier bundle (VKs only).</p></li>
         </ul>
@@ -239,8 +239,9 @@ flowchart TB
           <div class="scope-col">
             <h3>Available today</h3>
             <ul>
-              <li><a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries/apxv-pack-reference-redaction" rel="noopener noreferrer">Reference Redaction Pack</a> — first official pack (governance + acceptance)</li>
-              <li><a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries" rel="noopener noreferrer">Governance templates</a> — starter markdown (not full packs)</li>
+              <li><a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries/apxv-pack-reference-redaction" rel="noopener noreferrer">Reference Redaction Pack</a> — governed text redaction vertical</li>
+              <li><a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries/apxv-pack-document-processing" rel="noopener noreferrer">Document Processing Pack</a> — batch <code>.txt</code> / <code>.json</code> ingest</li>
+              <li><a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries/apxv-pack-ai-governance" rel="noopener noreferrer">AI Governance Pack</a> — redaction + <code>LLMReasoner</code> review</li>
               <li><a href="https://github.com/APXV-Official/APXV/tree/main/examples/llm-ollama" rel="noopener noreferrer">Ollama example</a> — plug in a local LLM</li>
             </ul>
           </div>
@@ -267,16 +268,16 @@ flowchart TB
             <h3>Shipped</h3>
             <ul>
               <li>Governed runtime — rules, audit, artifacts, dual-track Groth16, local API</li>
-              <li>Reference Redaction Pack — first official agent pack</li>
-              <li>One-command install — native and Docker</li>
+              <li>Three official agent packs — reference redaction, document processing, AI governance</li>
+              <li><code>merkle-inclusion</code> + <code>compliance</code> on default attest path (v1.2)</li>
+              <li>One-command install + <code>apx_demo</code> quick re-demo — native and Docker</li>
             </ul>
           </article>
           <article class="roadmap-phase">
             <h3>Through v1.3</h3>
             <ul>
-              <li>More official agent packs (AI governance, document processing)</li>
               <li>Pack catalog — curated index for official and community packs</li>
-              <li>Remaining platform depth as modules mature</li>
+              <li>Remaining platform depth (<code>normalization</code>, <code>threat</code> circuits) as modules mature</li>
             </ul>
           </article>
           <article class="roadmap-phase roadmap-phase--muted">
@@ -303,8 +304,9 @@ flowchart TB
             <ul>
               <li>Local API on <code>127.0.0.1:8741</code></li>
               <li>Pipeline: redact → orchestrate → attest → verify</li>
-              <li>Reference Redaction Pack</li>
-              <li>Dual-track ZK, optional E2EE, voice attest path</li>
+              <li>Three official agent packs</li>
+              <li>Dual-track ZK (<code>merkle-inclusion</code>, <code>compliance</code>), optional E2EE, voice attest</li>
+              <li>BYO ML redaction hook (optional; audit only)</li>
               <li>Ceremony transcript + verifier bundle export</li>
               <li>Pluggable LLM backends (Ollama example)</li>
               <li>Install scripts, doctor, integrity checks</li>

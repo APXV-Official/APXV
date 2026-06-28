@@ -2,7 +2,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **APXV1** is the first-generation open-source implementation.
 
-**Version:** 1.1.2 · **License:** Apache 2.0
+**Version:** 1.2.0 · **License:** Apache 2.0
 
 This guide describes the repository layout, core components, and documentation index. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
@@ -21,7 +21,7 @@ APXV (Attested Proof Execution Verified) is an air-gapped governed agent platfor
 | **Approval workflow** | Propose → approve → apply for governance changes |
 | **Redaction engine v3** | Format-aware pattern redaction with `entities[]` output |
 | **Optional E2EE** | `APXE2EE` encryption (`--encrypt` on pipeline) |
-| **Dual-track ZK** | 3 governance circuits + up to 4 entity proofs per attest (8 entity circuits in crate) |
+| **Dual-track ZK** | 3 governance circuits + entity proofs per attest (`merkle-inclusion`, `compliance`, and more; 8 circuits in crate) |
 | **Voice privacy** | STT → redact → attest (`agents/voice/`; simulated or local Vosk/pyttsx3) |
 | **Ceremony (Tier A/B)** | VK manifest transcript (+ signature when signing keys exist) + exportable verifier bundle |
 | **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
@@ -40,9 +40,10 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 | Privacy features (redaction, E2EE, dual ZK) | Complete |
 | Voice suite + ceremony transparency (v1.1) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
-| Current version | **v1.1.2** |
+| Official agent packs (v1.2) | Reference Redaction, Document Processing, AI Governance |
+| Current version | **v1.2.0** |
 
-The reference 3-agent pipeline (redact → orchestrate → attest), voice path, pack smoke tests, and dual-track Groth16 verification are covered by **311 automated tests in CI** (312 collected, 1 optional Vosk skip; see `python -m pytest tests/ -q`).
+The reference 3-agent pipeline (redact → orchestrate → attest), three official pack smoke tests, voice path, and dual-track Groth16 verification are covered by **339 automated tests** (1 optional Vosk skip; see `python -m pytest tests/ -q`).
 
 ---
 

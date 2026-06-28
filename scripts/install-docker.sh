@@ -11,7 +11,7 @@ if [[ "${1:-}" == "--fresh" ]]; then
 fi
 
 echo "============================================================"
-echo "APXV1 Docker onboarding (v1.1.2)"
+echo "APXV1 Docker onboarding (v1.2.0)"
 echo "Requires: Docker + Docker Compose"
 echo "============================================================"
 

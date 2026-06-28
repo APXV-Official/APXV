@@ -1,6 +1,6 @@
 # APXV1 Quickstart (15 Minutes)
 
-**APXV** is the platform; **APXV1** is this open-source implementation. **v1.1.2** ships one-command onboarding plus the [Reference Redaction Pack](../governance-libraries/apxv-pack-reference-redaction/).
+**APXV** is the platform; **APXV1** is this open-source implementation. **v1.2.0** ships one-command onboarding, three official agent packs, and `merkle-inclusion` / `compliance` on the default attest path.
 
 ## One command
 
@@ -24,6 +24,50 @@ Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
 
 Polluted runtime state from prior experiments: `.\scripts\install.ps1 -Fresh` or `.\scripts\install-docker.ps1 -Fresh` (clears audit/config/store; keeps governance templates)
 
+## 5-minute path (already installed)
+
+If `setup_first_run` is done, skip reinstall and run:
+
+```bash
+./scripts/apx_demo.sh                    # reference pack (default)
+./scripts/apx_demo.sh --pack document    # Document Processing Pack
+./scripts/apx_demo.sh --pack ai          # AI Governance Pack
+./scripts/apx_demo.sh --pack all         # all packs, then attest + verify
+```
+
+Windows: `.\scripts\apx_demo.ps1` (add `-Pack document` etc.)
+
+The script prints the latest ZK attested artifact path when verification succeeds.
+
+## Linux and WSL
+
+**Recommended:** use the project virtualenv created by `install.sh` (`.venv/`).
+
+```bash
+./scripts/install.sh
+source .venv/bin/activate
+./scripts/apx_demo.sh
+```
+
+**WSL / Ubuntu / Debian prerequisites** (before native install):
+
+```bash
+sudo apt update
+sudo apt install -y build-essential python3-venv curl
+```
+
+- **build-essential** — Rust compiles `apx-circuits` and `apx-zk` on first attest (1–3 minutes).
+- **python3-venv** — creates `.venv` when system pip is restricted (common on Ubuntu).
+
+If `python3 -m venv` fails, install the version-specific package, e.g. `sudo apt install -y python3.12-venv`.
+
+**Re-run onboarding** with a different pack:
+
+```bash
+python -m scripts.onboard --skip-setup --pack document
+python -m scripts.onboard --skip-setup --pack all
+```
+
 ## Manual install (step by step)
 
 ```bash
@@ -35,7 +79,7 @@ Save any API keys or signing PEMs printed during setup.
 
 Optional voice model: `python -m scripts.setup_voice` (~40 MB Vosk download).
 
-More packs: [governance-libraries/README.md](../governance-libraries/README.md). Custom agents: [BUILDING.md](BUILDING.md).
+Official packs: [Reference Redaction](../governance-libraries/apxv-pack-reference-redaction/), [Document Processing](../governance-libraries/apxv-pack-document-processing/), [AI Governance](../governance-libraries/apxv-pack-ai-governance/). Index: [governance-libraries/README.md](../governance-libraries/README.md). Custom agents: [BUILDING.md](BUILDING.md).
 
 ### Voice attest (platform)
 
@@ -56,7 +100,7 @@ python -m scripts.ceremony_transcript --verify
 python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
 ```
 
-Verifier VKs are unchanged since v1.1.0 — download from [v1.1.2 release assets](https://github.com/APXV-Official/APXV/releases/tag/v1.1.2) or export your own. See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
+Verifier VKs are unchanged since v1.1.0 — download from [GitHub Releases](https://github.com/APXV-Official/APXV/releases) or export your own. See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
 
 ## Run the local API
 

@@ -85,6 +85,13 @@ APXV1 uses **single-party Groth16 trusted setup** per circuit. v1.1 adds **Tier 
 
 v1.1.0 uses single-party Groth16 trusted setup. See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
 
+## BYO ML redaction backends (v1.2)
+
+- Optional `register_backend()` on `APXRedactionEngine` — you supply the model; APXV1 does not ship weights or inference
+- Invocations can be audit-logged as `redaction_backend_invoked` (backend id + input hash + counts)
+- Groth16 entity proofs bind **`entities[]` and document hashes** produced by your pipeline — **not** semantic correctness of an external ML model
+- Treat backend outputs like any other agent output: validate before attestation
+
 ## Voice privacy (v1.1)
 
 - Voice audio/transcripts flow through local STT (Vosk or simulated) then the same redaction engine as text

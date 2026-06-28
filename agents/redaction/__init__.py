@@ -1,5 +1,6 @@
 """APX redaction package — format parsing, unicode armor, and entity-aware engine."""
 
+from .backends import RedactionBackendRegistry
 from .engine import (
     APXRedactionEngine,
     REDACTION_ENGINE_VERSION,
@@ -11,6 +12,7 @@ from .unicode_armor import detect_unicode_spoofing, preprocess_for_pii_detection
 
 __all__ = [
     "APXRedactionEngine",
+    "RedactionBackendRegistry",
     "REDACTION_ENGINE_VERSION",
     "FormatParser",
     "ParsedData",

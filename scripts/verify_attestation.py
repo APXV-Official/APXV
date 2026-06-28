@@ -236,10 +236,23 @@ def verify_real_zk_independent(
             return {"status": "error_calling_rust", "error": str(e)}
 
 
+def entity_proof_key_for_circuit(circuit: str, proof_key: str | None = None) -> str:
+    if proof_key:
+        return proof_key
+    return circuit.replace("-", "_")
+
+
+def circuit_for_entity_proof_key(proof_key: str) -> str:
+    if proof_key.startswith("merkle_inclusion_"):
+        return "merkle-inclusion"
+    return proof_key.replace("_", "-")
+
+
 def verify_entity_zk_independent(
     attested_result: dict,
     base_path: Path,
     circuit: str = "redaction-v1",
+    proof_key: str | None = None,
 ) -> dict:
     """Independent Groth16 verification for entity circuits (apx-zk)."""
     import subprocess
@@ -249,8 +262,8 @@ def verify_entity_zk_independent(
 
     entity_bundle = attested_result.get("entity_proofs", {})
     proofs = entity_bundle.get("proofs", {})
-    proof_key = circuit.replace("-", "_")
-    proof_bundle = proofs.get(proof_key)
+    resolved_proof_key = entity_proof_key_for_circuit(circuit, proof_key)
+    proof_bundle = proofs.get(resolved_proof_key)
     if not isinstance(proof_bundle, dict) or "proof_hex" not in proof_bundle:
         return {
             "status": "no_entity_proof_in_attestation",
@@ -405,25 +418,28 @@ def main():
             print(f"\n--- governance: {circuit} ---")
             print(json.dumps(zk_result, indent=2))
 
-        entity_circuits = []
-        entity_proofs = attested.get("entity_proofs", {}).get("proofs", {})
-        for key in sorted(entity_proofs.keys()):
-            entity_circuits.append(key.replace("_", "-"))
+        entity_proof_keys = sorted(attested.get("entity_proofs", {}).get("proofs", {}).keys())
 
         entity_results = {}
-        for circuit in entity_circuits:
-            entity_result = verify_entity_zk_independent(attested, base, circuit=circuit)
-            entity_results[circuit] = entity_result
+        for proof_key in entity_proof_keys:
+            circuit = circuit_for_entity_proof_key(proof_key)
+            entity_result = verify_entity_zk_independent(
+                attested,
+                base,
+                circuit=circuit,
+                proof_key=proof_key,
+            )
+            entity_results[proof_key] = entity_result
             if entity_result.get("status") != "independent_verification_complete":
                 all_valid = False
-            print(f"\n--- entity: {circuit} ---")
+            print(f"\n--- entity: {proof_key} ({circuit}) ---")
             print(json.dumps(entity_result, indent=2))
 
         print("\n" + "=" * 70)
-        if all_valid and entity_circuits:
+        if all_valid and entity_proof_keys:
             print(
                 f"ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK] "
-                f"(3 governance + {len(entity_circuits)} entity)"
+                f"(3 governance + {len(entity_proof_keys)} entity)"
             )
         elif all_valid:
             print("ALL THREE GOVERNANCE GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]")

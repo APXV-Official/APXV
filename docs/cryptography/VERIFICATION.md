@@ -33,7 +33,7 @@ See [CEREMONY.md](CEREMONY.md) and [ASSUMPTIONS.md](ASSUMPTIONS.md).
 2. VK integrity (`vk_hex` vs manifest on disk or bundle)
 3. Independent Groth16 verify for:
    - **Governance (3):** `redaction`, `rule-binding`, `pipeline`
-   - **Entity (present in artifact):** typically `redaction-v1`, `core-redaction`, optional `batch-merkle`, optional `voice-redaction`
+   - **Entity (present in artifact):** `redaction-v1`, `core-redaction`, optional `batch-merkle`, `merkle_inclusion_*` (per entity), `compliance`, optional `voice-redaction`
 
 Not every entity circuit in the crate appears on every artifact. See [CIRCUITS.md](CIRCUITS.md).
 

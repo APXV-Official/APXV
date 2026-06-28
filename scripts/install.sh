@@ -11,7 +11,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 echo "============================================================"
-echo "APXV1 — clone to running (v1.1.2)"
+echo "APXV1 — clone to running"
 echo "No Python/Rust? Use: ./scripts/install-docker.sh"
 echo "============================================================"
 
@@ -29,18 +29,68 @@ if ! command -v cargo >/dev/null 2>&1 || ! command -v rustc >/dev/null 2>&1; the
   exit 1
 fi
 
+if ! command -v cc >/dev/null 2>&1 && ! command -v gcc >/dev/null 2>&1; then
+  echo "WARNING: No C compiler (cc/gcc) found. Rust ZK builds need build-essential."
+  echo "  Ubuntu/Debian/WSL: sudo apt install -y build-essential"
+fi
+
+PYTHON=(python3)
+VENV_DIR="$ROOT/.venv"
+
+ensure_venv() {
+  if [[ -x "$VENV_DIR/bin/python" ]]; then
+    PYTHON=("$VENV_DIR/bin/python")
+    return 0
+  fi
+
+  echo "Creating project virtualenv (.venv)..."
+  if python3 -m venv "$VENV_DIR" 2>/dev/null; then
+    PYTHON=("$VENV_DIR/bin/python")
+    return 0
+  fi
+
+  PY_MINOR="$(python3 -c 'import sys; print(sys.version_info.minor)')"
+  echo "ensurepip unavailable — trying venv without pip..."
+  if ! python3 -m venv --without-pip "$VENV_DIR"; then
+    echo "ERROR: Could not create .venv. Install: sudo apt install -y python3.${PY_MINOR}-venv"
+    exit 1
+  fi
+
+  GET_PIP="$(mktemp)"
+  if ! curl -fsSL https://bootstrap.pypa.io/get-pip.py -o "$GET_PIP"; then
+    echo "ERROR: Could not download get-pip.py. Check network or install python3-pip."
+    rm -f "$GET_PIP"
+    exit 1
+  fi
+  "$VENV_DIR/bin/python" "$GET_PIP" -q
+  rm -f "$GET_PIP"
+  PYTHON=("$VENV_DIR/bin/python")
+}
+
+if ! python3 -m pip --version >/dev/null 2>&1; then
+  ensure_venv
+elif ! python3 -m pip install --dry-run pip >/dev/null 2>&1; then
+  ensure_venv
+else
+  if ! python3 -m pip install -e ".[dev]" --dry-run >/dev/null 2>&1; then
+    ensure_venv
+  fi
+fi
+
 if [[ "$FRESH" -eq 1 ]]; then
   echo "Resetting runtime state (keeping governance templates)..."
-  python3 -m scripts.fresh_reset
+  "${PYTHON[@]}" -m scripts.fresh_reset
 fi
 
 echo "[1/2] Installing Python package (dev + voice extras)..."
-python3 -m pip install -e ".[dev,voice]"
+"${PYTHON[@]}" -m pip install -e ".[dev,voice]"
 
 echo "[2/2] Onboarding (setup, pack demo, attest, verify)..."
-python3 -m scripts.onboard
+"${PYTHON[@]}" -m scripts.onboard
 
 echo "============================================================"
-echo "Done. Optional: python3 -m scripts.setup_voice"
+echo "Done. Activate venv: source .venv/bin/activate"
+echo "Quick demo: ./scripts/apx_demo.sh"
+echo "Optional: ${PYTHON[*]} -m scripts.setup_voice"
 echo "Docs: docs/QUICKSTART.md"
 echo "============================================================"

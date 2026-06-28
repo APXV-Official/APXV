@@ -327,6 +327,15 @@ def main():
             extras = []
             if "batch_merkle" in entity_bundle.get("proofs", {}):
                 extras.append("batch-merkle")
+            inclusion_count = sum(
+                1
+                for key in entity_bundle.get("proofs", {})
+                if key.startswith("merkle_inclusion_")
+            )
+            if inclusion_count:
+                extras.append(f"merkle-inclusion×{inclusion_count}")
+            if "compliance" in entity_bundle.get("proofs", {}):
+                extras.append("compliance")
             if "voice_redaction" in entity_bundle.get("proofs", {}):
                 extras.append("voice-redaction")
             suffix = (" + " + " + ".join(extras)) if extras else ""
