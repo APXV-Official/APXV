@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV1**, the first open-source implementation.
 
-> **Current release:** [v1.2.0](https://github.com/APXV-Official/APXV/releases/tag/v1.2.0) — runtime + three official agent packs. [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
+> **Current release:** [v1.2.1](https://github.com/APXV-Official/APXV/releases/tag/v1.2.1) — stability patch on v1.2.0 (audit hardening, operator UX). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
 
 Clone the repo, run one command, and you get a working instance: setup, health checks, the reference pack pipeline, a full attestation, and independent ZK verification. Everything stays on your machine.
 
@@ -31,6 +31,10 @@ ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]
 First native install may take a few minutes (Rust compile). Docker build is slower once, then cached.
 
 Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
+
+**Linux / WSL:** use `python3` or activate `.venv/bin/activate` if `python` is not on PATH.
+
+**API key:** printed once at onboard, saved to `managed/config/OPERATOR-KEY-default-operator.txt`, or create with `python -m scripts.apx_ctl api-key create my-app --save-hint`.
 
 Details: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
@@ -153,7 +157,7 @@ Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest
 
 ## Status
 
-**v1.2.0 (current)** — `merkle-inclusion` + `compliance` on attest path, Document Processing Pack, AI Governance Pack, BYO ML redaction hook, `apx_demo` scripts. **339 tests pass** (1 optional Vosk skip). Prior releases: [CHANGELOG.md](CHANGELOG.md).
+**v1.2.1 (current)** — stability patch: audit log locking, corrupt-line tolerance, API key hint files, hot-reload keys, Docker recovery, configurable LLM timeout. Builds on v1.2.0 (entity circuits, three official packs, `apx_demo`). Prior releases: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 

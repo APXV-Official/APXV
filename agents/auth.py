@@ -34,6 +34,10 @@ class APIKeyAuth:
         data = json.loads(self.config_path.read_text(encoding="utf-8"))
         self._keys = data.get("keys", [])
 
+    def reload(self) -> None:
+        """Reload key store from disk (e.g. after apx_ctl api-key create)."""
+        self._load()
+
     def list_keys(self) -> List[Dict[str, Any]]:
         """Return key metadata (never includes raw secrets)."""
         return [

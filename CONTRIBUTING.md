@@ -25,6 +25,8 @@ Thank you for your interest in **APXV1**. **APXV** (*Attested Proof Execution Ve
    python -m pytest tests/ -v
    ```
 
+   On Linux/WSL use `python3` if `python` is not on PATH. API tests bind an ephemeral port — they can run while `apx_serve` listens on `8741`.
+
    For CI parity on voice paths: `APX_VOICE_MODE=simulated python -m pytest tests/ -v`
 
 ## Development Principles

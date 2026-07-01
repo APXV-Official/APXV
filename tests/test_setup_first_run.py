@@ -34,6 +34,11 @@ def test_setup_first_run_fresh_instance(tmp_path):
     assert (tmp_path / "managed" / "config" / "capabilities.json").exists()
     assert (tmp_path / "managed" / "config" / "server.json").exists()
     assert (tmp_path / "managed" / "config" / "api_keys.json").exists()
+    api_step = report["steps"]["api_key"]
+    if api_step.get("api_key"):
+        hint = tmp_path / "managed" / "config" / "OPERATOR-KEY-default-operator.txt"
+        assert hint.is_file()
+        assert api_step.get("hint_file") == str(hint)
 
     policy = json.loads(
         (tmp_path / "managed" / "config" / "capabilities.json").read_text(encoding="utf-8")

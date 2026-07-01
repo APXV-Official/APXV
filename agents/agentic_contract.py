@@ -13,7 +13,7 @@ All code is original work written for APX v1.
 
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Protocol
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 @dataclass
@@ -33,7 +33,9 @@ class AgenticOutput:
     confidence: float = 0.0
     cost_usd: float = 0.0
     latency_ms: int = 0
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+    timestamp: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    )
 
 
 class AgenticContract(Protocol):

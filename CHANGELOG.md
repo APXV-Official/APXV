@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-06-29
+
+Stability and operator-experience patch. No verifier VK or circuit changes since v1.1.0.
+
+### Fixed
+
+- Audit log: file locking on append; `get_entries()` / `get_status()` tolerate corrupt lines without crashing `/status`
+- Document pack tests use isolated `tmp_path` batch fixtures
+- API tests bind ephemeral port (no collision with running `apx_serve`)
+- Write `managed/config/OPERATOR-KEY-default-operator.txt` when default API key is created
+- Reload API keys on each authenticated request (hot-reload after `apx_ctl api-key create`)
+- `install-docker.sh` removes stale `apx-v1` container before `docker compose up -d`
+- Configurable `APX_LLM_TIMEOUT_SECONDS` for slow local LLMs (default 120s)
+
+### Changed
+
+- `datetime.utcnow()` replaced with timezone-aware UTC in core agents, audit logger, and artifact provider
+
+### Documentation
+
+- QUICKSTART, LOCAL-API, DOCKER, BUILDING, CONTRIBUTING, README, PROJECT-OVERVIEW, ROADMAP, examples, website, and AI Governance pack README updated for v1.2.1 operator flows
+
+### Chore
+
+- Install script banners and GitHub Pages site aligned to v1.2.1 (343 tests)
+
 ## [1.2.0] - 2026-06-28
 
 **APXV1 v1.2.0** — entity circuit wiring (`merkle-inclusion`, `compliance`), two new official agent packs, BYO ML redaction hook, and easier re-demo path. Verifier VKs unchanged since v1.1.0.
@@ -193,6 +219,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.2.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.1
 [1.2.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.0
 [1.1.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.2
 [1.1.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.1

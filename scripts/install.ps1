@@ -8,7 +8,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 Write-Host "============================================================"
-Write-Host "APXV1 - clone to running (v1.2.0)"
+Write-Host "APXV1 - clone to running (v1.2.1)"
 Write-Host "No Python/Rust? Use: .\scripts\install-docker.ps1"
 Write-Host "============================================================"
 

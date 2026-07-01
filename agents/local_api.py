@@ -138,6 +138,7 @@ def create_handler(
         def _check_auth(self) -> bool:
             if not self.require_auth:
                 return True
+            self.auth.reload()
             key = self.auth.extract_key_from_headers(self._headers_dict())
             return self.auth.validate(key)
 
@@ -349,6 +350,10 @@ class APXLocalServer:
         config_dir = self.base_path / "managed" / "config"
         self.auth = APIKeyAuth(config_dir / "api_keys.json")
         self.generated_key = self.auth.ensure_default_key()
+        if self.generated_key:
+            APIKeyAuth.write_key_hint(
+                self.base_path, "default-operator", self.generated_key
+            )
 
         jobs_db = self.base_path / "managed" / "store" / "jobs.db"
         self.queue = JobQueue(jobs_db)

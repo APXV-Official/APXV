@@ -1,6 +1,6 @@
 # APXV1 Quickstart (15 Minutes)
 
-**APXV** is the platform; **APXV1** is this open-source implementation. **v1.2.0** ships one-command onboarding, three official agent packs, and `merkle-inclusion` / `compliance` on the default attest path.
+**APXV** is the platform; **APXV1** is this open-source implementation. **v1.2.1** is the current release (stability patch on v1.2.0): one-command onboarding, three official agent packs, and `merkle-inclusion` / `compliance` on the default attest path.
 
 ## One command
 
@@ -21,6 +21,10 @@ Expected finale:
 First native install may take a few minutes while Rust compiles. Docker build is slower once, then cached.
 
 Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
+
+**Linux / WSL:** use `python3` (or activate `.venv/bin/activate` first) if `python` is not on PATH.
+
+**API key after onboard:** printed once in the terminal, or read `managed/config/OPERATOR-KEY-default-operator.txt`, or create with `python -m scripts.apx_ctl api-key create my-key --save-hint`.
 
 Polluted runtime state from prior experiments: `.\scripts\install.ps1 -Fresh` or `.\scripts\install-docker.ps1 -Fresh` (clears audit/config/store; keeps governance templates)
 
@@ -112,16 +116,20 @@ Open `http://127.0.0.1:8741/health` (no auth required).
 
 ### API key
 
-If you missed the key on first start:
+On first `setup_first_run` or `apx_serve`, the default key is printed once and written to:
+
+`managed/config/OPERATOR-KEY-default-operator.txt`
+
+If you missed it, create a new key (works immediately — no server restart required in v1.2.1+):
 
 ```bash
-python -m scripts.apx_ctl api-key create my-app --description "Local development"
+python -m scripts.apx_ctl api-key create my-app --save-hint --description "Local development"
 ```
 
 Set environment variable:
 
 ```bash
-export APX_API_KEY="<key-from-output>"
+export APX_API_KEY="<key-from-output-or-hint-file>"
 ```
 
 ## Try the examples
@@ -146,6 +154,8 @@ python -m scripts.apx_doctor
 ```
 
 If `apx_doctor` or `apx_ctl integrity` fails after heavy local testing (broken audit chain), use a **fresh** instance: re-run `python -m scripts.setup_first_run` on a clean tree, or remove `managed/audit/` and run setup again — do not hand-edit audit logs.
+
+**Docker:** if `docker compose up` fails with `container name "/apx-v1" is already in use`, run `docker rm -f apx-v1` then retry. See [DOCKER.md](DOCKER.md).
 
 First `run_apx --attest` can take 1–3 minutes while Rust compiles; `apx_doctor` may show `apx-circuits=no` until binaries are on PATH even when attest works.
 

@@ -39,7 +39,7 @@
     <section id="top" class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy reveal">
-          <p class="eyebrow">Apache 2.0 · Local · No telemetry · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Open source</a></p>
+          <p class="eyebrow">Apache 2.0 · Local · No telemetry · <a href="https://github.com/APXV-Official/APXV/releases/tag/v1.2.1" rel="noopener noreferrer">v1.2.1</a> · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Open source</a></p>
           <h1>Governed local agents with cryptographic attestation</h1>
           <p class="lead">
             <strong>APXV</strong> is the platform; <strong>APXV1</strong> is the open-source runtime on your infrastructure.
@@ -53,7 +53,7 @@
           <dl class="hero-meta">
             <div><dt>Source</dt><dd><a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">APXV-Official/APXV</a></dd></div>
             <div><dt>API</dt><dd><code>127.0.0.1:8741</code></dd></div>
-            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">339 tests</a></dd></div>
+            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">343 tests</a></dd></div>
           </dl>
         </div>
         <div class="hero-aside reveal">
@@ -265,11 +265,20 @@ flowchart TB
         </div>
         <div class="roadmap-phases">
           <article class="roadmap-phase">
-            <h3>Shipped</h3>
+            <h3>Shipped — v1.2.1 (current)</h3>
+            <ul>
+              <li>Audit log locking; corrupt-line tolerance without crashing <code>/status</code></li>
+              <li>API key hint files + hot-reload keys (no <code>apx_serve</code> restart)</li>
+              <li>Docker install removes stale <code>apx-v1</code> container automatically</li>
+              <li>Configurable <code>APX_LLM_TIMEOUT_SECONDS</code> for slow local LLMs</li>
+            </ul>
+          </article>
+          <article class="roadmap-phase">
+            <h3>Shipped — v1.2.0</h3>
             <ul>
               <li>Governed runtime — rules, audit, artifacts, dual-track Groth16, local API</li>
               <li>Three official agent packs — reference redaction, document processing, AI governance</li>
-              <li><code>merkle-inclusion</code> + <code>compliance</code> on default attest path (v1.2)</li>
+              <li><code>merkle-inclusion</code> + <code>compliance</code> on default attest path</li>
               <li>One-command install + <code>apx_demo</code> quick re-demo — native and Docker</li>
             </ul>
           </article>

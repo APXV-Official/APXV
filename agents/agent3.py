@@ -24,7 +24,7 @@ All code is original work written for APX v1.
 
 from pathlib import Path
 from typing import Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import json
 
@@ -140,7 +140,7 @@ class AttestationCoordinator:
             "rationale": rationale,
             "governed_by_knowledge_id": self.knowledge["id"],
             "governed_by_knowledge_hash": self.knowledge["file_hash"],
-            "decided_at": datetime.utcnow().isoformat() + "Z",
+            "decided_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         }
 
     def coordinate_attestation(
@@ -176,15 +176,15 @@ class AttestationCoordinator:
                 json.dumps(proposed_artifact, sort_keys=True).encode()
             ).hexdigest()[:32] + "-placeholder",
             "public_inputs": attestation_request.get("public_inputs", {}),
-            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "status": "simulated_proof_ready_for_real_circuit",
         }
 
         # === Final Attested Result ===
         attested_result = {
             "final_status": "ATTESTED",
-            "attestation_id": f"attested-{hashlib.sha256(str(datetime.utcnow()).encode()).hexdigest()[:16]}",
-            "completed_at": datetime.utcnow().isoformat() + "Z",
+            "attestation_id": f"attested-{hashlib.sha256(str(datetime.now(timezone.utc)).encode()).hexdigest()[:16]}",
+            "completed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "agent_chain": [
                 "APX-AGENT-001",  # RuleGovernedRedactor
                 "APX-AGENT-002",  # WorkflowOrchestrator
@@ -221,7 +221,7 @@ class AttestationCoordinator:
         result = {
             "agent_id": self.agent_id,
             "agent_name": self.agent_name,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "workflow_id": self.workflow["id"],
             "workflow_version": self.workflow["version"],
             "attested_result": attested_result,

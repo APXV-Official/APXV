@@ -10,6 +10,8 @@ Run first-time setup from the project root:
 python -m scripts.setup_first_run
 ```
 
+On Linux/WSL use `python3` if `python` is not on PATH.
+
 The example reuses `APX-AGENT-LLM-001` from the default capability policy.
 
 ## Run
@@ -20,7 +22,7 @@ python examples/hello-agent/hello_agent.py "your message here"
 
 ## What It Demonstrates
 
-- Attaching to `APXRuntime`
+- Attaching to `APXRuntime` (required for all governed agents)
 - Capability checks before execution
 - Writing an immutable artifact
 - Chained audit logging

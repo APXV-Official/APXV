@@ -27,6 +27,8 @@ ctx = init_agent_context("APX-AGENT-001", "MyAgent", "my_agent_audit.log", runti
 # capability checks → process → provider.write_artifact() → audit_logger.log_event()
 ```
 
+**Governed agents require `APXRuntime`.** Any agent that reads rules, workflows, or capabilities through the governance layer (including `RuleGovernedRedactor` and pack agents) must be constructed with `runtime=APXRuntime()`. Bare constructors without a runtime are not supported.
+
 Add your agent ID to the capability policy:
 
 ```bash
@@ -60,6 +62,8 @@ agent = LLMReasoner(
 output = agent.execute({"prompt": "Your task here"})
 ```
 
+Slow local models (CPU Ollama) may need a longer timeout: `export APX_LLM_TIMEOUT_SECONDS=120` (default since v1.2.1).
+
 LLM agents must return structured `AgenticOutput` — never raw ungoverned text as final output.
 
 ### 4. BYO ML redaction backend (optional)
@@ -90,7 +94,7 @@ result = engine.apply(input_text, backend_id=backend_id)
 
 ### 5. Agent packs and governance templates
 
-**Official packs (v1.2.0):**
+**Official packs (v1.2+):**
 
 | Pack | Demo |
 |------|------|

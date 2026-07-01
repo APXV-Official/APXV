@@ -23,6 +23,14 @@ if TYPE_CHECKING:
     from .store import SqliteArtifactStore
 
 
+def _utcnow_z() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _utcnow_filename() -> str:
+    return datetime.now(timezone.utc).replace(tzinfo=None).isoformat().replace(":", "-").replace(".", "-")
+
+
 class IArtifactProvider(Protocol):
     """
     Interface for all artifact providers in APX.
@@ -117,7 +125,7 @@ class MinimalArtifactProvider:
             "id": spec_id,
             "version": version,
             "file_path": str(relative_path),
-            "read_at": datetime.utcnow().isoformat() + "Z",
+            "read_at": _utcnow_z(),
         }
 
     def write_artifact(self, artifact: Dict[str, Any], name: str) -> Dict[str, Any]:
@@ -133,7 +141,7 @@ class MinimalArtifactProvider:
         Returns:
             Dict with write metadata: path, hash, written_at
         """
-        timestamp = datetime.utcnow().isoformat().replace(":", "-").replace(".", "-")
+        timestamp = _utcnow_filename()
         safe_name = "".join(c for c in name if c.isalnum() or c in ("-", "_")).lower()
         filename = f"{safe_name}_{timestamp}.json"
         full_path = self.artifacts_path / filename
@@ -142,7 +150,7 @@ class MinimalArtifactProvider:
         wrapped = {
             "artifact": artifact,
             "written_by": "MinimalArtifactProvider",
-            "written_at": datetime.utcnow().isoformat() + "Z",
+            "written_at": _utcnow_z(),
             "artifact_hash": self._compute_hash(json.dumps(artifact, sort_keys=True)),
         }
 
@@ -164,7 +172,7 @@ class MinimalArtifactProvider:
 
         content = full_path.read_text(encoding="utf-8")
         data = json.loads(content)
-        data["read_at"] = datetime.utcnow().isoformat() + "Z"
+        data["read_at"] = _utcnow_z()
         return data
 
     def list_artifacts(self) -> list:
@@ -236,7 +244,7 @@ class FileArtifactProvider:
             "id": f"APX-{spec_type.upper()}-001",
             "version": "1.0.0",
             "file_path": str(relative_path),
-            "read_at": datetime.utcnow().isoformat() + "Z",
+            "read_at": _utcnow_z(),
         }
 
     def _get_previous_artifact_hash(self) -> Optional[str]:
@@ -268,7 +276,7 @@ class FileArtifactProvider:
         artifact_json = json.dumps(artifact, sort_keys=True)
         artifact_hash = self._compute_hash(artifact_json)
 
-        timestamp = datetime.utcnow().isoformat().replace(":", "-").replace(".", "-")
+        timestamp = _utcnow_filename()
         safe_name = "".join(c for c in name if c.isalnum() or c in ("-", "_")).lower()
         filename = f"{safe_name}_{artifact_hash[:16]}_{timestamp}.json"
         full_path = self.artifacts_path / filename
@@ -281,7 +289,7 @@ class FileArtifactProvider:
         wrapped = {
             "artifact": artifact,
             "written_by": "FileArtifactProvider",
-            "written_at": datetime.utcnow().isoformat() + "Z",
+            "written_at": _utcnow_z(),
             "artifact_hash": artifact_hash,
             "previous_artifact": previous_artifact_hash,
         }
@@ -315,7 +323,7 @@ class FileArtifactProvider:
         if stored_hash and stored_hash != computed_hash:
             raise ValueError(f"Integrity check failed for {full_path.name}")
 
-        data["read_at"] = datetime.utcnow().isoformat() + "Z"
+        data["read_at"] = _utcnow_z()
         return data
 
     def list_artifacts(self) -> list:

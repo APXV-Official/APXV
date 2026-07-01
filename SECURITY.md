@@ -4,6 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
+| 1.2.x   | Yes       |
 | 1.1.x   | Yes       |
 | 1.0.x   | Yes       |
 | 0.3.x   | No        |
@@ -24,7 +25,7 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 
 ### APXV1 Protects Against
 
-- **Casual tampering** with artifacts and audit logs (hash chains detect modification)
+- **Casual tampering** with artifacts and audit logs (hash chains detect modification; v1.2.1+ uses locked append to reduce concurrent-write corruption)
 - **Unaudited rule changes** (governance approval workflow required)
 - **Unsigned capability policy changes** (Ed25519-signed local policy)
 - **Accidental data egress via APXV1 itself** (localhost-only API, no built-in telemetry)

@@ -11,7 +11,7 @@ if [[ "${1:-}" == "--fresh" ]]; then
 fi
 
 echo "============================================================"
-echo "APXV1 Docker onboarding (v1.2.0)"
+echo "APXV1 Docker onboarding (v1.2.1)"
 echo "Requires: Docker + Docker Compose"
 echo "============================================================"
 
@@ -109,6 +109,7 @@ echo "[2/3] Onboarding in container (pack demo, attest, verify)..."
 "${COMPOSE[@]}" run --rm apx-v1 python -m scripts.onboard --skip-zk
 
 echo "[3/3] Starting API server..."
+docker rm -f apx-v1 2>/dev/null || true
 "${COMPOSE[@]}" up -d
 
 echo "============================================================"

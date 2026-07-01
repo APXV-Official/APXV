@@ -47,20 +47,31 @@ def test_pack_layout_exists(pack_root: Path):
         assert (pack_root / rel).is_file(), rel
 
 
-def test_pack_agent_bindings():
+@pytest.fixture
+def isolated_batch_dir(tmp_path: Path) -> Path:
+    """Copy only the two canonical batch fixtures — immune to extra files in examples/."""
+    src = PACK / "examples" / "inputs" / "batch"
+    batch = tmp_path / "batch"
+    batch.mkdir()
+    for name in ("invoice.txt", "customer.json"):
+        (batch / name).write_text((src / name).read_text(encoding="utf-8"), encoding="utf-8")
+    return batch
+
+
+def test_pack_agent_bindings(isolated_batch_dir: Path):
     mod = _load_document_agents()
     assert mod.PACK_AGENT_IDS == ("APX-AGENT-001", "APX-AGENT-002", "APX-AGENT-003")
     assert mod.DEFAULT_POLICY_BATCH == 2
-    files = mod.discover_batch_files(PACK / "examples" / "inputs" / "batch")
+    files = mod.discover_batch_files(isolated_batch_dir)
     assert len(files) == 2
 
 
-def test_batch_pipeline_sets_compliance_policy_id_2():
+def test_batch_pipeline_sets_compliance_policy_id_2(isolated_batch_dir: Path):
     mod = _load_document_agents()
     from agents.runtime import APXRuntime
 
     attested = mod.process_batch_directory(
-        PACK / "examples" / "inputs" / "batch",
+        isolated_batch_dir,
         runtime=APXRuntime(),
         batch_id="test-batch-001",
     )
@@ -92,7 +103,7 @@ def test_pack_demo_script_exits_zero():
     not (ROOT / "rust" / "Cargo.toml").exists(),
     reason="Rust workspace not available",
 )
-def test_batch_attest_includes_compliance_policy_2_proof():
+def test_batch_attest_includes_compliance_policy_2_proof(isolated_batch_dir: Path):
     mod = _load_document_agents()
     from agents.runtime import APXRuntime
     from agents.zk.bridge import EntityZKBridge
@@ -100,7 +111,7 @@ def test_batch_attest_includes_compliance_policy_2_proof():
     from scripts.setup_entity_zk import ensure_entity_zk_setup
 
     attested = mod.process_batch_directory(
-        PACK / "examples" / "inputs" / "batch",
+        isolated_batch_dir,
         runtime=APXRuntime(),
     )
     assert resolve_compliance_policy_id(attested) == 2

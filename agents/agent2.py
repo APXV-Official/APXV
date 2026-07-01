@@ -23,7 +23,7 @@ All code is original work written for APX v1.
 
 from pathlib import Path
 from typing import Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import json
 
@@ -164,7 +164,7 @@ class WorkflowOrchestrator:
         # We now build the rich execution record
 
         execution_trace = [
-            {"step": 1, "name": "load_specifications", "timestamp": datetime.utcnow().isoformat() + "Z"},
+            {"step": 1, "name": "load_specifications", "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")},
             {"step": 2, "name": "record_input_hash", "input_hash": original_input_hash},
             {"step": 3, "name": "apply_redactions", "redactions": redactions_applied},
             {"step": 4, "name": "build_structured_output"},
@@ -175,7 +175,7 @@ class WorkflowOrchestrator:
             "artifact_type": "redaction_result",
             "schema_version": "apx-artifact-v0.1",
             "agent_chain": [upstream_agent, self.agent_id] if upstream_agent else [self.agent_id],
-            "created_at": datetime.utcnow().isoformat() + "Z",
+            "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "governed_by": {
                 "rule_id": self.rule_set["id"],
                 "rule_version": self.rule_set["version"],
@@ -204,7 +204,7 @@ class WorkflowOrchestrator:
 
         # === Step 6: Prepare Attestation Request Payload ===
         attestation_request = {
-            "request_id": f"attest-{hashlib.sha256(str(datetime.utcnow()).encode()).hexdigest()[:12]}",
+            "request_id": f"attest-{hashlib.sha256(str(datetime.now(timezone.utc)).encode()).hexdigest()[:12]}",
             "artifact_hash": hashlib.sha256(json.dumps(proposed_artifact, sort_keys=True).encode()).hexdigest(),
             "circuit_hint": "redaction_v1",   # Points to future circuit in Step 5
             "public_inputs": {
@@ -213,7 +213,7 @@ class WorkflowOrchestrator:
                 "input_hash": original_input_hash,
                 "redaction_count": total_redactions,
             },
-            "requested_at": datetime.utcnow().isoformat() + "Z",
+            "requested_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "status": "pending_proof",
         }
 
@@ -221,7 +221,7 @@ class WorkflowOrchestrator:
         result = {
             "agent_id": self.agent_id,
             "agent_name": self.agent_name,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "workflow_id": self.workflow["id"],
             "workflow_version": self.workflow["version"],
             "workflow_file_hash": self.workflow["file_hash"],

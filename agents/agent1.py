@@ -19,7 +19,7 @@ All code is original work written for APX v1.
 
 from pathlib import Path
 from typing import Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 
 from .agent_base import init_agent_context, register_loaded_specs
@@ -127,7 +127,7 @@ class RuleGovernedRedactor:
         output = {
             "agent_id": self.agent_id,
             "agent_name": self.agent_name,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "input_hash": input_hash,
             "redacted_text": redaction_result["redacted_text"],
             "redactions_applied": redaction_result["redactions_applied"],

@@ -1,10 +1,19 @@
 # APXV Roadmap
 
-**Last updated:** 2026-06-28
+**Last updated:** 2026-07-01
 
 APXV1 is a local governed runtime. Verticals ship as **agent packs** on top. This is our direction — not a fixed timeline. See [CHANGELOG.md](CHANGELOG.md) for what has shipped.
 
-## Shipped today (v1.2.0)
+## Shipped today (v1.2.1 — current)
+
+Stability and operator-experience patch on v1.2.0. No verifier VK or circuit changes since v1.1.0.
+
+- Audit log file locking; corrupt-line tolerance (health degrades instead of crashing `/status`)
+- API key hint files (`managed/config/OPERATOR-KEY-*.txt`); hot-reload keys without restarting `apx_serve`
+- Docker install removes stale `apx-v1` container automatically
+- Configurable `APX_LLM_TIMEOUT_SECONDS` (default 120s)
+
+## Shipped (v1.2.0)
 
 - Governed runtime: rules, audit, artifacts, dual-track Groth16, local API
 - **Official agent packs:** [Reference Redaction](governance-libraries/apxv-pack-reference-redaction/), [Document Processing](governance-libraries/apxv-pack-document-processing/), [AI Governance](governance-libraries/apxv-pack-ai-governance/)
@@ -28,7 +37,7 @@ APXV1 is a local governed runtime. Verticals ship as **agent packs** on top. Thi
 
 - Cloud SaaS or hosted APXV
 - HIPAA / SOC2 / GDPR certification claims
-- A bundled LLM or “magic compliance” product
+- A bundled LLM or "magic compliance" product
 - PDF / DOCX enterprise DLP in core packs (batch `.txt` / `.json` only today)
 
 ## Feedback

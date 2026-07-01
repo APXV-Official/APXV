@@ -9,7 +9,7 @@
 python -m scripts.apx_serve
 ```
 
-On first start, a default API key is generated and printed once. Save it.
+On first start, a default API key is generated and printed once. It is also written to `managed/config/OPERATOR-KEY-default-operator.txt` (v1.2.1+). Save it and delete the hint file after copying if desired.
 
 Configuration: `managed/config/server.json`
 
@@ -36,6 +36,12 @@ X-APX-API-Key: <your-api-key>
 ```
 
 Keys are stored as SHA-256 hashes in `managed/config/api_keys.json`.
+
+New keys created via `apx_ctl api-key create` are accepted immediately without restarting `apx_serve` (v1.2.1+).
+
+## Health and status
+
+`GET /health` (no auth) reports `healthy` or `degraded` from integrity checks. A corrupt audit log line marks the chain invalid but does not crash the server (v1.2.1+). Use `python -m scripts.apx_doctor` or restore from backup if integrity is `degraded`.
 
 ## Endpoints
 

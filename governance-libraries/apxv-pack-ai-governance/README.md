@@ -9,7 +9,9 @@
 Governed redaction plus LLM review:
 
 1. Redact input with **APX-AGENT-001** (core redactor)
-2. Run **APX-AGENT-LLM-001** (`LLMReasoner`) for governance review (simulated backend by default)
+2. Run **APX-AGENT-LLM-001** (`LLMReasoner`) for governance review
+
+> **Default backend is simulated** (`SimulatedLLMBackend`) — no real LLM calls. For production review, pass your own `LLMBackend` (see [examples/llm-ollama/](../../examples/llm-ollama/) and `run_governed_ai_pipeline(..., backend=your_backend)`).
 3. Orchestrate and attest with **compliance policy id 4** (AI governance / regulated metadata)
 
 Agents ship in APXV1 core. This pack adds governance specs, pipeline logic (`agents/governance_agents.py`), demo fixtures, and acceptance tests.
@@ -47,6 +49,8 @@ Apply governance via propose → approve → apply for each spec in `governance/
 
 The demo runs the governance attestation path (Agents 1–3 + LLM review metadata). For full Groth16 entity proofs including `compliance` with policy id 4, run `python -m scripts.run_apx --attest` after integrating pack output into your pipeline.
 
-## BYO LLM
+## BYO LLM (required for real inference)
 
-Pass your own `LLMBackend` to `run_governed_ai_pipeline(..., backend=your_backend)`. See `docs/BUILDING.md` and `examples/llm-ollama/`.
+The pack demo and `apx_demo --pack ai` use a **simulated** backend unless you pass a real one. For Ollama or another local model, pass `backend=OllamaLLMBackend(model="llama3.2")` to `run_governed_ai_pipeline` — see `examples/run_pack_demo.py` and [examples/llm-ollama/](../../examples/llm-ollama/).
+
+Set `APX_LLM_TIMEOUT_SECONDS=120` (or higher) for slow CPU inference. See [docs/BUILDING.md](../../docs/BUILDING.md) and [examples/llm-ollama/](../../examples/llm-ollama/).

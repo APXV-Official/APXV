@@ -101,9 +101,13 @@ def ensure_api_key(base_path: Path) -> dict:
     config_path = base_path / "managed" / "config" / "api_keys.json"
     auth = APIKeyAuth(config_path)
     raw_key = auth.ensure_default_key()
+    hint_path = None
+    if raw_key:
+        hint_path = APIKeyAuth.write_key_hint(base_path, "default-operator", raw_key)
     return {
         "created": raw_key is not None,
         "api_key": raw_key,
+        "hint_file": str(hint_path) if hint_path else None,
     }
 
 

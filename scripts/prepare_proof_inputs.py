@@ -16,6 +16,7 @@ All code is original work written for APX v1.
 
 from pathlib import Path
 from typing import Dict, Any, Optional
+from datetime import datetime, timezone
 import json
 import sys
 import hashlib
@@ -104,7 +105,7 @@ def prepare_circuit_inputs(
         "redaction_proof_inputs": redaction_inputs,
         "rule_binding_inputs": rule_binding_inputs,
         "pipeline_attestation_inputs": pipeline_inputs,
-        "prepared_at": __import__("datetime").datetime.utcnow().isoformat() + "Z",
+        "prepared_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
 
 

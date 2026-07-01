@@ -24,17 +24,20 @@ APXV1 binds inside the container on `0.0.0.0:8741` (Docker-only via `APX_CONTAIN
 
 On first start with **empty volumes**, the entrypoint runs `setup_first_run --skip-zk` (ZK keys are baked into the image at build time).
 
-Get your API key from logs:
+Get your API key (v1.2.1+):
+
+1. Read the hint file on the mounted volume: `managed/config/OPERATOR-KEY-default-operator.txt`
+2. Or scan container logs: `docker logs apx-v1 2>&1 | findstr /i "API KEY"`
+
+Save the key and delete the hint file after copying if desired. See [LOCAL-API.md](LOCAL-API.md) for auth details.
+
+Create additional keys after start (accepted immediately without restarting the API):
 
 ```bash
-docker logs apx-v1 2>&1 | findstr /i "API KEY"
+docker exec apx-v1 python -m scripts.apx_ctl api-key create team-api --save-hint
 ```
 
-Or create one after start:
-
-```bash
-docker exec apx-v1 python -m scripts.apx_ctl api-key create team-api
-```
+The hint is written to `managed/config/OPERATOR-KEY-team-api.txt` on the mounted volume.
 
 ## Volumes (important)
 
@@ -80,6 +83,19 @@ Backups land in `managed/backups/` on the mounted volume.
 docker exec apx-v1 python -m scripts.run_apx --attest
 docker exec apx-v1 python -m scripts.verify_attestation --real-zk
 ```
+
+## Troubleshooting
+
+**`container name "/apx-v1" is already in use`**
+
+Only one APXV1 API per host on port 8741. Remove the stale container, then start again:
+
+```bash
+docker rm -f apx-v1
+docker compose up -d
+```
+
+`install-docker.sh` runs this cleanup automatically (v1.2.1+).
 
 ## Air-gap note
 

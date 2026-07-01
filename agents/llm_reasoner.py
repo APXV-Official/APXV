@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 import concurrent.futures
+import os
 
 from .agent_base import init_agent_context
 from .agentic_contract import AgenticOutput, validate_agentic_output
@@ -37,7 +38,7 @@ class LLMReasoner:
         agent_id: str = "APX-AGENT-LLM-001",
         max_cost_usd: float = 0.05,
         max_latency_ms: int = 5000,
-        max_execution_time_seconds: int = 30,
+        max_execution_time_seconds: Optional[int] = None,
         backend: Optional[LLMBackend] = None,
         base_path: Optional[Path] = None,
         runtime: Optional["APXRuntime"] = None,
@@ -46,6 +47,8 @@ class LLMReasoner:
         self.agent_name = "LLMReasoner"
         self.max_cost_usd = max_cost_usd
         self.max_latency_ms = max_latency_ms
+        if max_execution_time_seconds is None:
+            max_execution_time_seconds = int(os.environ.get("APX_LLM_TIMEOUT_SECONDS", "120"))
         self.max_execution_time_seconds = max_execution_time_seconds
         self.backend = backend or SimulatedLLMBackend()
 
