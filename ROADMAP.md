@@ -1,16 +1,25 @@
 # APXV Roadmap
 
-**Last updated:** 2026-07-01
+**Last updated:** 2026-07-02
 
 APXV1 is a local governed runtime. Verticals ship as **agent packs** on top. This is our direction — not a fixed timeline. See [CHANGELOG.md](CHANGELOG.md) for what has shipped.
 
-## Shipped today (v1.2.1 — current)
+## Shipped today (v1.2.2 — current)
 
-Stability and operator-experience patch on v1.2.0. No verifier VK or circuit changes since v1.1.0.
+Operator clarity and install parity patch on v1.2.1. No verifier VK or circuit changes since v1.1.0.
+
+- Audit integrity diagnostics: `corrupt_lines` vs `chain_break` in `apx_doctor`, `apx_ctl integrity`, and `/health` (`integrity.audit_summary`)
+- Windows Docker install parity: `install-docker.ps1` removes stale `apx-v1` before `compose up -d`
+- Upgrade runbooks and QUICKSTART recovery flows for degraded health and missing API key hint files
+- ASCII-safe GitHub release notes via `scripts/publish_github_release.py`
+
+## Shipped (v1.2.1)
+
+Stability and operator-experience patch on v1.2.0.
 
 - Audit log file locking; corrupt-line tolerance (health degrades instead of crashing `/status`)
 - API key hint files (`managed/config/OPERATOR-KEY-*.txt`); hot-reload keys without restarting `apx_serve`
-- Docker install removes stale `apx-v1` container automatically
+- Docker install removes stale `apx-v1` container automatically (bash; extended to PowerShell in v1.2.2)
 - Configurable `APX_LLM_TIMEOUT_SECONDS` (default 120s)
 
 ## Shipped (v1.2.0)

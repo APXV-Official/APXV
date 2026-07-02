@@ -263,14 +263,24 @@ def cmd_api_key_create(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_integrity(_args: argparse.Namespace) -> int:
-    runtime = APXRuntime()
+def cmd_integrity(args: argparse.Namespace) -> int:
+    base_path = getattr(args, "base_path", None) or ROOT
+    runtime = APXRuntime(base_path=base_path)
     result = runtime.verify_integrity()
     print(json.dumps(result, indent=2))
     if result["healthy"]:
         print("\nAPX integrity check: HEALTHY")
         return 0
     print("\nAPX integrity check: FAILED")
+    for log_name, summary in (result.get("audit_summary") or {}).items():
+        if summary.get("issue"):
+            print(
+                f"  {log_name}: {summary['issue']} "
+                f"(corrupt_lines={summary.get('corrupt_line_count', 0)}, "
+                f"chain_valid={summary.get('chain_valid')})"
+            )
+    for hint in result.get("recovery_hints") or []:
+        print(f"  -> {hint}")
     return 1
 
 
@@ -326,7 +336,13 @@ def main() -> int:
         action="store_true",
         help="Skip pre-restore safety backup",
     )
-    sub.add_parser("integrity", help="Full integrity check (store + audit)")
+    integrity = sub.add_parser("integrity", help="Full integrity check (store + audit)")
+    integrity.add_argument(
+        "--base-path",
+        type=Path,
+        default=ROOT,
+        help="APX project root (default: package root)",
+    )
 
     api_key = sub.add_parser("api-key", help="Operator API key management")
     api_sub = api_key.add_subparsers(dest="api_command", required=True)

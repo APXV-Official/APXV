@@ -13,7 +13,7 @@ Before performing any upgrade:
    - Store the backup in a secure, separate location.
 
 2. **Verify current system health**
-   - Run `AuditLogger.verify_chain()` on all audit logs.
+   - Run `python -m scripts.apx_doctor` (preferred) or `python -m scripts.apx_ctl integrity`.
    - Confirm all services/containers are running normally.
 
 3. **Document the current version**
@@ -34,21 +34,31 @@ docker build -t apx-v1:<new-version> .
 ### 2.2 Stop the Running Container
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### 2.3 Start with New Image
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
+```
+
+Or use the one-command installer (removes stale `apx-v1` automatically since v1.2.2):
+
+```powershell
+.\scripts\install-docker.ps1
+```
+
+```bash
+./scripts/install-docker.sh
 ```
 
 ### 2.4 Post-Upgrade Verification
 
 - Check logs for successful startup
-- Run `AuditLogger.verify_chain()` again
+- Run `python -m scripts.apx_doctor`
 - Verify recent artifacts are still readable
-- Test a small end-to-end attestation flow
+- Test a small end-to-end attestation flow (`apx_demo --pack reference`)
 
 ---
 
@@ -60,12 +70,48 @@ docker-compose up -d --build
    ```bash
    pip install -e . --upgrade
    ```
-4. Restart the application
+4. Restart the application (`apx_serve` or Docker)
 5. Verify as above
+
+### 3.1 API key hint file (v1.2.0 → v1.2.2 in-place)
+
+v1.2.1+ writes `managed/config/OPERATOR-KEY-default-operator.txt` on fresh setup. Upgraded trees may have `api_keys.json` only.
+
+Create a new hint without server restart (hot-reload in v1.2.1+):
+
+```bash
+python -m scripts.apx_ctl api-key create my-app --save-hint --description "Post-upgrade"
+```
+
+Or run `python -m scripts.setup_first_run` — it prints an advisory if the default hint file is missing.
 
 ---
 
-## 4. Rollback Procedure
+## 4. Degraded integrity after upgrade (v1.2.2+)
+
+Long-lived `managed/` trees often show **NEEDS ATTENTION** while pipelines still work. Use per-log diagnostics from `apx_doctor`, `apx_ctl integrity`, or `GET /health`:
+
+| Symptom | `issue` | Recovery |
+|---------|---------|----------|
+| Unparseable JSON lines | `corrupt_lines` | Back up `managed/`, remove affected files under `managed/audit/`, run `setup_first_run` |
+| Valid JSON, broken hash chain | `chain_break` | Remove `managed/audit/*.log`, run `setup_first_run` — or `fresh_reset` for full local reset |
+| All logs healthy | — | No action |
+
+**Do not hand-edit audit log lines** — that breaks the hash chain.
+
+Example chain-break (common on dev machines):
+
+```
+apx_ctl integrity
+  system_audit.log: chain_break (0 corrupt lines, chain_valid=false)
+  Recovery: Remove managed/audit/*.log and run setup_first_run
+```
+
+`/health` returns HTTP 200 with `"status": "degraded"` and `integrity.audit_summary` when audit logs fail verification.
+
+---
+
+## 5. Rollback Procedure
 
 If the upgrade causes issues:
 
@@ -73,8 +119,8 @@ If the upgrade causes issues:
 2. Restore the `managed/` directory from the pre-upgrade backup (if needed)
 3. Redeploy the previous known-good version:
    ```bash
-   docker-compose down
-   docker-compose up -d -f docker-compose.yml
+   docker compose down
+   docker compose up -d
    # (or use previous image tag)
    ```
 4. Verify audit log and artifact chain integrity
@@ -82,7 +128,7 @@ If the upgrade causes issues:
 
 ---
 
-## 5. Data Migration Notes
+## 6. Data Migration Notes
 
 - APXV1 currently uses file-based storage under `managed/`
 - Most upgrades should not require data migration
@@ -90,13 +136,14 @@ If the upgrade causes issues:
 
 ---
 
-## 6. Best Practices
+## 7. Best Practices
 
 - Always test upgrades in a staging environment first
-- Keep at least one previous version’s image available for quick rollback
+- Keep at least one previous version's image available for quick rollback
 - Maintain regular backups of `managed/keys/` (verification keys)
 - Document every upgrade with date, version, and any issues encountered
+- Use **fresh Docker volumes** for production — do not mount a polluted dev `managed/` folder (see [docs/DOCKER.md](../docs/DOCKER.md))
 
 ---
 
-*Last updated: 2026-06-10*
+*Last updated: 2026-07-02*

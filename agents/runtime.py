@@ -8,7 +8,7 @@ No cloud services, no external network dependencies.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 import json
 
 from .artifact_provider import SqliteArtifactProvider
@@ -97,11 +97,28 @@ class APXRuntime:
             self.base_path / "managed" / "audit" / "agent3_audit.log",
             self.base_path / "managed" / "audit" / "capability_checks.log",
         ]
-        audit_results = {}
+        audit_results: Dict[str, bool] = {}
+        audit_log_details: Dict[str, Dict[str, Any]] = {}
+        audit_summary: Dict[str, Dict[str, Any]] = {}
+        recovery_hints: List[str] = []
+
         for log_path in audit_logs:
-            if log_path.exists():
-                logger = AuditLogger(log_path=log_path)
-                audit_results[log_path.name] = logger.verify_chain()
+            if not log_path.exists():
+                continue
+            logger = AuditLogger(log_path=log_path)
+            detail = logger.get_status()
+            name = log_path.name
+            audit_results[name] = detail["chain_valid"] and detail["corrupt_line_count"] == 0
+            audit_log_details[name] = detail
+            audit_summary[name] = {
+                "chain_valid": detail["chain_valid"],
+                "corrupt_line_count": detail["corrupt_line_count"],
+                "entry_count": detail["entry_count"],
+                "issue": detail["issue"],
+            }
+            hint = detail.get("recovery_hint")
+            if hint and hint not in recovery_hints:
+                recovery_hints.append(hint)
 
         store_chain = self.store.verify_artifact_chain()
         policy_trusted = self.capability_checker.is_policy_trusted()
@@ -116,6 +133,9 @@ class APXRuntime:
             "store_chain_valid": store_chain["valid"],
             "store_issues": store_chain.get("issues", []),
             "audit_logs": audit_results,
+            "audit_log_details": audit_log_details,
+            "audit_summary": audit_summary,
+            "recovery_hints": recovery_hints,
             "all_audit_valid": all(audit_results.values()) if audit_results else True,
             "capability_policy_trusted": policy_trusted,
             "capability_policy_error": self.capability_checker.get_status().get("policy_error"),

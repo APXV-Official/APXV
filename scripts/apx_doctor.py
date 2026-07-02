@@ -177,12 +177,16 @@ def main() -> int:
             integrity_check = next((c for c in report["checks"] if c["name"] == "integrity"), None)
             if integrity_check and not integrity_check.get("ok"):
                 detail = integrity_check.get("detail") or {}
-                audit_logs = detail.get("audit_logs") if isinstance(detail, dict) else {}
-                if isinstance(audit_logs, dict) and audit_logs and not all(audit_logs.values()):
-                    print(
-                        "Audit chain broken (often from local testing)? "
-                        "Remove managed/audit/ and re-run: python -m scripts.setup_first_run"
-                    )
+                if isinstance(detail, dict):
+                    for log_name, summary in (detail.get("audit_summary") or {}).items():
+                        if summary.get("issue"):
+                            print(
+                                f"Audit {log_name}: {summary['issue']} "
+                                f"(corrupt={summary.get('corrupt_line_count', 0)}, "
+                                f"chain_valid={summary.get('chain_valid')})"
+                            )
+                    for hint in detail.get("recovery_hints") or []:
+                        print(f"  -> {hint}")
         print("=" * 60)
     return 0 if report["healthy"] else 1
 

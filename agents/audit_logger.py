@@ -148,15 +148,35 @@ class AuditLogger:
             return entries[-limit:]
         return entries
 
+    def _recovery_hint(self, corrupt_count: int, chain_valid: bool, entry_count: int) -> tuple:
+        """Classify degraded logs and return (issue, hint). issue is None when healthy."""
+        if corrupt_count > 0:
+            return (
+                "corrupt_lines",
+                "Unparseable audit lines detected. Back up managed/, remove affected files "
+                "under managed/audit/, then run: python -m scripts.setup_first_run",
+            )
+        if not chain_valid and entry_count > 0:
+            return (
+                "chain_break",
+                "Audit hash chain is broken (common on long-lived dev trees). Remove "
+                "managed/audit/*.log and run: python -m scripts.setup_first_run - or "
+                "python -m scripts.fresh_reset for a full local reset.",
+            )
+        return (None, None)
+
     def get_status(self) -> Dict[str, Any]:
         """Return basic status of the audit log."""
         entries, corrupt_count = self._parse_lines()
         chain_valid = self.verify_chain()
+        issue, recovery_hint = self._recovery_hint(corrupt_count, chain_valid, len(entries))
         return {
             "log_path": str(self.log_path),
             "entry_count": len(entries),
             "corrupt_line_count": corrupt_count,
             "chain_valid": chain_valid,
             "degraded": corrupt_count > 0 or not chain_valid,
+            "issue": issue,
+            "recovery_hint": recovery_hint,
             "last_entry": entries[-1] if entries else None,
         }

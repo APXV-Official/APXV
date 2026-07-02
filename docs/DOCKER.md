@@ -51,7 +51,7 @@ The hint is written to `managed/config/OPERATOR-KEY-team-api.txt` on the mounted
 
 ### Use fresh volumes for production-like deploys
 
-Do **not** mount a developer `managed/` directory with a long audit history. That can show `degraded` health from prior local experiments.
+Do **not** mount a developer `managed/` directory with a long audit history. That can show `degraded` health from prior local experiments (v1.2.2+ reports `integrity.audit_summary` with `chain_break` vs `corrupt_lines`). See [RUNBOOKS/RUNBOOK-UPGRADE.md](../RUNBOOKS/RUNBOOK-UPGRADE.md).
 
 For a clean deploy:
 
@@ -95,7 +95,7 @@ docker rm -f apx-v1
 docker compose up -d
 ```
 
-`install-docker.sh` runs this cleanup automatically (v1.2.1+).
+`install-docker.sh` and `install-docker.ps1` run this cleanup automatically (v1.2.2+; bash since v1.2.1).
 
 ## Air-gap note
 

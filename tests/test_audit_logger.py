@@ -41,6 +41,39 @@ def test_verify_chain_false_on_corrupt_line(tmp_path: Path):
     assert logger.verify_chain() is False
 
 
+def test_get_status_chain_break_without_corrupt_lines(tmp_path: Path):
+    log_path = tmp_path / "system_audit.log"
+    logger = AuditLogger(log_path)
+    logger.log_event("first", {"n": 1})
+    logger.log_event("second", {"n": 2})
+
+    lines = log_path.read_text(encoding="utf-8").splitlines()
+    entry = json.loads(lines[0])
+    entry["previous_hash"] = "tampered"
+    lines[0] = json.dumps(entry, sort_keys=True)
+    log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    status = logger.get_status()
+    assert status["corrupt_line_count"] == 0
+    assert status["chain_valid"] is False
+    assert status["issue"] == "chain_break"
+    assert status["recovery_hint"] is not None
+    assert "chain" in status["recovery_hint"].lower()
+
+
+def test_get_status_corrupt_lines_issue(tmp_path: Path):
+    log_path = tmp_path / "system_audit.log"
+    logger = AuditLogger(log_path)
+    logger.log_event("ok", {"n": 1})
+    with log_path.open("a", encoding="utf-8") as f:
+        f.write("{not-json\n")
+
+    status = logger.get_status()
+    assert status["issue"] == "corrupt_lines"
+    assert status["recovery_hint"] is not None
+    assert "managed/audit" in status["recovery_hint"]
+
+
 def test_concurrent_log_event_preserves_chain(tmp_path: Path):
     log_path = tmp_path / "system_audit.log"
     logger = AuditLogger(log_path)

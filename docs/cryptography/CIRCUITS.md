@@ -1,4 +1,4 @@
-# APXV1 — Groth16 Circuit Inventory (v1.2.1)
+# APXV1 — Groth16 Circuit Inventory (v1.2.2)
 
 APXV1 uses **Groth16 over BN254** (arkworks 0.4) in two Rust crates. This document separates **circuits that exist** from **circuits proven on the default attest path**.
 

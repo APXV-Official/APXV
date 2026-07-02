@@ -104,11 +104,21 @@ def ensure_api_key(base_path: Path) -> dict:
     hint_path = None
     if raw_key:
         hint_path = APIKeyAuth.write_key_hint(base_path, "default-operator", raw_key)
-    return {
+    result = {
         "created": raw_key is not None,
         "api_key": raw_key,
         "hint_file": str(hint_path) if hint_path else None,
     }
+    if not raw_key and config_path.exists():
+        hint_file = base_path / "managed" / "config" / "OPERATOR-KEY-default-operator.txt"
+        if not hint_file.is_file():
+            result["hint_missing"] = True
+            result["hint_advisory"] = (
+                "Default API key exists but OPERATOR-KEY-default-operator.txt is missing "
+                "(common after in-place upgrade). Create a hint file: "
+                "python -m scripts.apx_ctl api-key create my-key --save-hint"
+            )
+    return result
 
 
 def verify_zk_keys(base_path: Path) -> dict:
@@ -199,6 +209,10 @@ def print_report(report: dict) -> None:
         print("NEW API KEY (save this — shown once):")
         print(f"  {api['api_key']}")
         print("  Use: Authorization: Bearer <key>")
+    elif api.get("hint_missing"):
+        print()
+        print("API key hint file missing:")
+        print(f"  {api['hint_advisory']}")
 
     bootstrapped = report["steps"].get("governance_bootstrap", [])
     if bootstrapped:

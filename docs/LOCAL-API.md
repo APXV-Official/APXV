@@ -41,7 +41,29 @@ New keys created via `apx_ctl api-key create` are accepted immediately without r
 
 ## Health and status
 
-`GET /health` (no auth) reports `healthy` or `degraded` from integrity checks. A corrupt audit log line marks the chain invalid but does not crash the server (v1.2.1+). Use `python -m scripts.apx_doctor` or restore from backup if integrity is `degraded`.
+`GET /health` (no auth) returns HTTP 200 with:
+
+```json
+{
+  "status": "healthy",
+  "air_gapped": true,
+  "integrity": { "healthy": true, "audit_summary": {}, ... }
+}
+```
+
+When audit logs fail verification, `status` is `degraded` (v1.2.1+) and the server keeps running — pipelines are not blocked by corrupt lines alone (v1.2.1+).
+
+**v1.2.2+ diagnostics:** `integrity.audit_summary` lists each audit log with `chain_valid`, `corrupt_line_count`, `entry_count`, and `issue`:
+
+| `issue` | Meaning | Typical recovery |
+|---------|---------|------------------|
+| `corrupt_lines` | Unparseable JSON in the log | Back up `managed/`, remove affected files under `managed/audit/`, run `setup_first_run` |
+| `chain_break` | Valid JSON but hash chain broken | Remove `managed/audit/*.log`, run `setup_first_run` (or `fresh_reset`) |
+| (absent) | Log healthy | No action |
+
+`integrity.recovery_hints` duplicates actionable hints. Same classification appears in `python -m scripts.apx_doctor` and `python -m scripts.apx_ctl integrity` (supports `--base-path` for alternate instances).
+
+See [RUNBOOKS/RUNBOOK-UPGRADE.md](../RUNBOOKS/RUNBOOK-UPGRADE.md) for upgrade-specific context.
 
 ## Endpoints
 

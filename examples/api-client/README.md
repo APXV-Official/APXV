@@ -28,7 +28,9 @@ export APX_API_KEY="your-key-here"
 python -m scripts.apx_ctl api-key create my-app --save-hint
 ```
 
-New keys work immediately while `apx_serve` is running (v1.2.1+). Hashes are stored in `managed/config/api_keys.json` — raw keys cannot be recovered from that file.
+New keys work immediately while `apx_serve` is running (v1.2.1+). Hashes are stored in `managed/config/api_keys.json` - raw keys cannot be recovered from that file. Upgraded trees may lack the hint file; run `apx_ctl api-key create my-app --save-hint` or see [docs/QUICKSTART.md](../../docs/QUICKSTART.md).
+
+`/health` returns `degraded` when audit integrity fails (v1.2.2+ includes `integrity.audit_summary` with per-log `issue`). Pipelines may still work; see [docs/LOCAL-API.md](../../docs/LOCAL-API.md).
 
 ## Run
 

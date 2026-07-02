@@ -154,3 +154,7 @@ Examples of systems on APXV1:
 - [ ] Governance changes go through approval workflow
 - [ ] Pipeline attestation tested with `--attest`
 - [ ] `verify_attestation --real-zk` passes
+
+## Troubleshooting integrity (v1.2.2+)
+
+Reused `managed/` folders from experiments often show `NEEDS ATTENTION` while pipelines still work. `apx_doctor`, `apx_ctl integrity`, and `GET /health` report per-log `issue` (`corrupt_lines` or `chain_break`) with recovery hints. See [QUICKSTART.md](QUICKSTART.md#troubleshooting) and [RUNBOOKS/RUNBOOK-UPGRADE.md](../RUNBOOKS/RUNBOOK-UPGRADE.md).

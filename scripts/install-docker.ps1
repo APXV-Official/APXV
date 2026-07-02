@@ -8,7 +8,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 Write-Host "============================================================"
-Write-Host "APXV1 Docker onboarding (v1.2.1)"
+Write-Host "APXV1 Docker onboarding (v1.2.2)"
 Write-Host "Requires: Docker Desktop + Docker Compose"
 Write-Host "============================================================"
 
@@ -104,6 +104,8 @@ Write-Host "[2/3] Onboarding in container (pack demo, attest, verify)..."
 Invoke-Compose @("run", "--rm", "apx-v1", "python", "-m", "scripts.onboard", "--skip-zk")
 
 Write-Host "[3/3] Starting API server..."
+# Remove stale apx-v1 from a prior install (port 8741 / container name conflict)
+docker rm -f apx-v1 2>$null | Out-Null
 Invoke-Compose @("up", "-d")
 
 Write-Host "============================================================"

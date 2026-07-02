@@ -45,3 +45,31 @@ def test_setup_first_run_fresh_instance(tmp_path):
     )
     assert policy.get("signature")
     assert "APX-AGENT-001" in policy.get("agents", {})
+
+
+def test_setup_first_run_advises_missing_hint_on_upgrade(tmp_path):
+    (tmp_path / "managed" / "rules").mkdir(parents=True)
+    (tmp_path / "managed" / "workflows").mkdir(parents=True)
+    (tmp_path / "managed" / "knowledge").mkdir(parents=True)
+
+    for spec, name in (
+        ("rules", "rule1.md"),
+        ("workflows", "workflow1.md"),
+        ("knowledge", "knowledge1.md"),
+    ):
+        src = ROOT / "managed" / spec / name
+        if src.exists():
+            (tmp_path / "managed" / spec / name).write_text(
+                src.read_text(encoding="utf-8"), encoding="utf-8"
+            )
+
+    first = run_setup(tmp_path, setup_zk=False)
+    assert first["steps"]["api_key"].get("hint_file")
+
+    hint = tmp_path / "managed" / "config" / "OPERATOR-KEY-default-operator.txt"
+    hint.unlink()
+
+    second = run_setup(tmp_path, setup_zk=False)
+    api_step = second["steps"]["api_key"]
+    assert api_step.get("hint_missing") is True
+    assert "apx_ctl api-key create" in api_step.get("hint_advisory", "")

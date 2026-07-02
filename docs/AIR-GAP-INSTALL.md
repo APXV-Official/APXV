@@ -35,9 +35,10 @@ ZK circuit keys are generated during setup (requires Rust on offline machine). U
 ```bash
 python -m scripts.apx_ctl integrity
 python -m scripts.apx_ctl status
+curl http://127.0.0.1:8741/health
 ```
 
-Expected: `healthy: true` in status output.
+Expected: `healthy: true` in status output. On upgraded or reused `managed/` trees, v1.2.2+ may report `degraded` with `integrity.audit_summary` (`corrupt_lines` vs `chain_break`) while core paths still run — see [RUNBOOKS/RUNBOOK-UPGRADE.md](../RUNBOOKS/RUNBOOK-UPGRADE.md).
 
 ## 4. Run
 

@@ -1,6 +1,6 @@
 # APXV1 Quickstart (15 Minutes)
 
-**APXV** is the platform; **APXV1** is this open-source implementation. **v1.2.1** is the current release (stability patch on v1.2.0): one-command onboarding, three official agent packs, and `merkle-inclusion` / `compliance` on the default attest path.
+**APXV** is the platform; **APXV1** is this open-source implementation. **v1.2.2** is the current release (operator clarity patch on v1.2.1): one-command onboarding, three official agent packs, and `merkle-inclusion` / `compliance` on the default attest path.
 
 ## One command
 
@@ -120,7 +120,7 @@ On first `setup_first_run` or `apx_serve`, the default key is printed once and w
 
 `managed/config/OPERATOR-KEY-default-operator.txt`
 
-If you missed it, create a new key (works immediately — no server restart required in v1.2.1+):
+If you missed it, create a new key (works immediately - no server restart required in v1.2.1+):
 
 ```bash
 python -m scripts.apx_ctl api-key create my-app --save-hint --description "Local development"
@@ -153,9 +153,24 @@ See [DOCKER.md](DOCKER.md). Use **fresh volumes** — do not mount a dev `manage
 python -m scripts.apx_doctor
 ```
 
-If `apx_doctor` or `apx_ctl integrity` fails after heavy local testing (broken audit chain), use a **fresh** instance: re-run `python -m scripts.setup_first_run` on a clean tree, or remove `managed/audit/` and run setup again — do not hand-edit audit logs.
+If `apx_doctor` or `apx_ctl integrity` fails after heavy local testing, read the per-log hint (v1.2.2+):
 
-**Docker:** if `docker compose up` fails with `container name "/apx-v1" is already in use`, run `docker rm -f apx-v1` then retry. See [DOCKER.md](DOCKER.md).
+- **corrupt lines** (`corrupt_line_count` > 0) — back up `managed/`, remove affected files under `managed/audit/`, run `python -m scripts.setup_first_run`
+- **chain break** (`corrupt_line_count` == 0, `chain_valid` false) — common on long-lived dev trees; remove `managed/audit/*.log` and run setup, or `python -m scripts.fresh_reset` for a full local reset
+
+Pipelines may still work while `/health` shows `degraded`. See [RUNBOOKS/RUNBOOK-UPGRADE.md](../RUNBOOKS/RUNBOOK-UPGRADE.md).
+
+### Upgrading from v1.2.0 / v1.2.1 without re-setup
+
+In-place upgrades keep `managed/config/api_keys.json` but may lack `OPERATOR-KEY-default-operator.txt` (added in v1.2.1). Create a hint file without rotating keys:
+
+```bash
+python -m scripts.apx_ctl api-key create my-key --save-hint --description "Post-upgrade hint"
+```
+
+Or re-run `python -m scripts.setup_first_run` — it prints an advisory if the hint file is missing.
+
+**Docker:** if `docker compose up` fails with `container name "/apx-v1" is already in use`, run `docker rm -f apx-v1` then retry. `install-docker.ps1` and `install-docker.sh` do this automatically (v1.2.2+). See [DOCKER.md](DOCKER.md).
 
 First `run_apx --attest` can take 1–3 minutes while Rust compiles; `apx_doctor` may show `apx-circuits=no` until binaries are on PATH even when attest works.
 

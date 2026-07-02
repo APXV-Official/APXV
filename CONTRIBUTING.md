@@ -43,6 +43,10 @@ Thank you for your interest in **APXV1**. **APXV** (*Attested Proof Execution Ve
 3. Run `python -m scripts.apx_ctl integrity` before submitting.
 4. Update docs when changing user-visible behavior.
 
+### Release notes (maintainers)
+
+GitHub release bodies must use **ASCII punctuation only** (`-` and `|` for bullets) to avoid mojibake in the API/UI. Extract the `[X.Y.Z]` section from `CHANGELOG.md` with `python -m scripts.publish_github_release --tag vX.Y.Z` (or paste ASCII-only text manually). Attach the verifier bundle zip on every release (VKs unchanged since v1.1.0).
+
 ## Reporting Issues
 
 Use the **Bug report** issue template when possible. At minimum include:
@@ -50,7 +54,7 @@ Use the **Bug report** issue template when possible. At minimum include:
 - OS and Python version
 - Whether Rust/ZK setup completed
 - Output from `python -m scripts.apx_doctor` (preferred) or `python -m scripts.apx_ctl integrity`
-- Fresh install vs reused `managed/` folder (integrity failures are common on polluted dev trees)
+- Fresh install vs reused `managed/` folder (integrity failures are common on polluted dev trees; v1.2.2+ reports `issue: corrupt_lines` or `chain_break` in doctor output)
 
 Do **not** include API keys, signing keys, or real PII in issue reports.
 

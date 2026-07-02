@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-07-02
+
+Operator clarity and install parity patch. No verifier VK or circuit changes since v1.1.0.
+
+### Fixed
+
+- `install-docker.ps1` removes stale `apx-v1` container before `docker compose up -d` (parity with `.sh`)
+
+### Added
+
+- Audit integrity diagnostics: distinguish corrupt log lines vs hash-chain break in `apx_doctor`, `apx_ctl integrity`, and `/health`
+- Upgrade runbook: recovering degraded health; API key hints for in-place upgrades from v1.2.0
+
+### Changed
+
+- `/health` reports per-audit-log summary (`chain_valid`, `corrupt_line_count`) when integrity is degraded
+
+### Documentation
+
+- QUICKSTART, LOCAL-API, DOCKER, BUILDING, RUNBOOK-UPGRADE, RUNBOOK-OPERATIONS, website, and CONTRIBUTING updated for v1.2.2
+
+### Chore
+
+- GitHub release template (ASCII-only); verifier bundle asset on release
+- Install script banners and GitHub Pages site aligned to v1.2.2 (352 tests)
+
+No verifier VK or circuit changes since v1.1.0.
+
 ## [1.2.1] - 2026-06-29
 
 Stability and operator-experience patch. No verifier VK or circuit changes since v1.1.0.
@@ -219,6 +247,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.2.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.2
 [1.2.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.1
 [1.2.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.0
 [1.1.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.1.2
