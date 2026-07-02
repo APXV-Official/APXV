@@ -13,6 +13,7 @@ Operator clarity and install parity patch. No verifier VK or circuit changes sin
 ### Fixed
 
 - `install-docker.ps1` removes stale `apx-v1` container before `docker compose up -d` (parity with `.sh`)
+- `install-docker.ps1` (post-release patch): suppress `docker rm -f apx-v1` stderr on Windows when the container was already removed by `compose down` — fixes second consecutive install aborting under `$ErrorActionPreference Stop`
 
 ### Added
 

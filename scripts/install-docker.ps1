@@ -105,7 +105,10 @@ Invoke-Compose @("run", "--rm", "apx-v1", "python", "-m", "scripts.onboard", "--
 
 Write-Host "[3/3] Starting API server..."
 # Remove stale apx-v1 from a prior install (port 8741 / container name conflict)
-docker rm -f apx-v1 2>$null | Out-Null
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+docker rm -f apx-v1 2>&1 | Out-Null
+$ErrorActionPreference = $prevEap
 Invoke-Compose @("up", "-d")
 
 Write-Host "============================================================"

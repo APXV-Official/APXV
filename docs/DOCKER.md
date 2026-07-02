@@ -95,7 +95,7 @@ docker rm -f apx-v1
 docker compose up -d
 ```
 
-`install-docker.sh` and `install-docker.ps1` run this cleanup automatically (v1.2.2+; bash since v1.2.1).
+`install-docker.sh` and `install-docker.ps1` run this cleanup automatically (v1.2.2+; bash since v1.2.1). On Windows PowerShell, the PS1 script ignores benign `No such container` stderr from `docker rm` so a second install in the same clone completes without manual steps.
 
 ## Air-gap note
 
