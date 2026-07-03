@@ -19,7 +19,7 @@ ark-r1cs-std = "0.4"
 # ark-snark provides the SNARK trait (circuit_specific_setup, prove, verify, etc.).
 # This is required in arkworks 0.4 even when using ark-groth16; the trait is not
 # re-exported through groth16 alone. This is part of making the cryptographic
-# foundation explicit and auditable (per Phase 1 of APX-PRODUCTION-BUILD-PLAN.md).
+# foundation explicit and auditable (Phase 1 honest-setup requirements).
 ark-snark = "0.4"
 
 # Minimal support for CLI + JSON I/O in the tiny integration binary

@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 
 DEFAULT_BATCH_DIR = Path(__file__).resolve().parent / "inputs" / "batch"
+# Canonical demo fixtures — ignore stray files in the default batch folder (F-020).
+DEMO_BATCH_FILES = ("invoice.txt", "customer.json")
 
 
 def _load_document_agents():
@@ -31,7 +33,11 @@ def main() -> int:
     if len(sys.argv) > 1:
         batch_dir = Path(sys.argv[1]).resolve()
 
-    result = process_batch_directory(batch_dir)
+    only_files = None
+    if batch_dir.resolve() == DEFAULT_BATCH_DIR.resolve():
+        only_files = DEMO_BATCH_FILES
+
+    result = process_batch_directory(batch_dir, only_files=only_files)
     status = result.get("final_status")
     output = result.get("proposed_artifact", {}).get("output", {})
     redactions = output.get("total_redactions", 0)

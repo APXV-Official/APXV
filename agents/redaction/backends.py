@@ -3,11 +3,35 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
+import sys
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
 RedactionBackendHandler = Callable[..., Dict[str, Any]]
+
+
+def _dev_warnings_enabled() -> bool:
+    return os.environ.get("APX_DEV_WARNINGS", "").strip().lower() in ("1", "true", "yes")
+
+
+def _entity_shape_issues(entities: List[Any]) -> List[str]:
+    """Return human-readable issues for BYO backend entity payloads (dev advisory only)."""
+    issues: List[str] = []
+    for index, entity in enumerate(entities):
+        if not isinstance(entity, dict):
+            issues.append(f"entities[{index}] must be a dict, got {type(entity).__name__}")
+            continue
+        if not entity.get("type") and not entity.get("category"):
+            issues.append(f"entities[{index}] missing type or category")
+        for key in ("start", "end"):
+            if key in entity and not isinstance(entity[key], int):
+                issues.append(f"entities[{index}].{key} must be int when present")
+        value = entity.get("value")
+        if value is not None and not isinstance(value, str):
+            issues.append(f"entities[{index}].value must be str when present")
+    return issues
 
 
 def _slug_backend_id(name: str) -> str:
@@ -67,6 +91,12 @@ class RedactionBackendRegistry:
         entities = result.get("entities", [])
         if not isinstance(entities, list):
             raise TypeError(f"backend {backend_id} entities must be a list")
+        if _dev_warnings_enabled():
+            for message in _entity_shape_issues(entities):
+                print(
+                    f"WARNING [APX_DEV_WARNINGS]: BYO backend {backend_id}: {message}",
+                    file=sys.stderr,
+                )
         payload = {
             "redacted_text": result["redacted_text"],
             "entities": entities,

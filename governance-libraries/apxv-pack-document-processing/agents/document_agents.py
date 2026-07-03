@@ -7,7 +7,7 @@ import json
 import sys
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Sequence, TYPE_CHECKING
 
 _ROOT = Path(__file__).resolve().parents[3]
 if str(_ROOT) not in sys.path:
@@ -48,9 +48,25 @@ def extract_text_from_file(path: Path) -> str:
     raise ValueError(f"Unsupported batch file type: {path.suffix}")
 
 
-def discover_batch_files(batch_dir: Path) -> List[Path]:
+def discover_batch_files(
+    batch_dir: Path,
+    *,
+    only_names: Optional[Sequence[str]] = None,
+) -> List[Path]:
     if not batch_dir.is_dir():
         raise FileNotFoundError(f"Batch directory not found: {batch_dir}")
+
+    if only_names is not None:
+        files: List[Path] = []
+        for name in only_names:
+            path = batch_dir / name
+            if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES:
+                files.append(path)
+        if not files:
+            raise ValueError(
+                f"No matching .txt or .json files in {batch_dir} for only_names={list(only_names)}"
+            )
+        return files
 
     files = [
         path
@@ -127,6 +143,7 @@ def process_batch_directory(
     *,
     runtime: Optional["APXRuntime"] = None,
     batch_id: Optional[str] = None,
+    only_files: Optional[Sequence[str]] = None,
 ) -> Dict[str, Any]:
     """Redact each batch file, build manifest, orchestrate, and attest."""
     runtime = runtime or __import__("agents.runtime", fromlist=["APXRuntime"]).APXRuntime()
@@ -135,7 +152,7 @@ def process_batch_directory(
     redactor = RuleGovernedRedactor(runtime=runtime)
     file_entries: List[Dict[str, Any]] = []
 
-    for path in discover_batch_files(batch_dir):
+    for path in discover_batch_files(batch_dir, only_names=only_files):
         original_text = extract_text_from_file(path)
         result = redactor.process_text(original_text)
         file_entries.append(

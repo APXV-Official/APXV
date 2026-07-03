@@ -2,6 +2,8 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. **APXV1** is the first-generation open-source implementation. You bring your agents, rules, and (optionally) LLMs; APXV1 provides governance, audit, artifacts, and cryptographic attestation.
 
+**Commands:** On Linux/WSL use `python3 -m …` (or activate `.venv` from `install.sh`). On Windows use `py -3 -m …` or `python -m …` after `install.ps1`. See [QUICKSTART.md](QUICKSTART.md).
+
 ## Core Concepts
 
 | Concept | What you use |

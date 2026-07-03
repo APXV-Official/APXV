@@ -4,7 +4,7 @@ Python client for the local APXV1 HTTP API.
 
 ## Prerequisites
 
-1. Run setup: `python -m scripts.setup_first_run`
+1. Run setup: `python -m scripts.setup_first_run` (Linux/WSL: `python3 -m …`)
 2. Start the server: `python -m scripts.apx_serve`
 3. Set your API key:
 

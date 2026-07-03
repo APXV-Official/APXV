@@ -83,7 +83,7 @@ fn deserialize_vk(hex_str: &str) -> VerifyingKey<Bn254> {
 }
 
 /// --- Honest Trusted Setup Helpers (arkworks 0.4 native) ---
-/// These implement the correct approach per APX-PRODUCTION-BUILD-PLAN.md Phase 1:
+/// These implement the correct approach per Phase 1 honest-setup requirements:
 /// Perform setup ONCE with strong entropy, serialize the keys, and load them
 /// for every subsequent proof. This eliminates per-proof toxic waste and
 /// provides a stable, versionable verification key.
@@ -135,7 +135,7 @@ fn get_key_paths(circuit_name: &str) -> (PathBuf, PathBuf) {
 /// - The resulting keys are then used for all subsequent proofs of that circuit.
 /// - The "toxic waste" (the rng used during setup) is discarded after this run.
 ///
-/// Per APX-PRODUCTION-BUILD-PLAN.md Phase 1 Criterion #1 and #4.
+/// Per Phase 1 criteria #1 and #4 (honest setup, portable proofs).
 fn run_one_time_setup(circuit_name: &str) {
     let mut rng = StdRng::from_entropy();
 
@@ -223,7 +223,7 @@ fn prove_circuit<C: ConstraintSynthesizer<Fr> + Clone>(
 ) -> (Proof<Bn254>, VerifyingKey<Bn254>, bool) {
     let mut rng = StdRng::from_entropy();
 
-    // NOTE (Phase 1 per APX-PRODUCTION-BUILD-PLAN.md):
+    // NOTE (Phase 1 honest-setup requirements):
     // circuit_specific_setup is only acceptable inside the explicit one-time `setup` command.
     // Normal prove paths must load persisted keys. This function is intentionally left
     // only for the setup helper and should not be called from the "prove" CLI arm.
@@ -298,7 +298,7 @@ fn main() {
             if !pk_path.exists() || !vk_path.exists() {
                 eprintln!("ERROR: No trusted setup keys found for circuit '{}'.", circuit_name);
                 eprintln!("Run first:  cargo run -- setup {}", circuit_name);
-                eprintln!("This is required for honest setup (see APX-PRODUCTION-BUILD-PLAN.md Phase 1).");
+                eprintln!("This is required for honest setup (Phase 1 trusted setup).");
                 std::process::exit(1);
             }
 

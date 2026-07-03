@@ -66,6 +66,48 @@ def test_pack_agent_bindings(isolated_batch_dir: Path):
     assert len(files) == 2
 
 
+def test_discover_batch_only_names_ignores_extra_files(tmp_path: Path):
+    mod = _load_document_agents()
+    src = PACK / "examples" / "inputs" / "batch"
+    batch = tmp_path / "batch"
+    batch.mkdir()
+    for name in ("invoice.txt", "customer.json"):
+        (batch / name).write_text((src / name).read_text(encoding="utf-8"), encoding="utf-8")
+    (batch / "stray.txt").write_text("extra noise", encoding="utf-8")
+    (batch / "notes.pdf").write_bytes(b"%PDF-1.4")
+
+    all_supported = mod.discover_batch_files(batch)
+    assert len(all_supported) == 3
+
+    demo_only = mod.discover_batch_files(
+        batch,
+        only_names=("invoice.txt", "customer.json"),
+    )
+    assert len(demo_only) == 2
+    assert {p.name for p in demo_only} == {"invoice.txt", "customer.json"}
+
+
+def test_process_batch_directory_only_files_excludes_extras(tmp_path: Path):
+    mod = _load_document_agents()
+    from agents.runtime import APXRuntime
+
+    src = PACK / "examples" / "inputs" / "batch"
+    batch = tmp_path / "batch"
+    batch.mkdir()
+    for name in ("invoice.txt", "customer.json"):
+        (batch / name).write_text((src / name).read_text(encoding="utf-8"), encoding="utf-8")
+    (batch / "stray.txt").write_text("ignored when only_files set", encoding="utf-8")
+
+    attested = mod.process_batch_directory(
+        batch,
+        runtime=APXRuntime(),
+        only_files=("invoice.txt", "customer.json"),
+    )
+    manifest = attested["proposed_artifact"]["output"]["batch_manifest"]
+    assert manifest["file_count"] == 2
+    assert attested["final_status"] == "ATTESTED"
+
+
 def test_batch_pipeline_sets_compliance_policy_id_2(isolated_batch_dir: Path):
     mod = _load_document_agents()
     from agents.runtime import APXRuntime

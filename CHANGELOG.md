@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.5] - 2026-07-03
+
+Final v1.2.x consolidation — operator polish and install reliability. No verifier VK or circuit changes since v1.1.0. No APX→APXV renames (planned for v1.3.0).
+
+### Fixed
+
+- `install-docker.ps1`: suppress benign `docker rm -f apx-v1` stderr on Windows when container already removed (F-018)
+- Document pack demo: default batch uses explicit fixture list — stray files in `examples/inputs/batch/` ignored
+- `verify_attestation --real-zk`: suppress benign subprocess `RuntimeWarning` on Windows (exit code matches verification)
+
+### Added
+
+- BYO ML backend: optional `APX_DEV_WARNINGS=1` surfaces malformed `entities[]` at dev time (not ZK-proven)
+
+### Changed
+
+- Linux/WSL docs and examples: canonical `python3` / venv guidance; Windows contributor notes in CONTRIBUTING
+
+### Documentation
+
+- RUNBOOK-OPERATIONS: expanded audit chain-break recovery steps
+- DOCKER.md: Windows second-install behavior
+- Install script banners and GitHub Pages site aligned to v1.2.5 (356 tests)
+
+No verifier VK or circuit changes since v1.1.0.
+
 ## [1.2.2] - 2026-07-02
 
 Operator clarity and install parity patch. No verifier VK or circuit changes since v1.1.0.
@@ -248,6 +274,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.2.5]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.5
 [1.2.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.2
 [1.2.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.1
 [1.2.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.0

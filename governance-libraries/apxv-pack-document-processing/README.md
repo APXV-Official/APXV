@@ -34,11 +34,13 @@ Expected:
 Pack demo complete: final_status=ATTESTED, file_count=2, total_redactions=4, compliance_policy_id=2
 ```
 
-Custom batch folder:
+Custom batch folder (all supported `.txt` / `.json` files in the directory are processed):
 
 ```bash
 python governance-libraries/apxv-pack-document-processing/examples/run_pack_demo.py /path/to/batch
 ```
+
+The **default** demo path uses only `invoice.txt` and `customer.json` — extra files in `examples/inputs/batch/` are ignored so local experiments do not break `apx_demo --pack document`.
 
 ## Install (production)
 

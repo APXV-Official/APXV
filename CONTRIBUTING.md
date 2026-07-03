@@ -29,6 +29,15 @@ Thank you for your interest in **APXV1**. **APXV** (*Attested Proof Execution Ve
 
    For CI parity on voice paths: `APX_VOICE_MODE=simulated python -m pytest tests/ -v`
 
+### Windows vs Linux
+
+| Task | Linux / WSL | Windows |
+|------|---------------|---------|
+| Python | `python3` or `.venv/bin/python` after `install.sh` | `py -3` or `python` after `install.ps1` |
+| Tests | `python3 -m pytest tests/ -v` | `py -3 -m pytest tests/ -v` |
+| API server | Safe to run pytest while `apx_serve` uses port 8741 (tests use ephemeral ports) | Same |
+| Docker smoke | `./scripts/install-docker.sh` | `.\scripts\install-docker.ps1` (requires Docker Desktop) |
+
 ## Development Principles
 
 - **Local-first:** No cloud dependencies, no outbound network calls in core paths.

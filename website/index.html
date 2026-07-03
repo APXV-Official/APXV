@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="APXV1 v1.2.2 — governed local agents, three official packs, Groth16 proofs, local API. Open source on GitHub. No telemetry.">
+  <meta name="description" content="APXV1 v1.2.5 — governed local agents, three official packs, Groth16 proofs, local API. Open source on GitHub. No telemetry.">
   <meta name="theme-color" content="#06080c">
   <meta property="og:title" content="APXV1 — Governed Local Agents">
-  <meta property="og:description" content="APXV — air-gapped governed agents with Groth16 proofs. APXV1 v1.2.2: runtime + three official agent packs on your infrastructure.">
+  <meta property="og:description" content="APXV — air-gapped governed agents with Groth16 proofs. APXV1 v1.2.5: runtime + three official agent packs on your infrastructure.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://apxv-official.github.io/APXV/">
   <title>APXV1 — Attested Proof Execution Verified</title>
@@ -39,7 +39,7 @@
     <section id="top" class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy reveal">
-          <p class="eyebrow">Apache 2.0 · Local · No telemetry · <a href="https://github.com/APXV-Official/APXV/releases/tag/v1.2.2" rel="noopener noreferrer">v1.2.2</a> · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Open source</a></p>
+          <p class="eyebrow">Apache 2.0 · Local · No telemetry · <a href="https://github.com/APXV-Official/APXV/releases/tag/v1.2.5" rel="noopener noreferrer">v1.2.5</a> · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Open source</a></p>
           <h1>Governed local agents with cryptographic attestation</h1>
           <p class="lead">
             <strong>APXV</strong> is the platform; <strong>APXV1</strong> is the open-source runtime on your infrastructure.
@@ -53,7 +53,7 @@
           <dl class="hero-meta">
             <div><dt>Source</dt><dd><a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">APXV-Official/APXV</a></dd></div>
             <div><dt>API</dt><dd><code>127.0.0.1:8741</code></dd></div>
-            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">352 tests</a></dd></div>
+            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">356 tests</a></dd></div>
           </dl>
         </div>
         <div class="hero-aside reveal">
@@ -268,7 +268,16 @@ flowchart TB
         </div>
         <div class="roadmap-phases">
           <article class="roadmap-phase">
-            <h3>Shipped — v1.2.2 (current)</h3>
+            <h3>Shipped — v1.2.5 (current)</h3>
+            <ul>
+              <li>Final v1.2.x consolidation — Docker second-install fix, demo batch fixture isolation</li>
+              <li><code>APX_DEV_WARNINGS</code> for BYO backend entity shape advisories</li>
+              <li><code>verify_attestation</code> CLI exit code hygiene on Windows</li>
+              <li>Linux <code>python3</code> / venv guidance across docs and CONTRIBUTING</li>
+            </ul>
+          </article>
+          <article class="roadmap-phase">
+            <h3>Shipped — v1.2.2</h3>
             <ul>
               <li>Audit diagnostics: <code>corrupt_lines</code> vs <code>chain_break</code> in doctor, integrity CLI, and <code>/health</code></li>
               <li>Windows Docker install removes stale <code>apx-v1</code> container automatically</li>

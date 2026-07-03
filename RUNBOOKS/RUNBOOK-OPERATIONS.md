@@ -57,17 +57,44 @@ docker compose restart apx-v1
 
 ## 4. Audit log recovery (v1.2.2+)
 
-When integrity fails, classify before acting:
+When integrity fails, classify before acting (`python -m scripts.apx_doctor` or `python -m scripts.apx_ctl integrity` — v1.2.2+ reports `issue: corrupt_lines` vs `chain_break`).
+
+**Before any destructive step:**
+
+```bash
+python -m scripts.apx_ctl backup-create
+# optional archive of audit dir
+mkdir -p managed/backups/audit-$(date +%Y%m%d)
+cp managed/audit/*.log managed/backups/audit-$(date +%Y%m%d)/ 2>/dev/null || true
+```
+
+Confirm classification:
+
+```bash
+python -m scripts.apx_ctl integrity
+python -m scripts.apx_doctor
+```
 
 **Corrupt lines** (`corrupt_line_count` > 0, `issue: corrupt_lines`):
-1. Back up entire `managed/`
-2. Remove affected log files under `managed/audit/`
+1. Back up entire `managed/` (see above)
+2. Remove only the affected log files under `managed/audit/` (or all `*.log` if unsure)
 3. Run `python -m scripts.setup_first_run`
+4. Re-check: `python -m scripts.apx_ctl integrity` → HEALTHY
 
 **Hash chain break** (`corrupt_line_count` == 0, `chain_valid: false`, `issue: chain_break`):
-1. Back up `managed/` if artifacts matter
-2. Remove `managed/audit/*.log` (or run `python -m scripts.fresh_reset` for broader reset)
+1. Back up `managed/` if artifacts and config matter (`backup-create` + copy `managed/audit/`)
+2. Clear audit logs (pick one scope):
+   - **Audit only:** `rm -f managed/audit/*.log` (Linux/macOS) or `Remove-Item managed\audit\*.log` (Windows)
+   - **Broader runtime reset:** `python -m scripts.fresh_reset` (clears audit/config/store artifacts; keeps governance templates)
 3. Run `python -m scripts.setup_first_run`
+4. Re-check integrity and `/health` — expect `healthy` on a fresh chain
+
+**After recovery:** re-run a pack demo to confirm attest path:
+
+```bash
+python -m scripts.apx_demo --pack reference
+python -m scripts.apx_ctl integrity
+```
 
 Pipelines and ZK verification may continue to work while health is degraded — treat integrity failure as an operator signal, not necessarily a production outage.
 

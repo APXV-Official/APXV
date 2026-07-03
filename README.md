@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV1**, the first open-source implementation.
 
-> **Current release:** [v1.2.2](https://github.com/APXV-Official/APXV/releases/tag/v1.2.2) — operator clarity patch on v1.2.1 (audit diagnostics, install parity, upgrade runbooks). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
+> **Current release:** [v1.2.5](https://github.com/APXV-Official/APXV/releases/tag/v1.2.5) — final v1.2.x consolidation (install polish, demo hardening, dev warnings). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
 
 Clone the repo, run one command, and you get a working instance: setup, health checks, the reference pack pipeline, a full attestation, and independent ZK verification. Everything stays on your machine.
 
@@ -157,7 +157,7 @@ Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest
 
 ## Status
 
-**v1.2.2 (current)** — operator clarity patch: audit integrity diagnostics (`corrupt_lines` vs `chain_break` in doctor, `apx_ctl integrity`, `/health`), Windows Docker install parity, upgrade runbooks, API key hint advisory for in-place upgrades. Builds on v1.2.1 (audit locking, key hints, hot-reload) and v1.2.0 (entity circuits, three official packs, `apx_demo`). Prior releases: [CHANGELOG.md](CHANGELOG.md).
+**v1.2.5 (current)** — final v1.2.x consolidation: Windows Docker second-install fix (F-018), document pack demo fixture isolation, `APX_DEV_WARNINGS` for BYO backends, `verify_attestation` CLI hygiene, Linux `python3` doc pass. Builds on v1.2.2 (audit diagnostics, install parity), v1.2.1, and v1.2.0. Prior releases: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 

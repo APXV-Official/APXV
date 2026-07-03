@@ -83,3 +83,28 @@ def test_duplicate_backend_registration_raises():
     engine.register_backend("same-name", _mock_ml_backend)
     with pytest.raises(ValueError, match="already registered"):
         engine.register_backend("same-name", _mock_ml_backend)
+
+
+def _bad_shape_backend(*, text: str, input_format: str) -> dict:
+    return {
+        "redacted_text": text,
+        "entities": [{"unexpected": True}],
+    }
+
+
+def test_dev_warnings_for_malformed_entities(monkeypatch, capsys):
+    monkeypatch.setenv("APX_DEV_WARNINGS", "1")
+    engine = APXRedactionEngine()
+    backend_id = engine.register_backend("bad-shape", _bad_shape_backend)
+    engine.apply("hello", backend_id=backend_id)
+    err = capsys.readouterr().err
+    assert "APX_DEV_WARNINGS" in err
+    assert backend_id in err
+
+
+def test_no_dev_warnings_by_default(monkeypatch, capsys):
+    monkeypatch.delenv("APX_DEV_WARNINGS", raising=False)
+    engine = APXRedactionEngine()
+    backend_id = engine.register_backend("bad-shape-quiet", _bad_shape_backend)
+    engine.apply("hello", backend_id=backend_id)
+    assert "APX_DEV_WARNINGS" not in capsys.readouterr().err

@@ -20,6 +20,7 @@ from typing import Dict, Any
 import json
 import hashlib
 import sys
+import warnings
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -326,6 +327,7 @@ def verify_entity_zk_independent(
 
 def main():
     """CLI entry point."""
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
     runtime = APXRuntime()
     provider = runtime.provider
     use_real_zk = False

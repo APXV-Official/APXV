@@ -11,7 +11,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 echo "============================================================"
-echo "APXV1 — clone to running (v1.2.2)"
+echo "APXV1 — clone to running (v1.2.5)"
 echo "No Python/Rust? Use: ./scripts/install-docker.sh"
 echo "============================================================"
 
@@ -50,6 +50,9 @@ ensure_venv() {
   fi
 
   PY_MINOR="$(python3 -c 'import sys; print(sys.version_info.minor)')"
+  echo "python3 -m venv failed — install the venv package, e.g.:"
+  echo "  sudo apt install -y python3-venv"
+  echo "  sudo apt install -y python3.${PY_MINOR}-venv"
   echo "ensurepip unavailable — trying venv without pip..."
   if ! python3 -m venv --without-pip "$VENV_DIR"; then
     echo "ERROR: Could not create .venv. Install: sudo apt install -y python3.${PY_MINOR}-venv"

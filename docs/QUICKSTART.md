@@ -1,6 +1,6 @@
 # APXV1 Quickstart (15 Minutes)
 
-**APXV** is the platform; **APXV1** is this open-source implementation. **v1.2.2** is the current release (operator clarity patch on v1.2.1): one-command onboarding, three official agent packs, and `merkle-inclusion` / `compliance` on the default attest path.
+**APXV** is the platform; **APXV1** is this open-source implementation. **v1.2.5** is the current release (final v1.2.x consolidation): one-command onboarding, three official agent packs, and `merkle-inclusion` / `compliance` on the default attest path.
 
 ## One command
 
@@ -22,7 +22,15 @@ First native install may take a few minutes while Rust compiles. Docker build is
 
 Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
 
-**Linux / WSL:** use `python3` (or activate `.venv/bin/activate` first) if `python` is not on PATH.
+**Command cheat sheet:**
+
+| OS | Install | Demo / CLI |
+|----|---------|------------|
+| Linux / WSL | `./scripts/install.sh` then `source .venv/bin/activate` | `python3 -m scripts.apx_demo --pack all` |
+| Windows | `.\scripts\install.ps1` | `py -3 -m scripts.apx_demo --pack all` |
+| Docker (any) | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` | `curl http://127.0.0.1:8741/health` |
+
+On Linux/WSL, use `python3` (or activated `.venv`) if bare `python` is not on PATH.
 
 **API key after onboard:** printed once in the terminal, or read `managed/config/OPERATOR-KEY-default-operator.txt`, or create with `python -m scripts.apx_ctl api-key create my-key --save-hint`.
 

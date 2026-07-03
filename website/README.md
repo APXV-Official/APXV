@@ -2,7 +2,7 @@
 
 Static site deployed to **GitHub Pages** via `.github/workflows/pages.yml`.
 
-**Current release on site:** v1.2.2 (eyebrow, roadmap, CI test count).
+**Current release on site:** v1.2.5 (eyebrow, roadmap, CI test count).
 
 **Live URL (after Pages is enabled):** https://apxv-official.github.io/APXV/
 

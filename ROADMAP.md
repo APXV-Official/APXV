@@ -1,14 +1,24 @@
 # APXV Roadmap
 
-**Last updated:** 2026-07-02
+**Last updated:** 2026-07-03
 
 APXV1 is a local governed runtime. Verticals ship as **agent packs** on top. This is our direction — not a fixed timeline. See [CHANGELOG.md](CHANGELOG.md) for what has shipped.
 
-## Shipped today (v1.2.2 — current)
+## Shipped today (v1.2.5 — current)
 
-Operator clarity and install parity patch on v1.2.1. No verifier VK or circuit changes since v1.1.0.
+Final v1.2.x consolidation — operator polish and install reliability. No verifier VK or circuit changes since v1.1.0.
 
-- Audit integrity diagnostics: `corrupt_lines` vs `chain_break` in `apx_doctor`, `apx_ctl integrity`, and `/health` (`integrity.audit_summary`)
+- Windows Docker: suppress benign `docker rm` stderr on second consecutive `install-docker.ps1` run
+- Document pack demo uses explicit batch fixtures (stray files in demo dir ignored)
+- `APX_DEV_WARNINGS=1` for BYO ML backend entity shape advisories
+- `verify_attestation --real-zk` exit code matches verification on Windows
+- Linux/WSL `python3` guidance and CONTRIBUTING Windows vs Linux table
+
+## Shipped (v1.2.2)
+
+Operator clarity and install parity patch on v1.2.1.
+
+- Audit integrity diagnostics: `corrupt_lines` vs `chain_break` in `apx_doctor`, `apx_ctl integrity`, and `/health`
 - Windows Docker install parity: `install-docker.ps1` removes stale `apx-v1` before `compose up -d`
 - Upgrade runbooks and QUICKSTART recovery flows for degraded health and missing API key hint files
 - ASCII-safe GitHub release notes via `scripts/publish_github_release.py`
