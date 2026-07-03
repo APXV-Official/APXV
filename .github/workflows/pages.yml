@@ -20,8 +20,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -34,14 +38,39 @@ jobs:
         with:
           path: website
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before retry
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 45
+
+      - name: Deploy to GitHub Pages (retry 1)
+        if: steps.deployment.outcome == 'failure'
+        id: deployment_retry1
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Wait before retry 2
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry1.outcome == 'failure'
+        run: sleep 45
+
+      - name: Deploy to GitHub Pages (retry 2)
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry1.outcome == 'failure'
+        id: deployment_retry2
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Verify deploy succeeded
+        if: always()
+        run: |
+          if [[ "${{ steps.deployment.outcome }}" == "success" ]] || \
+             [[ "${{ steps.deployment_retry1.outcome }}" == "success" ]] || \
+             [[ "${{ steps.deployment_retry2.outcome }}" == "success" ]]; then
+            echo "Deploy succeeded"
+            exit 0
+          fi
+          echo "All deploy attempts failed"
+          exit 1

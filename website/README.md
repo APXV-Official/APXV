@@ -8,7 +8,7 @@ Static site deployed to **GitHub Pages** via `.github/workflows/pages.yml`.
 
 **Preview locally:** `preview.ps1` or `preview.bat` → http://127.0.0.1:5500
 
-Edit here, then push `main`. Workflow **Deploy static content to Pages** runs on every push to `main`.
+Edit here, then push `main`. Workflow **Deploy static content to Pages** runs on pushes that touch `website/` or `pages.yml`.
 
 ## Republish after Pages was disabled
 
