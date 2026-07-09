@@ -17,6 +17,7 @@ import traceback
 
 from .api_v2 import ApiV2Router
 from .auth import APIKeyAuth
+from .cors import CORS_ALLOW_HEADERS, CORS_ALLOW_METHODS, resolve_cors_origin
 from .env import get_env
 from .backup_restore import BackupRestoreError
 from .governance_approval import GovernanceApprovalError
@@ -149,17 +150,12 @@ def create_handler(
             self.send_header("Sunset", "v1.4")
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
-            origin = self.headers.get("Origin", "")
-            allowed = ("http://127.0.0.1:5173", "http://localhost:5173")
-            if origin in allowed:
-                self.send_header("Access-Control-Allow-Origin", origin)
-            else:
-                self.send_header("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
-            self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
             self.send_header(
-                "Access-Control-Allow-Headers",
-                "Authorization, Content-Type, APXV-API-KEY, X-APX-API-Key, Accept",
+                "Access-Control-Allow-Origin",
+                resolve_cors_origin(self.headers.get("Origin", "")),
             )
+            self.send_header("Access-Control-Allow-Methods", CORS_ALLOW_METHODS)
+            self.send_header("Access-Control-Allow-Headers", CORS_ALLOW_HEADERS)
             self.end_headers()
             self.wfile.write(body)
 
@@ -174,17 +170,12 @@ def create_handler(
 
         def do_OPTIONS(self) -> None:
             self.send_response(204)
-            origin = self.headers.get("Origin", "")
-            allowed = ("http://127.0.0.1:5173", "http://localhost:5173")
-            if origin in allowed:
-                self.send_header("Access-Control-Allow-Origin", origin)
-            else:
-                self.send_header("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
-            self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
             self.send_header(
-                "Access-Control-Allow-Headers",
-                "Authorization, Content-Type, APXV-API-KEY, X-APX-API-Key, Accept",
+                "Access-Control-Allow-Origin",
+                resolve_cors_origin(self.headers.get("Origin", "")),
             )
+            self.send_header("Access-Control-Allow-Methods", CORS_ALLOW_METHODS)
+            self.send_header("Access-Control-Allow-Headers", CORS_ALLOW_HEADERS)
             self.send_header("Access-Control-Max-Age", "86400")
             self.end_headers()
 

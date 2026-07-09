@@ -21,7 +21,9 @@ import {
   PanelHeader,
 } from "@apxv/ui";
 import { useNavigate } from "@tanstack/react-router";
+import { router } from "../router";
 import { useEffect, useState } from "react";
+import { isOnboardingComplete } from "../lib/auth-storage";
 import { useApp } from "../context/AppContext";
 import { BrandLogo } from "../components/BrandLogo";
 import { integrityCheckFailed } from "../lib/doctor-format";
@@ -30,6 +32,7 @@ import {
   invokeTauri,
   isDockerDeploy,
   isTauri,
+  quitApxvDesktop,
   type OperatorKeyInfo,
   type ServerStatus,
 } from "../lib/tauri";
@@ -51,6 +54,27 @@ export function SetupPage() {
   const isSetupPreview =
     typeof window !== "undefined" &&
     window.location.pathname === "/setup-preview";
+
+  useEffect(() => {
+    if (isSetupPreview || !isTauri()) return;
+    let cancelled = false;
+    void (async () => {
+      if (!(await isOnboardingComplete())) return;
+      router.update({
+        context: {
+          onboarded: true,
+          sovereignReady: router.options.context?.sovereignReady ?? true,
+        },
+      });
+      await router.invalidate();
+      if (!cancelled) {
+        await navigate({ to: "/" });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isSetupPreview, navigate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -198,7 +222,8 @@ export function SetupPage() {
         }
       }
       await completeOnboarding();
-      void navigate({ to: "/" });
+      await router.invalidate();
+      await navigate({ to: "/" });
     } catch (err) {
       const message =
         err instanceof ApiError
@@ -336,7 +361,24 @@ export function SetupPage() {
             <Button onClick={() => void handleConnect()} disabled={!canConnect}>
               {busy ? "Connecting…" : "Connect"}
             </Button>
+            {isTauri() && (
+              <Button
+                variant="secondary"
+                disabled={busy}
+                onClick={() => void quitApxvDesktop()}
+              >
+                Quit APXV
+              </Button>
+            )}
           </ActionGroup>
+
+          {isTauri() && (
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+              Closing the window keeps APXV running in the background. Use{" "}
+              <strong>Quit APXV</strong> here, or right-click the APXV icon in
+              the Windows notification area (system tray).
+            </p>
+          )}
 
           {doctorWarning && (
             <Alert variant="warning">

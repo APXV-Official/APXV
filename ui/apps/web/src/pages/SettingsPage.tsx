@@ -36,7 +36,7 @@ import { QueryState } from "../components/QueryState";
 import { formatApiError } from "../lib/api-errors";
 import { downloadJson } from "../lib/download";
 import { getDefaultBaseUrl } from "../lib/tauri";
-import { invokeTauri, isTauri } from "../lib/tauri";
+import { invokeTauri, isTauri, quitApxvDesktop } from "../lib/tauri";
 
 export function SettingsPage() {
   const navigate = useNavigate();
@@ -397,6 +397,14 @@ export function SettingsPage() {
               }
             >
               Stop server
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={busy}
+              onClick={() => void quitApxvDesktop()}
+            >
+              Quit APXV
             </Button>
           </ActionGroup>
         </section>

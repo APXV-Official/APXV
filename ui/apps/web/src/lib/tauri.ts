@@ -75,6 +75,12 @@ export async function ensureApxvServerStarted(): Promise<string> {
   return invokeTauri<string>("start_apxv_server");
 }
 
+/** Stop API and exit the desktop app (visible alternative to tray Quit). */
+export async function quitApxvDesktop(): Promise<void> {
+  if (!isTauri()) return;
+  await invokeTauri("quit_apxv");
+}
+
 export async function getBootstrapStatus(): Promise<BootstrapStatus> {
   return invokeTauri<BootstrapStatus>("get_bootstrap_status");
 }

@@ -3,6 +3,7 @@ import { ActionGroup, Alert, AlertDescription, AlertTitle, Button } from "@apxv/
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useApp } from "../context/AppContext";
+import { getFirstRunPath } from "../lib/tauri";
 import { formatApiError } from "../lib/api-errors";
 
 export function ConnectionBanner() {
@@ -11,7 +12,7 @@ export function ConnectionBanner() {
 
   async function reconnect() {
     await resetOnboarding();
-    void navigate({ to: "/onboarding", search: { redirect: undefined } });
+    void navigate({ to: getFirstRunPath(), search: { redirect: undefined } });
   }
 
   const healthQuery = useQuery({

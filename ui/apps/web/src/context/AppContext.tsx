@@ -109,7 +109,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const completeOnboarding = useCallback(async () => {
     await setOnboardingComplete(true);
     setOnboarded(true);
-  }, []);
+    // Sync router before Setup navigates to "/" — avoids a silent bounce back to /setup.
+    router.update({ context: { onboarded: true, sovereignReady } });
+  }, [sovereignReady]);
 
   const resetOnboarding = useCallback(async () => {
     await clearApiKey();

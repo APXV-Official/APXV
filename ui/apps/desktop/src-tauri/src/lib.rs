@@ -18,8 +18,24 @@ fn show_main_window(app: tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn quit_apxv(app: tauri::AppHandle) -> Result<(), String> {
+    let _ = stop_apxv_server();
+    app.exit(0);
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Desktop UI is served over HTTPS (tauri.localhost); local API is HTTP on :8741.
+    #[cfg(windows)]
+    {
+        std::env::set_var(
+            "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
+            "--unsafely-treat-insecure-origin-as-secure=http://127.0.0.1:8741",
+        );
+    }
+
     let mut builder = tauri::Builder::default();
 
     #[cfg(desktop)]
@@ -58,6 +74,7 @@ pub fn run() {
             read_operator_key,
             save_operator_key_file,
             show_main_window,
+            quit_apxv,
             run_bootstrap,
             get_bootstrap_status,
         ])

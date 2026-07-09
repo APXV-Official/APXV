@@ -37,6 +37,7 @@ import {
 } from "../lib/doctor-format";
 import { BrandLogo } from "../components/BrandLogo";
 import { invokeTauri, isTauri } from "../lib/tauri";
+import { router } from "../router";
 
 const STEPS: OnboardingStep[] = ["welcome", "connect", "doctor", "complete"];
 
@@ -179,7 +180,8 @@ export function OnboardingPage() {
 
   async function handleFinish() {
     await completeOnboarding();
-    void navigate({ to: "/" });
+    await router.invalidate();
+    await navigate({ to: "/" });
   }
 
   return (

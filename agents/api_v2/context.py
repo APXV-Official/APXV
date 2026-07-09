@@ -9,6 +9,7 @@ import json
 import uuid
 
 from ..auth import APIKeyAuth
+from ..cors import CORS_ALLOW_HEADERS, resolve_cors_origin
 from ..job_queue import JobQueue
 from ..runtime import APXRuntime
 from ..upload_manager import UploadManager
@@ -74,16 +75,11 @@ class ApiV2Context:
         self.handler.send_header("Content-Type", "application/json")
         self.handler.send_header("Content-Length", str(len(body)))
         self.handler.send_header("X-Request-Id", self.request_id)
-        origin = self.handler.headers.get("Origin", "")
-        allowed = ("http://127.0.0.1:5173", "http://localhost:5173")
-        if origin in allowed:
-            self.handler.send_header("Access-Control-Allow-Origin", origin)
-        else:
-            self.handler.send_header("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
         self.handler.send_header(
-            "Access-Control-Allow-Headers",
-            "Authorization, Content-Type, APXV-API-KEY, X-APX-API-Key, Accept",
+            "Access-Control-Allow-Origin",
+            resolve_cors_origin(self.handler.headers.get("Origin", "")),
         )
+        self.handler.send_header("Access-Control-Allow-Headers", CORS_ALLOW_HEADERS)
         if extra_headers:
             for key, value in extra_headers.items():
                 self.handler.send_header(key, value)
