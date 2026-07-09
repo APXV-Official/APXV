@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -24,15 +25,34 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _git_show_bytes(relpath: str) -> bytes:
+    """Read committed blob — survives CI bootstrap mutating the working tree."""
+    result = subprocess.run(
+        ["git", "show", f"HEAD:{relpath}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=True,
+    )
+    return result.stdout
+
+
+def _committed_governance_manifest() -> dict:
+    return json.loads(
+        _git_show_bytes("rust/apxv-circuits/keys/manifest.json").decode("utf-8")
+    )
+
+
 def _copy_vendor_governance_keys(tmp_path: Path) -> None:
-    src_dir = ROOT / "rust" / "apxv-circuits" / "keys"
     dest = tmp_path / "rust" / "apxv-circuits" / "keys"
     dest.mkdir(parents=True, exist_ok=True)
     for circuit in GOVERNANCE_CIRCUITS:
         for ext in ("pk", "vk"):
-            src = src_dir / f"{circuit}.{ext}"
-            if src.is_file():
-                (dest / f"{circuit}.{ext}").write_bytes(src.read_bytes())
+            rel = f"rust/apxv-circuits/keys/{circuit}.{ext}"
+            try:
+                data = _git_show_bytes(rel)
+            except subprocess.CalledProcessError:
+                continue
+            (dest / f"{circuit}.{ext}").write_bytes(data)
 
 
 def _write_sovereign_keys(tmp_path: Path, *, suffix: bytes = b"operator-vk") -> dict[str, str]:
@@ -136,9 +156,7 @@ def test_doctor_fails_when_install_vk_hashes_mismatch(tmp_path: Path):
 
 
 def test_vendor_blocklist_matches_manifest_hashes():
-    manifest = json.loads(
-        (ROOT / "rust" / "apxv-circuits" / "keys" / "manifest.json").read_text(encoding="utf-8")
-    )
+    manifest = _committed_governance_manifest()
     blocklist = set(load_vendor_vk_blocklist().get("vk_hashes", []))
     for circuit in GOVERNANCE_CIRCUITS:
         vk_hash = manifest["circuits"][circuit]["vk_hash"]

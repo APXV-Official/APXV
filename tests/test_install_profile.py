@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+import urllib.error
 from pathlib import Path
 
 import pytest
@@ -88,6 +89,11 @@ def test_ai_pack_production_uses_ollama_not_simulated(tmp_path: Path, monkeypatc
     runtime = APXVRuntime(base_path=tmp_path)
     backend = _resolve_llm_backend(None, runtime)
     assert isinstance(backend, OllamaLLMBackend)
+
+    def _ollama_unreachable(*_args, **_kwargs):
+        raise urllib.error.URLError("connection refused")
+
+    monkeypatch.setattr("urllib.request.urlopen", _ollama_unreachable)
     with pytest.raises(RuntimeError, match="Ollama"):
         backend.complete("Governance review for release")
 

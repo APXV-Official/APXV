@@ -54,11 +54,11 @@ def test_preflight_requires_writable_base(tmp_path: Path):
 def test_bootstrap_fresh_tmp_path_writes_install_json(tmp_path: Path, monkeypatch):
     _seed_governance_only(tmp_path)
 
-    def fake_gov(base_path: Path):
+    def fake_gov(base_path: Path, *, force: bool = False):
         _fake_zk_keys(base_path)
         return {"setup_ran": True, "keys_ready": True}
 
-    def fake_entity(base_path: Path):
+    def fake_entity(base_path: Path, *, force: bool = False):
         return {"setup_ran": True, "keys_ready": True}
 
     monkeypatch.setattr("scripts.bootstrap.orchestrator.run_governance_zk", fake_gov)
@@ -96,7 +96,7 @@ def test_bootstrap_fresh_tmp_path_writes_install_json(tmp_path: Path, monkeypatc
 def test_bootstrap_cli_json_report(tmp_path: Path, monkeypatch):
     _seed_governance_only(tmp_path)
 
-    def fake_gov(base_path: Path):
+    def fake_gov(base_path: Path, *, force: bool = False):
         _fake_zk_keys(base_path)
         return {"setup_ran": True}
 
@@ -126,7 +126,7 @@ def test_bootstrap_cli_json_report(tmp_path: Path, monkeypatch):
 def test_bootstrap_exit_partial_when_ollama_missing(tmp_path: Path, monkeypatch):
     _seed_governance_only(tmp_path)
 
-    def fake_gov(base_path: Path):
+    def fake_gov(base_path: Path, *, force: bool = False):
         _fake_zk_keys(base_path)
         return {"setup_ran": True}
 
