@@ -1,5 +1,8 @@
 name: Release Desktop
 
+# Do NOT use "Re-run failed jobs" on an old run — GitHub reuses that run's workflow YAML
+# (including the broken VBScript DISM step on windows-latest). Always use "Run workflow"
+# from the latest main branch after CI fixes land.
 on:
   workflow_dispatch:
     inputs:
@@ -8,6 +11,12 @@ on:
         required: true
         default: v1.3.1
   push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/release-desktop.yml"
+      - "scripts/build-desktop.ps1"
+      - "scripts/build-desktop.sh"
     tags:
       - "v*"
 
@@ -21,6 +30,15 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v5
+
+      - name: Preflight (windows-2022 — stale re-runs still use old workflow YAML)
+        shell: pwsh
+        run: |
+          Write-Host "Commit: $env:GITHUB_SHA"
+          Write-Host "Runner ImageOS: $env:ImageOS"
+          if ($env:ImageOS -ne "win22") {
+            throw "Wrong runner ($env:ImageOS). Do not Re-run old failed jobs. Use Actions -> Release Desktop -> Run workflow from latest main."
+          }
 
       - uses: actions/setup-node@v4
         with:
@@ -163,6 +181,7 @@ jobs:
 
   publish:
     needs: [build-windows, build-linux]
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
