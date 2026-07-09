@@ -2,17 +2,17 @@
 
 Download-and-run APXV for individual operators. No git clone required.
 
-**v1.3.0 ships:** Windows MSI/NSIS and Linux deb/AppImage. macOS DMG is planned for a follow-up release.
+**v1.3.1 ships:** Windows MSI/NSIS and Linux deb/AppImage. macOS DMG is planned for a follow-up release.
 
 ## Download
 
-Get installers from [GitHub Releases](https://github.com/APXV-Official/APXV/releases/tag/v1.3.0):
+Get installers from [GitHub Releases](https://github.com/APXV-Official/APXV/releases/tag/v1.3.1):
 
 | Platform | Artifact | Notes |
 |----------|----------|-------|
-| **Windows 10/11** | `APXV_1.3.0_x64_en-US.msi` or NSIS setup `.exe` | Requires Python 3.9+ on the machine (embedded runtime invokes it) |
-| **Linux (amd64)** | `APXV_1.3.0_amd64.deb` or `.AppImage` | Debian/Ubuntu: `.deb`; portable: AppImage. GTK/WebKit deps per [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) |
-| **macOS** | DMG (post-v1.3.0) | Build requires a Mac; not in v1.3.0 launch set |
+| **Windows 10/11** | `APXV_1.3.1_x64_en-US.msi` or NSIS setup `.exe` | Requires Python 3.9+ on the machine (embedded runtime invokes it) |
+| **Linux (amd64)** | `APXV_1.3.1_amd64.deb` or `.AppImage` | Debian/Ubuntu: `.deb`; portable: AppImage. GTK/WebKit deps per [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) |
+| **macOS** | DMG (post-v1.3.1) | Build requires a Mac; not in v1.3.1 launch set |
 
 For teams without a desktop install, use [DOCKER.md](DOCKER.md) instead.
 
@@ -32,7 +32,7 @@ For teams without a desktop install, use [DOCKER.md](DOCKER.md) instead.
 **Debian/Ubuntu (.deb):**
 
 ```bash
-sudo dpkg -i APXV_1.3.0_amd64.deb
+sudo dpkg -i APXV_1.3.1_amd64.deb
 sudo apt install -f   # if dependencies are missing
 apxv   # or find APXV in your application menu
 ```
@@ -40,8 +40,8 @@ apxv   # or find APXV in your application menu
 **AppImage:**
 
 ```bash
-chmod +x APXV_1.3.0_amd64.AppImage
-./APXV_1.3.0_amd64.AppImage
+chmod +x APXV_1.3.1_amd64.AppImage
+./APXV_1.3.1_amd64.AppImage
 ```
 
 Then follow the same first-launch bootstrap wizard as Windows.

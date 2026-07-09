@@ -1,4 +1,5 @@
 import { authHeaders, getApiConfig, notifyUnauthorized } from "./configure";
+import { resolveFetch } from "./platform-fetch";
 import type { Job } from "./jobs";
 
 export interface JobStreamEvent {
@@ -53,7 +54,8 @@ export async function* streamJobs(options?: {
     ...authHeaders(config.apiKey),
   };
 
-  const response = await fetch(`${base}/api/v2/jobs/stream${suffix}`, {
+  const fetchImpl = await resolveFetch();
+  const response = await fetchImpl(`${base}/api/v2/jobs/stream${suffix}`, {
     headers,
     signal: options?.signal,
   });

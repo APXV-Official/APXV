@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-07-09
+
+Desktop connectivity hotfix — operators can Connect and use Jobs on **Windows and Linux** without manual API patching.
+
+### Fixed
+
+- **Linux desktop Connect** — `Load failed` when pairing operator key; WebKitGTK blocks HTTPS UI → HTTP API (`tauri.localhost` → `127.0.0.1:8741`). API calls now use `tauri-plugin-http` (Rust), bypassing mixed-content restrictions.
+- **Jobs live updates** — SSE `/api/v2/jobs/stream` missing CORS headers; showed `Connecting… · Failed to fetch` while pipelines still ran.
+- **Windows server pile-up** — duplicate `apxv_serve` on `:8741` after relaunch; spawn real `python.exe`, skip start if port reachable, stop all listeners on Quit.
+- **Connect flow** — setup navigation after Connect; visible Quit on setup; CORS origins for Tauri desktop webview.
+
+### Added
+
+- `scripts/patch_jobs_stream_cors.py` — in-place patch for v1.3.0 runtime trees (SSE CORS only; Linux Connect still needs 1.3.1 desktop build).
+
+### Chore
+
+- Ship artifacts: `APXV_1.3.1_x64_en-US.msi`, `APXV_1.3.1_x64-setup.exe`, `APXV_1.3.1_amd64.deb`, `APXV_1.3.1_amd64.AppImage`
+
 ## [1.3.0] - 2026-07-09
 
 Platform rename, **sovereign local trust**, desktop app, Pack Studio, and API v2. No Groth16 circuit semantic changes since v1.1.0 — each deployment runs its own trusted setup ceremony.
@@ -315,6 +334,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.3.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.1
 [1.3.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.0
 [1.2.5]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.5
 [1.2.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.2

@@ -82,7 +82,7 @@ def test_bootstrap_fresh_tmp_path_writes_install_json(tmp_path: Path, monkeypatc
     install = read_install_json(tmp_path)
     assert install is not None
     assert install["sovereign_setup"] is True
-    assert install["bootstrap_version"] == "1.3.0"
+    assert install["bootstrap_version"] == "1.3.1"
     assert install["profile"] == "ci"
     assert len(install["vk_hashes"]) == len(GOVERNANCE_CIRCUITS) + len(ENTITY_CIRCUITS)
     assert (tmp_path / "managed" / "config" / "capabilities.json").is_file()

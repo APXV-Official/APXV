@@ -104,10 +104,13 @@ export function JobsPage() {
     <PageShell wide className="space-y-10">
       <PageToolbar>
         <span className="inline-flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]">
-          <StatusDot tone={connected ? "success" : "muted"} pulse={connected} />
-          {connected ? "Live updates" : "Connecting…"}
+          <StatusDot
+            tone={connected ? "success" : streamError ? "warning" : "muted"}
+            pulse={connected}
+          />
+          {connected ? "Live updates" : streamError ? "Polling" : "Connecting…"}
           {streamError && (
-            <span className="text-[hsl(var(--destructive))]">· {streamError}</span>
+            <span className="text-[hsl(var(--muted-foreground))]">· {streamError}</span>
           )}
         </span>
         <ActionGroup>

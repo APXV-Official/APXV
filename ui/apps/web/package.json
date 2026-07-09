@@ -20,6 +20,7 @@
     "@tanstack/react-router": "^1.114.25",
     "@tanstack/react-virtual": "^3.14.4",
     "@tauri-apps/api": "^2.3.0",
+    "@tauri-apps/plugin-http": "^2.3.0",
     "@tauri-apps/plugin-store": "^2.2.0",
     "lucide-react": "^1.22.0",
     "react": "^19.0.0",

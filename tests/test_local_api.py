@@ -135,3 +135,20 @@ def test_pipeline_async_job(api_server):
             break
         time.sleep(0.2)
     assert job["status"] == "completed"
+
+
+def test_jobs_stream_includes_cors_for_tauri(api_server):
+    base, api_key = api_server
+    req = urllib.request.Request(
+        f"{base}/api/v2/jobs/stream?seconds=2&poll_ms=250",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Accept": "text/event-stream",
+            "Origin": "https://tauri.localhost",
+        },
+        method="GET",
+    )
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        assert resp.status == 200
+        assert resp.headers.get("Content-Type") == "text/event-stream"
+        assert resp.headers.get("Access-Control-Allow-Origin") == "https://tauri.localhost"

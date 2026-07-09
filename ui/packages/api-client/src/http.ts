@@ -1,4 +1,5 @@
 import { authHeaders, notifyUnauthorized, withApiDefaults } from "./configure";
+import { resolveFetch } from "./platform-fetch";
 import type { ErrorEnvelope } from "./types";
 
 export class ApiError extends Error {
@@ -43,7 +44,8 @@ export async function apiFetch<T>(
     body = JSON.stringify(resolved.body);
   }
 
-  const response = await fetch(url, {
+  const fetchImpl = await resolveFetch();
+  const response = await fetchImpl(url, {
     method: resolved.method ?? (body ? "POST" : "GET"),
     headers,
     body,

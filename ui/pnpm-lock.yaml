@@ -44,6 +44,9 @@ importers:
       '@tauri-apps/api':
         specifier: ^2.3.0
         version: 2.11.1
+      '@tauri-apps/plugin-http':
+        specifier: ^2.3.0
+        version: 2.5.9
       '@tauri-apps/plugin-store':
         specifier: ^2.2.0
         version: 2.4.3
@@ -87,6 +90,9 @@ importers:
       '@hey-api/client-fetch':
         specifier: ^0.9.0
         version: 0.9.0(@hey-api/openapi-ts@0.66.7(typescript@5.9.3))
+      '@tauri-apps/plugin-http':
+        specifier: ^2.3.0
+        version: 2.5.9
     devDependencies:
       '@hey-api/openapi-ts':
         specifier: ^0.66.0
@@ -971,6 +977,9 @@ packages:
     resolution: {integrity: sha512-R8xGtMpwyetawSqm9kYOuMmEqkhUbvcUy8n0aNXIxollKBLESUu5f4Fx+64hgASYm1H+jSWq6jCW6zqTnH6hqQ==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-http@2.5.9':
+    resolution: {integrity: sha512-lCiY0+vs4HvIUSvZrBs8TC3TiCB0MOPRmiUjTq4prW7SlcJE2jdLeT6KBsJrT9Tlplufl7W1pY6SFAO3gCWxDA==}
 
   '@tauri-apps/plugin-store@2.4.3':
     resolution: {integrity: sha512-9LWPj9yMphRi9czEtUv87XHbl1b6xgd9EXpPrUnq6nG7+nbtoF84d4Kwz9xhAv/Hf30sr58pq7EOlyI936y8qw==}
@@ -2218,6 +2227,10 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.11.4
       '@tauri-apps/cli-win32-ia32-msvc': 2.11.4
       '@tauri-apps/cli-win32-x64-msvc': 2.11.4
+
+  '@tauri-apps/plugin-http@2.5.9':
+    dependencies:
+      '@tauri-apps/api': 2.11.1
 
   '@tauri-apps/plugin-store@2.4.3':
     dependencies:

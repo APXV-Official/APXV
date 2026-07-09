@@ -1,6 +1,6 @@
 # APXV — Operator Guide
 
-**Version:** 1.3.0 · **API:** v2 (`127.0.0.1:8741`)
+**Version:** 1.3.1 · **API:** v2 (`127.0.0.1:8741`)
 
 Local operator console for governed agent pipelines — browser UI or Tauri desktop app. Every action maps to a documented REST endpoint.
 

@@ -11,6 +11,7 @@ export type ErrorEnvelope = {
 export type HealthResponse = {
     status?: 'healthy' | 'degraded';
     air_gapped?: boolean;
+    sovereign_setup?: boolean;
     integrity?: IntegrityResult;
 };
 
@@ -20,6 +21,10 @@ export type IntegrityResult = {
     capability_policy_trusted?: boolean;
     governance_approvals_valid?: boolean;
     healthy?: boolean;
+    sovereign_setup?: boolean;
+    sovereign_ok?: boolean;
+    sovereign_status?: string;
+    sovereign_issues?: Array<string>;
     audit_logs?: {
         [key: string]: boolean;
     };
@@ -662,6 +667,40 @@ export type GetOllamaStatusResponses = {
 };
 
 export type GetOllamaStatusResponse = GetOllamaStatusResponses[keyof GetOllamaStatusResponses];
+
+export type RepairIntegrationsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v2/integrations/repair';
+};
+
+export type RepairIntegrationsErrors = {
+    /**
+     * Missing or invalid API key
+     */
+    401: ErrorEnvelope;
+};
+
+export type RepairIntegrationsError = RepairIntegrationsErrors[keyof RepairIntegrationsErrors];
+
+export type RepairIntegrationsResponses = {
+    /**
+     * Integration repair result
+     */
+    200: {
+        ok?: boolean;
+        install_json_updated?: boolean;
+        ollama?: {
+            [key: string]: unknown;
+        };
+        voice?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type RepairIntegrationsResponse = RepairIntegrationsResponses[keyof RepairIntegrationsResponses];
 
 export type ClientOptions = {
     baseUrl: 'http://127.0.0.1:8741' | (string & {});

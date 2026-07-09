@@ -82,7 +82,7 @@ def test_repair_integrations_updates_install_json(tmp_path: Path, monkeypatch):
     write_install_json(
         tmp_path,
         {
-            "bootstrap_version": "1.3.0",
+            "bootstrap_version": "1.3.1",
             "profile": "production",
             "sovereign_setup": True,
             "zk_setup_at": "2026-01-01T00:00:00+00:00",
@@ -124,7 +124,7 @@ def test_smoke_check_ollama_skips_when_not_verified(tmp_path: Path):
     write_install_json(
         tmp_path,
         {
-            "bootstrap_version": "1.3.0",
+            "bootstrap_version": "1.3.1",
             "profile": "production",
             "sovereign_setup": True,
             "zk_setup_at": "2026-01-01T00:00:00+00:00",
@@ -145,7 +145,7 @@ def test_smoke_check_ollama_fails_when_verified_but_unreachable(tmp_path: Path, 
     write_install_json(
         tmp_path,
         {
-            "bootstrap_version": "1.3.0",
+            "bootstrap_version": "1.3.1",
             "profile": "production",
             "sovereign_setup": True,
             "zk_setup_at": "2026-01-01T00:00:00+00:00",

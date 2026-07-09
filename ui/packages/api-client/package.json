@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hey-api/client-fetch": "^0.9.0"
+    "@hey-api/client-fetch": "^0.9.0",
+    "@tauri-apps/plugin-http": "^2.3.0"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.66.0",

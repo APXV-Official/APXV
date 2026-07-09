@@ -401,12 +401,7 @@ def _jobs_get(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str])
 
 def _jobs_stream(ctx: ApiV2Context, query: Dict[str, str], _params: Dict[str, str]) -> bool:
     handler = ctx.handler
-    handler.send_response(200)
-    handler.send_header("Content-Type", "text/event-stream")
-    handler.send_header("Cache-Control", "no-cache")
-    handler.send_header("Connection", "keep-alive")
-    handler.send_header("X-Request-Id", ctx.request_id)
-    handler.end_headers()
+    ctx.begin_event_stream()
 
     duration = ctx.parse_int(query.get("seconds"), 30, minimum=5, maximum=120)
     poll_ms = ctx.parse_int(query.get("poll_ms"), 1000, minimum=250, maximum=5000)

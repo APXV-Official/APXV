@@ -63,6 +63,20 @@ class ApiV2Context:
             return b""
         return self.handler.rfile.read(length)
 
+    def begin_event_stream(self) -> None:
+        """Start an SSE response with CORS headers (required for browser/Tauri fetch)."""
+        self.handler.send_response(200)
+        self.handler.send_header("Content-Type", "text/event-stream")
+        self.handler.send_header("Cache-Control", "no-cache")
+        self.handler.send_header("Connection", "keep-alive")
+        self.handler.send_header("X-Request-Id", self.request_id)
+        self.handler.send_header(
+            "Access-Control-Allow-Origin",
+            resolve_cors_origin(self.handler.headers.get("Origin", "")),
+        )
+        self.handler.send_header("Access-Control-Allow-Headers", CORS_ALLOW_HEADERS)
+        self.handler.end_headers()
+
     def send_json(
         self,
         status: int,

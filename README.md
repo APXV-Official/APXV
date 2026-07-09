@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV**, the first open-source implementation.
 
-> **Current release:** [v1.3.0](https://github.com/APXV-Official/APXV/releases/tag/v1.3.0) — sovereign local trust, Pack Studio, operator UI, API v2. [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
+> **Current release:** [v1.3.1](https://github.com/APXV-Official/APXV/releases/tag/v1.3.1) — desktop connectivity fix (Windows + Linux). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
 
 Install APXV on your machine. Your instance generates **your** proving keys, runs governed pipelines, and produces proofs you can verify locally. No vendor keys in Docker images; no cloud trust boundary.
 
@@ -170,7 +170,7 @@ Circuit semantics unchanged since v1.1.0 — each operator still runs their own 
 
 ## Status
 
-**v1.3.0 (current release)** — sovereign local trust, platform rename (`apxv`), API v2, Pack Studio, desktop app (Windows + Linux), operator UI, agent registry. Migration: [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md). Prior line: **v1.2.5**. Full history: [CHANGELOG.md](CHANGELOG.md).
+**v1.3.1 (current release)** — desktop Connect and Jobs live updates on Windows and Linux. **v1.3.0** added sovereign local trust, API v2, Pack Studio, desktop app. Migration: [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md). Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 

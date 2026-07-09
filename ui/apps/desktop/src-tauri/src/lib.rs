@@ -28,6 +28,8 @@ fn quit_apxv(app: tauri::AppHandle) -> Result<(), String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // Desktop UI is served over HTTPS (tauri.localhost); local API is HTTP on :8741.
+    // Linux WebKitGTK blocks mixed-content fetch ("Load failed"). API calls use
+    // tauri-plugin-http from the UI instead of the webview fetch stack.
     #[cfg(windows)]
     {
         std::env::set_var(
@@ -46,6 +48,7 @@ pub fn run() {
     }
 
     builder
+        .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .setup(|app| {
