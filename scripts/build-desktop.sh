@@ -4,6 +4,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEV_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+RUNTIME_ROOT="$DEV_ROOT/runtime"
+if [[ ! -f "$RUNTIME_ROOT/pyproject.toml" ]]; then
+  RUNTIME_ROOT="$DEV_ROOT"
+fi
+RUST_DIR="$RUNTIME_ROOT/rust"
 UI_ROOT="$DEV_ROOT/ui"
 TAURI_ROOT="$UI_ROOT/apps/desktop/src-tauri"
 
@@ -18,10 +23,19 @@ if ! command -v pnpm >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "Building release prover binaries for $(uname -s)..."
-pushd "$DEV_ROOT/runtime/rust" >/dev/null
-cargo build --release -p apxv-circuits -p apxv-zk
-popd >/dev/null
+if [[ ! -f "$RUST_DIR/Cargo.toml" ]]; then
+  echo "FAIL: Rust workspace not found at $RUST_DIR"
+  exit 1
+fi
+
+if [[ "${APXV_SKIP_PROVER_BUILD:-}" != "1" ]]; then
+  echo "Building release prover binaries for $(uname -s)..."
+  pushd "$RUST_DIR" >/dev/null
+  cargo build --release -p apxv-circuits -p apxv-zk
+  popd >/dev/null
+else
+  echo "Skipping prover build (APXV_SKIP_PROVER_BUILD=1)."
+fi
 
 echo "Staging runtime payload..."
 bash "$SCRIPT_DIR/stage-desktop-runtime.sh"

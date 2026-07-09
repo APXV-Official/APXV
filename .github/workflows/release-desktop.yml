@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       - uses: pnpm/action-setup@v4
         with:
@@ -35,13 +35,27 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install UI dependencies
+        working-directory: ui
+        run: pnpm install
+
       - name: Build Rust provers
         working-directory: rust
         run: cargo build --release -p apxv-circuits -p apxv-zk
 
       - name: Build desktop installers (Windows)
         shell: pwsh
+        env:
+          APXV_SKIP_PROVER_BUILD: "1"
         run: ./scripts/build-desktop.ps1
+
+      - name: Verify Windows installers
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem ui/apps/desktop/src-tauri/target/release/bundle/msi/*.msi -ErrorAction Stop
+          $setup = Get-ChildItem ui/apps/desktop/src-tauri/target/release/bundle/nsis/*setup.exe -ErrorAction Stop
+          Write-Host "MSI: $($msi.FullName)"
+          Write-Host "Setup: $($setup.FullName)"
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
@@ -74,7 +88,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       - uses: pnpm/action-setup@v4
         with:
@@ -86,12 +100,23 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install UI dependencies
+        working-directory: ui
+        run: pnpm install
+
       - name: Build Rust provers
         working-directory: rust
         run: cargo build --release -p apxv-circuits -p apxv-zk
 
       - name: Build desktop installers (Linux)
+        env:
+          APXV_SKIP_PROVER_BUILD: "1"
         run: bash scripts/build-desktop.sh
+
+      - name: Verify Linux installers
+        run: |
+          ls -la ui/apps/desktop/src-tauri/target/release/bundle/deb/*.deb
+          ls -la ui/apps/desktop/src-tauri/target/release/bundle/appimage/*.AppImage
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
