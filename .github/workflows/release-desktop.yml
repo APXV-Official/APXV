@@ -35,9 +35,25 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Enable VBScript (required for WiX MSI on Windows Server 2025)
+        shell: pwsh
+        run: |
+          dism /Online /Enable-Feature /FeatureName:VBScript /All /NoRestart
+          if ($LASTEXITCODE -ne 0) { Write-Warning "VBScript enable returned $LASTEXITCODE (may already be on)" }
+
+      - name: Install WiX Toolset v3 (MSI bundler)
+        shell: pwsh
+        run: choco install wixtoolset --version=3.14.0 -y --no-progress
+
       - name: Install UI dependencies
         working-directory: ui
         run: pnpm install
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust -> target
+            ui/apps/desktop/src-tauri -> target
 
       - name: Build Rust provers
         working-directory: rust
@@ -52,8 +68,15 @@ jobs:
       - name: Verify Windows installers
         shell: pwsh
         run: |
-          $msi = Get-ChildItem ui/apps/desktop/src-tauri/target/release/bundle/msi/*.msi -ErrorAction Stop
-          $setup = Get-ChildItem ui/apps/desktop/src-tauri/target/release/bundle/nsis/*setup.exe -ErrorAction Stop
+          $bundle = "ui/apps/desktop/src-tauri/target/release/bundle"
+          if (-not (Test-Path $bundle)) {
+            Write-Error "Bundle directory missing. Contents of target/release:"
+            Get-ChildItem ui/apps/desktop/src-tauri/target/release -ErrorAction SilentlyContinue
+            exit 1
+          }
+          Get-ChildItem $bundle -Recurse -File | ForEach-Object { Write-Host $_.FullName }
+          $msi = Get-ChildItem "$bundle/msi/*.msi" -ErrorAction Stop
+          $setup = Get-ChildItem "$bundle/nsis/*setup.exe" -ErrorAction Stop
           Write-Host "MSI: $($msi.FullName)"
           Write-Host "Setup: $($setup.FullName)"
 
@@ -103,6 +126,12 @@ jobs:
       - name: Install UI dependencies
         working-directory: ui
         run: pnpm install
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            rust -> target
+            ui/apps/desktop/src-tauri -> target
 
       - name: Build Rust provers
         working-directory: rust

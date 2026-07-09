@@ -18,10 +18,18 @@ pnpm --filter @apxv/desktop build
 $buildExit = $LASTEXITCODE
 Pop-Location
 
-if ($buildExit -ne 0) { exit $buildExit }
+if ($buildExit -ne 0) {
+    Write-Error "Desktop build failed (exit $buildExit)"
+    exit $buildExit
+}
+
+$releaseExe = Join-Path $UiRoot "apps\desktop\src-tauri\target\release\apxv.exe"
+if (-not (Test-Path $releaseExe)) {
+    Write-Error "Release binary missing: $releaseExe"
+    exit 1
+}
 
 $TauriRoot = Join-Path $UiRoot "apps\desktop\src-tauri"
-$releaseExe = Join-Path $TauriRoot "target\release\apxv.exe"
 $msiDir = Join-Path $TauriRoot "target\release\bundle\msi"
 $nsisDir = Join-Path $TauriRoot "target\release\bundle\nsis"
 
