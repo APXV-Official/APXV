@@ -51,17 +51,19 @@ else
   fi
   pnpm --filter @apxv/web build
 fi
-if [[ "$(uname -s)" == "Linux" ]]; then
-  # prebuild in package.json is Windows-only (powershell); staging already ran above.
-  if [[ ! -d node_modules ]]; then
-    pnpm install
-  fi
-  pushd apps/desktop >/dev/null
-  pnpm exec tauri build
-  popd >/dev/null
-else
-  pnpm --filter @apxv/desktop build
+# Invoke tauri directly from apps/desktop (same path Linux CI uses).
+# Avoid pnpm --filter @apxv/desktop build on Windows — package prebuild + filter is unreliable in GHA.
+if [[ ! -d node_modules ]]; then
+  pnpm install
 fi
+pushd apps/desktop >/dev/null
+if [[ -n "${APXV_WINDOWS_BUNDLES:-}" ]]; then
+  echo "  bundles: $APXV_WINDOWS_BUNDLES"
+  pnpm exec -- tauri build --verbose --bundles "$APXV_WINDOWS_BUNDLES"
+else
+  pnpm exec -- tauri build --verbose
+fi
+popd >/dev/null
 popd >/dev/null
 
 echo ""
@@ -79,7 +81,19 @@ case "$(uname -s)" in
     ls "$DEB_DIR"/*.deb 2>/dev/null | while read -r f; do echo "  Deb:  $f"; done
     ls "$APPIMAGE_DIR"/*.AppImage 2>/dev/null | while read -r f; do echo "  AppImage: $f"; done
     ;;
+  MINGW*|MSYS*|CYGWIN*|Windows_NT)
+    ls "$TAURI_ROOT/target/release/bundle/msi/"*.msi 2>/dev/null | while read -r f; do echo "  MSI:  $f"; done
+    ls "$TAURI_ROOT/target/release/bundle/nsis/"*setup.exe 2>/dev/null | while read -r f; do echo "  Setup: $f"; done
+    ;;
   *)
     echo "  Binary: $TAURI_ROOT/target/release/apxv"
+    ;;
+esac
+
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*|Windows_NT)
+    [[ -f "$TAURI_ROOT/target/release/apxv.exe" ]] || { echo "FAIL: apxv.exe missing" >&2; exit 1; }
+    ls "$TAURI_ROOT/target/release/bundle/msi/"*.msi >/dev/null 2>&1 || { echo "FAIL: MSI missing" >&2; exit 1; }
+    ls "$TAURI_ROOT/target/release/bundle/nsis/"*setup.exe >/dev/null 2>&1 || { echo "FAIL: NSIS setup missing" >&2; exit 1; }
     ;;
 esac

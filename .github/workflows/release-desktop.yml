@@ -92,30 +92,40 @@ jobs:
         working-directory: rust
         run: cargo build --release -p apxv-circuits -p apxv-zk
 
-      - name: Build desktop installers (Windows)
-        shell: pwsh
+      # Use bash + explicit steps (same tauri invocation as green Linux job).
+      # build-desktop.ps1 was exiting in ~1s on GHA without compiling — do not use it in CI.
+      - name: Stage runtime payload (Windows)
+        shell: bash
+        run: bash scripts/stage-desktop-runtime.sh
+
+      - name: Build web assets (Windows)
+        working-directory: ui
+        run: pnpm --filter @apxv/web build
+
+      - name: Build Tauri installers (Windows)
+        working-directory: ui/apps/desktop
         env:
           APXV_SKIP_PROVER_BUILD: "1"
-          APXV_WINDOWS_BUNDLES: "msi,nsis"
         run: |
-          Write-Host "candle: $(Get-Command candle.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source)"
-          Write-Host "makensis: $(Get-Command makensis.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source)"
-          ./scripts/build-desktop.ps1
+          set -euo pipefail
+          echo "tauri: $(pnpm exec -- tauri --version)"
+          echo "candle: $(command -v candle.exe || true)"
+          echo "makensis: $(command -v makensis.exe || true)"
+          pnpm exec -- tauri build --verbose --bundles msi,nsis
 
       - name: Verify Windows installers
-        shell: pwsh
+        shell: bash
         run: |
-          $bundle = "ui/apps/desktop/src-tauri/target/release/bundle"
-          if (-not (Test-Path $bundle)) {
-            Write-Error "Bundle directory missing. Contents of target/release:"
-            Get-ChildItem ui/apps/desktop/src-tauri/target/release -ErrorAction SilentlyContinue
+          set -euo pipefail
+          BUNDLE="ui/apps/desktop/src-tauri/target/release/bundle"
+          if [[ ! -d "$BUNDLE" ]]; then
+            echo "Bundle directory missing. Contents of target/release:" >&2
+            ls -la ui/apps/desktop/src-tauri/target/release || true
             exit 1
-          }
-          Get-ChildItem $bundle -Recurse -File | ForEach-Object { Write-Host $_.FullName }
-          $msi = Get-ChildItem "$bundle/msi/*.msi" -ErrorAction Stop
-          $setup = Get-ChildItem "$bundle/nsis/*setup.exe" -ErrorAction Stop
-          Write-Host "MSI: $($msi.FullName)"
-          Write-Host "Setup: $($setup.FullName)"
+          fi
+          find "$BUNDLE" -type f -ls
+          ls -la "$BUNDLE/msi/"*.msi
+          ls -la "$BUNDLE/nsis/"*setup.exe
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
