@@ -28,6 +28,9 @@ jobs:
     # windows-latest (Server 2025) removed VBScript as a DISM feature; WiX MSI needs windows-2022.
     runs-on: windows-2022
     timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v5
 
@@ -103,6 +106,7 @@ jobs:
         run: pnpm --filter @apxv/web build
 
       - name: Build Tauri installers (Windows)
+        shell: bash
         working-directory: ui/apps/desktop
         env:
           APXV_SKIP_PROVER_BUILD: "1"
