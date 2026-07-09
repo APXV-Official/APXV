@@ -14,22 +14,17 @@ pnpm --filter @apxv/web build
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "Building APXV desktop (release)..."
-$desktopRoot = Join-Path $UiRoot "apps\desktop"
-Push-Location $desktopRoot
 if ($env:APXV_WINDOWS_BUNDLES) {
     Write-Host "  bundles: $($env:APXV_WINDOWS_BUNDLES)"
-    pnpm exec tauri build --bundles $env:APXV_WINDOWS_BUNDLES
+    pnpm --filter @apxv/desktop exec tauri build --bundles $env:APXV_WINDOWS_BUNDLES
 } else {
-    pnpm exec tauri build
+    pnpm --filter @apxv/desktop build
 }
-$buildExit = $LASTEXITCODE
-Pop-Location
-Pop-Location
-
-if ($buildExit -ne 0) {
-    Write-Error "Desktop build failed (exit $buildExit)"
-    exit $buildExit
+if (-not $?) {
+    Write-Error "Desktop tauri build failed"
+    exit 1
 }
+Pop-Location
 
 $releaseExe = Join-Path $UiRoot "apps\desktop\src-tauri\target\release\apxv.exe"
 if (-not (Test-Path $releaseExe)) {
@@ -51,4 +46,17 @@ Get-ChildItem $msiDir -Filter "*.msi" -ErrorAction SilentlyContinue | ForEach-Ob
 }
 Get-ChildItem $nsisDir -Filter "*setup.exe" -ErrorAction SilentlyContinue | ForEach-Object {
     Write-Host "  Setup:  $($_.FullName)"
+}
+
+$msi = @(Get-ChildItem $msiDir -Filter "*.msi" -ErrorAction SilentlyContinue)
+$setup = @(Get-ChildItem $nsisDir -Filter "*setup.exe" -ErrorAction SilentlyContinue)
+if ($msi.Count -eq 0 -or $setup.Count -eq 0) {
+    Write-Error "Installer bundles missing (msi=$($msi.Count), setup=$($setup.Count)). target/release tree:"
+    $releaseRoot = Join-Path $TauriRoot "target\release"
+    if (Test-Path $releaseRoot) {
+        Get-ChildItem $releaseRoot -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+    } else {
+        Write-Host "  (missing $releaseRoot)"
+    }
+    exit 1
 }

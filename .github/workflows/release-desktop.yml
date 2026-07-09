@@ -54,7 +54,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install WiX Toolset v3 (MSI bundler)
+      - name: Install Windows bundlers (WiX + NSIS)
         shell: pwsh
         run: |
           $wixBin = "C:\Program Files (x86)\WiX Toolset v3.14\bin"
@@ -68,6 +68,17 @@ jobs:
           echo "$wixBin" >> $env:GITHUB_PATH
           Write-Host "WiX on PATH: $wixBin"
 
+          $nsisRoot = "C:\Program Files (x86)\NSIS"
+          if (-not (Test-Path "$nsisRoot\makensis.exe")) {
+            choco install nsis -y --no-progress
+            if ($LASTEXITCODE -ne 0) { throw "NSIS install failed with exit code $LASTEXITCODE" }
+          } else {
+            Write-Host "NSIS already installed at $nsisRoot"
+          }
+          if (-not (Test-Path "$nsisRoot\makensis.exe")) { throw "makensis.exe not found under $nsisRoot" }
+          echo "$nsisRoot" >> $env:GITHUB_PATH
+          Write-Host "NSIS on PATH: $nsisRoot"
+
       - name: Install UI dependencies
         working-directory: ui
         run: pnpm install
@@ -76,7 +87,6 @@ jobs:
         with:
           workspaces: |
             rust -> target
-            ui/apps/desktop/src-tauri -> target
 
       - name: Build Rust provers
         working-directory: rust
@@ -86,7 +96,11 @@ jobs:
         shell: pwsh
         env:
           APXV_SKIP_PROVER_BUILD: "1"
-        run: ./scripts/build-desktop.ps1
+          APXV_WINDOWS_BUNDLES: "msi,nsis"
+        run: |
+          Write-Host "candle: $(Get-Command candle.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source)"
+          Write-Host "makensis: $(Get-Command makensis.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source)"
+          ./scripts/build-desktop.ps1
 
       - name: Verify Windows installers
         shell: pwsh
