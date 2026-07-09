@@ -16,7 +16,8 @@ permissions:
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    # windows-latest (Server 2025) removed VBScript as a DISM feature; WiX MSI needs windows-2022.
+    runs-on: windows-2022
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v5
@@ -35,15 +36,19 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Enable VBScript (required for WiX MSI on Windows Server 2025)
-        shell: pwsh
-        run: |
-          dism /Online /Enable-Feature /FeatureName:VBScript /All /NoRestart
-          if ($LASTEXITCODE -ne 0) { Write-Warning "VBScript enable returned $LASTEXITCODE (may already be on)" }
-
       - name: Install WiX Toolset v3 (MSI bundler)
         shell: pwsh
-        run: choco install wixtoolset --version=3.14.0 -y --no-progress
+        run: |
+          $wixBin = "C:\Program Files (x86)\WiX Toolset v3.14\bin"
+          if (-not (Test-Path "$wixBin\candle.exe")) {
+            choco install wixtoolset --version=3.14.0 -y --no-progress
+            if ($LASTEXITCODE -ne 0) { throw "WiX Toolset install failed with exit code $LASTEXITCODE" }
+          } else {
+            Write-Host "WiX Toolset already installed at $wixBin"
+          }
+          if (-not (Test-Path "$wixBin\candle.exe")) { throw "candle.exe not found under $wixBin" }
+          echo "$wixBin" >> $env:GITHUB_PATH
+          Write-Host "WiX on PATH: $wixBin"
 
       - name: Install UI dependencies
         working-directory: ui

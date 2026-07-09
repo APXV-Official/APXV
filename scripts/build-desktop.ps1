@@ -14,8 +14,16 @@ pnpm --filter @apxv/web build
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "Building APXV desktop (release)..."
-pnpm --filter @apxv/desktop build
+$desktopRoot = Join-Path $UiRoot "apps\desktop"
+Push-Location $desktopRoot
+if ($env:APXV_WINDOWS_BUNDLES) {
+    Write-Host "  bundles: $($env:APXV_WINDOWS_BUNDLES)"
+    pnpm exec tauri build --bundles $env:APXV_WINDOWS_BUNDLES
+} else {
+    pnpm exec tauri build
+}
 $buildExit = $LASTEXITCODE
+Pop-Location
 Pop-Location
 
 if ($buildExit -ne 0) {
