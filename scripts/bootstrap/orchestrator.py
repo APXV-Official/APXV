@@ -126,11 +126,12 @@ def run_bootstrap(options: BootstrapOptions) -> BootstrapReport:
         steps["rust_layout"] = seed_rust_layout(base_path, source_root)
         steps["prover_env"] = _configure_prover_env(source_root)
 
+        force_keys = options.profile == "ci"
         print("[3/9] Governance ZK trusted setup")
-        steps["governance_zk"] = run_governance_zk(base_path)
+        steps["governance_zk"] = run_governance_zk(base_path, force=force_keys)
 
         print("[4/9] Entity ZK trusted setup")
-        steps["entity_zk"] = run_entity_zk(base_path)
+        steps["entity_zk"] = run_entity_zk(base_path, force=force_keys)
 
         print("[5/9] Runtime first-run")
         steps["seed_governance"] = seed_governance_templates(base_path, source_root)

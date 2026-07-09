@@ -17,9 +17,9 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def run_governance_zk(base_path: Path) -> Dict[str, Any]:
+def run_governance_zk(base_path: Path, *, force: bool = False) -> Dict[str, Any]:
     """Step 3 — governance circuit trusted setup."""
-    report = ensure_zk_setup(base_path=base_path)
+    report = ensure_zk_setup(base_path=base_path, force=force)
     keys = verify_zk_keys(base_path)
     if not keys["ready"]:
         raise RuntimeError("Governance ZK keys incomplete after setup")
@@ -27,9 +27,9 @@ def run_governance_zk(base_path: Path) -> Dict[str, Any]:
     return report
 
 
-def run_entity_zk(base_path: Path) -> Dict[str, Any]:
+def run_entity_zk(base_path: Path, *, force: bool = False) -> Dict[str, Any]:
     """Step 4 — entity circuit trusted setup."""
-    report = ensure_entity_zk_setup(base_path=base_path)
+    report = ensure_entity_zk_setup(base_path=base_path, force=force)
     keys = verify_entity_zk_keys(base_path)
     if not keys["ready"]:
         raise RuntimeError("Entity ZK keys incomplete after setup")

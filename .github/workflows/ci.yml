@@ -32,7 +32,7 @@ jobs:
       - name: Install package
         run: pip install -e ".[dev,voice]"
         env:
-          APX_VOICE_MODE: simulated
+          APXV_VOICE_MODE: simulated
 
       - name: Build Rust workspace (release)
         working-directory: rust
@@ -42,8 +42,16 @@ jobs:
         working-directory: rust
         run: cargo test -p apxv-circuits -p apxv-zk -q
 
-      - name: Setup first-run (with ZK)
-        run: python -m scripts.setup_first_run
+      - name: Sovereign bootstrap (CI profile)
+        run: >
+          python -m scripts.apxv_bootstrap
+          --profile ci
+          --skip-ollama
+          --skip-voice
+          --skip-smoke
+          --skip-prover-build
+        env:
+          APXV_VOICE_MODE: simulated
 
       - name: Ceremony transcript (Tier B)
         run: |
@@ -59,4 +67,5 @@ jobs:
       - name: Run pytest
         run: python -m pytest tests/ -q --tb=short
         env:
-          APX_VOICE_MODE: simulated
+          APXV_VOICE_MODE: simulated
+          APXV_PROFILE: ci
