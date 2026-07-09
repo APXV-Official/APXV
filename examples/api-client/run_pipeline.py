@@ -1,8 +1,11 @@
 """
-APXV1 — API Client Example
+APXV — API Client Example
 
-Calls the local APX API to run the governed pipeline.
-Requires apx_serve to be running and a valid API key.
+Calls the local v1 HTTP API to run the governed pipeline.
+Requires apxv_serve to be running and a valid API key.
+
+For new integrations, prefer API v2: POST /api/v2/pipeline/run
+See docs/LOCAL-API-V2.md.
 """
 
 from __future__ import annotations
@@ -14,6 +17,11 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+
+from agents.env import get_env
 
 DEFAULT_BASE = "http://127.0.0.1:8741"
 POLL_SECONDS = 0.5
@@ -44,19 +52,19 @@ def api_request(
 
 
 def load_api_key() -> str:
-    key = os.environ.get("APX_API_KEY")
+    key = get_env("APXV_API_KEY")
     if key:
         return key.strip()
 
-    config_path = Path(__file__).resolve().parents[2] / "managed" / "config" / "api_keys.json"
+    config_path = ROOT / "managed" / "config" / "api_keys.json"
     if not config_path.exists():
         raise RuntimeError(
-            "No API key found. Set APX_API_KEY or run: python -m scripts.setup_first_run"
+            "No API key found. Set APXV_API_KEY or run: python -m scripts.setup_first_run"
         )
 
     raise RuntimeError(
-        "API key hash is stored locally; set APX_API_KEY env var to the raw key "
-        "(printed once during setup_first_run or apx_serve first start)."
+        "API key hash is stored locally; set APXV_API_KEY env var to the raw key "
+        "(printed once during setup_first_run or apxv_serve first start)."
     )
 
 
@@ -72,7 +80,7 @@ def wait_for_job(job_id: str, api_key: str, base_url: str) -> dict:
 
 
 def main() -> int:
-    base_url = os.environ.get("APX_API_BASE", DEFAULT_BASE)
+    base_url = get_env("APXV_API_BASE", DEFAULT_BASE) or DEFAULT_BASE
     api_key = load_api_key()
 
     health = api_request("GET", "/health", base_url=base_url)
@@ -80,7 +88,7 @@ def main() -> int:
     integrity = health.get("integrity", {})
     is_healthy = health.get("status") == "healthy" or integrity.get("healthy", False)
     if not is_healthy:
-        print("APX instance is unhealthy — run: python -m scripts.apx_ctl integrity")
+        print("APXV instance is unhealthy — run: python -m scripts.apxv_ctl integrity")
         return 1
 
     payload = {

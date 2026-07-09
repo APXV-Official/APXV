@@ -62,9 +62,9 @@ def test_pack_governance_matches_managed_defaults(pack_root: Path):
 
 def test_pack_agent_bindings():
     mod = _load_reference_agents()
-    assert mod.PACK_AGENT_IDS == ("APX-AGENT-001", "APX-AGENT-002", "APX-AGENT-003")
+    assert mod.PACK_AGENT_IDS == ("APXV-AGENT-001", "APXV-AGENT-002", "APXV-AGENT-003")
     redactor = mod.RuleGovernedRedactor()
-    assert redactor.agent_id == "APX-AGENT-001"
+    assert redactor.agent_id == "APXV-AGENT-001"
 
 
 def test_pack_demo_script_exits_zero():

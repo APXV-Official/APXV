@@ -1,5 +1,5 @@
 """
-APX v1 — Optional E2EE encryption engine (Phase 2).
+APXV — Optional E2EE encryption engine (Phase 2).
 
 X25519 key exchange + XSalsa20-Poly1305 via PyNaCl (libsodium-compatible).
 """
@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import base64
 import json
-import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,10 +16,12 @@ from typing import Any, Dict, Optional, Tuple
 import nacl.bindings as sodium
 from nacl.exceptions import CryptoError
 
+from .env import get_env
+
 E2EE_ALGORITHM = "X25519-XSalsa20-Poly1305"
 DEFAULT_KEYPAIR_NAME = "e2ee-keypair.json"
 
-_INSTANCE: Optional["APXE2EE"] = None
+_INSTANCE: Optional["APXVE2EE"] = None
 
 
 @dataclass(frozen=True)
@@ -37,7 +38,7 @@ class EncryptedPayload:
         }
 
 
-class APXE2EE:
+class APXVE2EE:
     """X25519 + XSalsa20-Poly1305 encryption for optional payload protection."""
 
     def __init__(
@@ -57,7 +58,7 @@ class APXE2EE:
             self._load_or_create_persistent_keypair()
 
     def _resolve_keypair_path(self) -> Path:
-        keys_dir = os.environ.get("APX_KEYS_DIR")
+        keys_dir = get_env("APXV_KEYS_DIR")
         if keys_dir:
             return Path(keys_dir) / DEFAULT_KEYPAIR_NAME
         return self._base_path / "managed" / "config" / DEFAULT_KEYPAIR_NAME
@@ -250,10 +251,14 @@ def get_e2ee_instance(
     base_path: Optional[Path] = None,
     ephemeral: bool = False,
     keypair_path: Optional[Path] = None,
-) -> APXE2EE:
+) -> APXVE2EE:
     global _INSTANCE
     if ephemeral or keypair_path is not None or base_path is not None:
-        return APXE2EE(base_path=base_path, ephemeral=ephemeral, keypair_path=keypair_path)
+        return APXVE2EE(base_path=base_path, ephemeral=ephemeral, keypair_path=keypair_path)
     if _INSTANCE is None:
-        _INSTANCE = APXE2EE()
+        _INSTANCE = APXVE2EE()
     return _INSTANCE
+
+
+# v1.3.x compat alias — removed in v1.4
+APXE2EE = APXVE2EE

@@ -1,0 +1,38 @@
+{
+  "name": "@apxv/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "tsc -b --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "dependencies": {
+    "@apxv/api-client": "workspace:*",
+    "@apxv/types": "workspace:*",
+    "@apxv/ui": "workspace:*",
+    "@tanstack/react-query": "^5.67.1",
+    "@tanstack/react-router": "^1.114.25",
+    "@tanstack/react-virtual": "^3.14.4",
+    "@tauri-apps/api": "^2.3.0",
+    "@tauri-apps/plugin-store": "^2.2.0",
+    "lucide-react": "^1.22.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@tailwindcss/vite": "^4.0.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.9",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0"
+  }
+}

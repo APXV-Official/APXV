@@ -74,6 +74,33 @@ def test_get_status_corrupt_lines_issue(tmp_path: Path):
     assert "managed/audit" in status["recovery_hint"]
 
 
+def test_repair_chain_fixes_forked_previous_hash(tmp_path: Path):
+    log_path = tmp_path / "system_audit.log"
+    logger = AuditLogger(log_path)
+    logger.log_event("first", {"n": 1})
+    logger.log_event("second", {"n": 2})
+
+    lines = log_path.read_text(encoding="utf-8").splitlines()
+    first = json.loads(lines[0])
+    second = json.loads(lines[1])
+    fork = {
+        "timestamp": "2026-01-01T00:00:00Z",
+        "event_type": "runtime_initialized",
+        "data": {"fork": True},
+        "previous_hash": first["current_hash"],
+        "current_hash": "deadbeef" * 8,
+    }
+    # Fork shares parent with line 0 while line 1 is in between.
+    with log_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(second, sort_keys=True) + "\n")
+        f.write(json.dumps(fork, sort_keys=True) + "\n")
+
+    assert logger.verify_chain() is False
+    repair = logger.repair_chain()
+    assert repair["chain_valid"] is True
+    assert logger.verify_chain() is True
+
+
 def test_concurrent_log_event_preserves_chain(tmp_path: Path):
     log_path = tmp_path / "system_audit.log"
     logger = AuditLogger(log_path)

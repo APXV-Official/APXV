@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "apx-v1"
-version = "1.2.5"
-description = "APXV1 — first-generation open-source APXV (Attested Proof Execution Verified): air-gapped governed agents, Groth16 proofs, local API"
+name = "apxv"
+version = "1.3.0"
+description = "APXV — air-gapped governed agent platform (Attested Proof Execution Verified): Groth16 proofs, Pack Studio, local API v2"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "Apache-2.0"}
@@ -35,18 +35,26 @@ voice = [
 ]
 
 [project.scripts]
-run-apx = "scripts.run_apx:main"
+run-apxv = "scripts.run_apxv:main"
 setup-zk = "scripts.setup_zk:main"
 setup-first-run = "scripts.setup_first_run:main"
-apx-doctor = "scripts.apx_doctor:main"
+apxv-doctor = "scripts.apxv_doctor:main"
 verify-attestation = "scripts.verify_attestation:main"
-apx-verify-bundle = "scripts.apx_verify_bundle:main"
-apx-ctl = "scripts.apx_ctl:main"
-apx-serve = "scripts.apx_serve:main"
+apxv-verify-bundle = "scripts.apxv_verify_bundle:main"
+apxv-ctl = "scripts.apxv_ctl:main"
+apxv-serve = "scripts.apxv_serve:main"
 setup-voice = "scripts.setup_voice:main"
 run-voice-demo = "scripts.run_voice_demo:main"
 ceremony-transcript = "scripts.ceremony_transcript:main"
 export-verifier-bundle = "scripts.export_verifier_bundle:main"
+apxv-onboard = "scripts.onboard:main"
+apxv-bootstrap = "scripts.apxv_bootstrap:main"
+# v1.3.x compat shims (removed in v1.4)
+run-apx = "scripts.run_apx:main"
+apx-doctor = "scripts.apx_doctor:main"
+apx-verify-bundle = "scripts.apx_verify_bundle:main"
+apx-ctl = "scripts.apx_ctl:main"
+apx-serve = "scripts.apx_serve:main"
 apx-onboard = "scripts.onboard:main"
 
 [tool.pytest.ini_options]

@@ -1,5 +1,5 @@
 """
-APX v1 — Script 2: prepare_proof_inputs.py
+APXV — Script 2: prepare_proof_inputs.py
 
 This script takes a completed attested_result (from Agent 3 or a saved artifact)
 and extracts the exact public inputs required by the three Rust circuits:
@@ -11,7 +11,7 @@ and extracts the exact public inputs required by the three Rust circuits:
 It outputs a clean JSON structure that can be used as input when we wire
 the actual ZK proving in Step 7.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from pathlib import Path
@@ -39,7 +39,7 @@ def prepare_circuit_inputs(
     redaction_proof: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
-    Convert an APX v1 attested_result into the public inputs expected
+    Convert an APXV attested_result into the public inputs expected
     by the three circuits created in Step 5.
 
     Returns a dictionary with three sections:

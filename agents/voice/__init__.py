@@ -1,8 +1,10 @@
-"""APXV1 voice privacy suite — local STT/TTS + voice-redaction ZK inputs."""
+"""APXV voice privacy suite — local STT/TTS + voice-redaction ZK inputs."""
 
 from .factory import resolve_voice_providers, voice_mode
 from .pipeline import VOICE_REDACTION_POLICY_ID, VoicePipelineResult, VoicePrivacyPipeline
 from .providers import (
+    APXVSTTProvider,
+    APXVTTSProvider,
     APXSTTProvider,
     APXTTSProvider,
     SimulatedSTTProvider,
@@ -13,6 +15,8 @@ from .providers import (
 )
 
 __all__ = [
+    "APXVSTTProvider",
+    "APXVTTSProvider",
     "APXSTTProvider",
     "APXTTSProvider",
     "SimulatedSTTProvider",

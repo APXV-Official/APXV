@@ -1,4 +1,4 @@
 {
-  "note": "APX-AGENT-LLM-001 is granted by default in setup_first_run. This pack adds governance specs and binds LLMReasoner to the redaction attest path.",
+  "note": "APXV-AGENT-LLM-001 is granted by default in setup_first_run. This pack adds governance specs and binds LLMReasoner to the redaction attest path.",
   "agents_to_add": {}
 }

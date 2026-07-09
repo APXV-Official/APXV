@@ -1,4 +1,4 @@
-"""Pluggable STT/TTS providers for the APXV1 voice privacy suite."""
+"""Pluggable STT/TTS providers for the APXV voice privacy suite."""
 
 from __future__ import annotations
 
@@ -25,12 +25,12 @@ class VoiceBackendError(Exception):
     """Raised when a local voice backend is unavailable."""
 
 
-class APXSTTProvider(Protocol):
+class APXVSTTProvider(Protocol):
     def transcribe(self, audio_bytes: bytes, *, mime_type: str = "audio/wav") -> STTResult:
         ...
 
 
-class APXTTSProvider(Protocol):
+class APXVTTSProvider(Protocol):
     def synthesize(self, text: str, *, voice_id: str = "default") -> TTSResult:
         ...
 
@@ -76,3 +76,8 @@ class SimulatedTTSProvider:
             sample_rate_hz=sample_rate,
             provider="simulated-tts",
         )
+
+
+# v1.3.x compat — removed in v1.4
+APXSTTProvider = APXVSTTProvider
+APXTTSProvider = APXVTTSProvider

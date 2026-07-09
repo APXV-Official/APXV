@@ -1,0 +1,20 @@
+{
+  "name": "@apxv/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "openapi-ts -i ../../openapi/apxv-api-v2.yaml -o ./src/generated -c @hey-api/client-fetch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hey-api/client-fetch": "^0.9.0"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.66.0",
+    "typescript": "^5.8.2"
+  }
+}

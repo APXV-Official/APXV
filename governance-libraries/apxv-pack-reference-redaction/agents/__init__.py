@@ -1,4 +1,4 @@
-"""Reference Redaction Pack — bindings to APXV1 core pipeline agents."""
+"""Reference Redaction Pack — bindings to APXV core pipeline agents."""
 
 from .reference_agents import (
     AttestationCoordinator,

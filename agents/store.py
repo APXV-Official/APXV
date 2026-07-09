@@ -1,5 +1,5 @@
 """
-APX v1 — Local SQLite Artifact Store (Phase 2)
+APXV — Local SQLite Artifact Store (Phase 2)
 
 Air-gapped, self-hosted, zero external dependencies.
 Uses stdlib sqlite3 + content-addressable blob files on local disk.
@@ -24,11 +24,19 @@ class SqliteArtifactStore:
     def __init__(self, base_path: Path):
         self.base_path = Path(base_path)
         self.store_path = self.base_path / "managed" / "store"
-        self.db_path = self.store_path / "apx.db"
+        self.db_path = self._resolve_db_path()
         self.blobs_path = self.store_path / "blobs"
         self.store_path.mkdir(parents=True, exist_ok=True)
         self.blobs_path.mkdir(parents=True, exist_ok=True)
         self._init_db()
+
+    def _resolve_db_path(self) -> Path:
+        """Prefer apxv.db; migrate legacy apx.db on first open."""
+        apxv_path = self.store_path / "apxv.db"
+        apx_path = self.store_path / "apx.db"
+        if not apxv_path.exists() and apx_path.exists():
+            apx_path.rename(apxv_path)
+        return apxv_path
 
     def _connect(self) -> sqlite3.Connection:
         conn = sqlite3.connect(str(self.db_path))
@@ -241,15 +249,34 @@ class SqliteArtifactStore:
         data["store_record"] = dict(row)
         return data
 
-    def list_artifacts(self, name_prefix: Optional[str] = None, limit: Optional[int] = None) -> List[Dict[str, Any]]:
+    def count_artifacts(self, name_prefix: Optional[str] = None) -> int:
+        query = "SELECT COUNT(*) AS c FROM artifacts"
+        params: List[Any] = []
+        if name_prefix:
+            query += " WHERE name LIKE ?"
+            params.append(f"{name_prefix}%")
+        with self._connect() as conn:
+            row = conn.execute(query, params).fetchone()
+        return int(row["c"]) if row else 0
+
+    def list_artifacts(
+        self,
+        name_prefix: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> List[Dict[str, Any]]:
         query = "SELECT * FROM artifacts"
         params: List[Any] = []
         if name_prefix:
             query += " WHERE name LIKE ?"
             params.append(f"{name_prefix}%")
         query += " ORDER BY id DESC"
-        if limit:
-            query += f" LIMIT {int(limit)}"
+        if limit is not None:
+            query += " LIMIT ?"
+            params.append(int(limit))
+        if offset is not None:
+            query += " OFFSET ?"
+            params.append(int(offset))
 
         with self._connect() as conn:
             rows = conn.execute(query, params).fetchall()

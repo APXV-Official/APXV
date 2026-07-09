@@ -1,10 +1,51 @@
 # Changelog
 
-All notable changes to APXV1 are documented here.
+All notable changes to APXV are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.3.0] - 2026-07-09
+
+Platform rename, **sovereign local trust**, desktop app, Pack Studio, and API v2. No Groth16 circuit semantic changes since v1.1.0 — each deployment runs its own trusted setup ceremony.
+
+### Added
+
+- **Sovereign bootstrap** — `python -m scripts.apxv_bootstrap`; `managed/config/install.json` with `sovereign_setup` and `vk_hashes` (11 circuits)
+- **Desktop app** — Windows MSI/NSIS and Linux deb/AppImage (Tauri); first-launch bootstrap wizard; system tray
+- **REST API v2** — `/api/v2/*` (Pack Studio, jobs SSE, governance, uploads); v1 endpoints retained with `Deprecation: true`, `Sunset: v1.4`
+- **Pack Studio** — create, clone, activate, and run packs from the operator console
+- **Operator console** — React + Tauri UI over API v2 (pipelines, artifacts, verify, governance)
+- **Production profile** — Ollama + Vosk or explicit disable; no simulated LLM/voice on operator paths
+- **Install paths** — `install-full.ps1` / `.sh` (native sovereign), `install-docker.*` (binaries only, keys on volumes), [INSTALL-USER.md](docs/INSTALL-USER.md) for desktop
+- **Migration guide** — [MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md), [SOVEREIGN-SETUP.md](docs/SOVEREIGN-SETUP.md)
+- **Vendor key guard** — `apxv_doctor` rejects pre-v1.3 baked VK hashes (migration blocklist)
+- **Governance seed specs** in desktop/Linux payloads (`rule1`, `workflow1`, `knowledge1`)
+
+### Changed
+
+- **Platform rename** — `apx` → `apxv` (Python package, CLI, Rust binaries, env vars `APXV_*`, SQLite `apxv.db`, agent IDs `APXV-AGENT-*`)
+- **Docker image** — service `apxv`; ships prover binaries only (no baked proving keys)
+- **Legacy shims** — `apx_serve`, `apx_ctl`, `apx_doctor`, `run_apx` warn and delegate to `apxv_*` (removed in v1.4)
+- **Verifier bundle** — export name `apxv-verifier-bundle` (VK bytes unchanged since v1.1.0)
+- Operator-facing docs and site aligned to v1.3 sovereign story; deprecated Control Plane branding removed from UI
+
+### Fixed
+
+- Linux desktop build (WSL rsync/staging); governance seeds and `docs/internal` pruning in installer payloads
+- `install-docker.ps1`: suppress Docker Compose v2 progress stderr on Windows
+- Desktop smoke: localhost bind for `apxv_serve` during Tauri validation
+
+### Documentation
+
+- New: `SOVEREIGN-SETUP.md`, `INSTALL-USER.md`; updated QUICKSTART, DOCKER, AIR-GAP, MIGRATION-v1.3, OPERATOR-GUIDE, GitHub Pages site
+- Public-facing audit gate: 290+ parametrized checks (docs, web UI source, desktop payload when staged); **756** pytest tests (1 optional Vosk skip)
+
+### Chore
+
+- Ship artifacts: `APXV_1.3.0_x64_en-US.msi`, `APXV_1.3.0_x64-setup.exe`, `APXV_1.3.0_amd64.deb`, `APXV_1.3.0_amd64.AppImage`
+- macOS DMG deferred to follow-up release
 
 ## [1.2.5] - 2026-07-03
 
@@ -246,12 +287,12 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 
 - One-command install scripts: `scripts/install.ps1`, `scripts/install.sh`
 - `scripts/apx_doctor.py` — prerequisite and health checker
-- `scripts/setup_first_run.py` — ZK setup on by default (`--skip-zk` optional)
+- `scripts/setup_first_run.py` — ZK setup on by default (optional skip removed in v1.3.0)
 - `scripts/apx_ctl.py` — `api-key create|list` and administration commands
 - Local HTTP API (`scripts/apx_serve.py`) with localhost binding; Docker bind via `APX_CONTAINER_BIND=1`
 - Pluggable `LLMBackend` interface and `examples/llm-ollama/`
 - Examples: `examples/hello-agent/`, `examples/api-client/`
-- Docker image and `docker-compose.yml` with baked ZK keys at build time
+- Docker image and `docker-compose.yml` (pre-v1.3.0: image-embedded ZK keys; removed in v1.3.0 sovereign trust)
 - Documentation: `docs/QUICKSTART.md`, `docs/BUILDING.md`, `docs/INSTALL-RUST.md`, `docs/DOCKER.md`, deployment runbooks
 - CI workflow: `.github/workflows/ci.yml` (pytest, Rust build, setup, doctor, integrity)
 - Legal and hygiene: `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, expanded `.gitignore`
@@ -274,6 +315,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.3.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.0
 [1.2.5]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.5
 [1.2.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.2
 [1.2.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.1

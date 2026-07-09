@@ -1,6 +1,6 @@
-# APXV1 — Rule Set AI: Governed Agentic Decisions
+# APXV — Rule Set AI: Governed Agentic Decisions
 
-**Rule ID:** APX-RULE-AI-001  
+**Rule ID:** APXV-RULE-AI-001  
 **Version:** 0.1.0  
 **Effective Date:** 2026-06-28  
 **Purpose:** Mandatory constraints for LLM-powered and tool-using agents in APX-governed pipelines.
@@ -9,7 +9,7 @@
 
 ## 1. Scope
 
-Applies to **APX-AGENT-LLM-001** (`LLMReasoner`) and hybrid workflows that delegate reasoning to agentic components.
+Applies to **APXV-AGENT-LLM-001** (`LLMReasoner`) and hybrid workflows that delegate reasoning to agentic components.
 
 ## 2. Human review
 

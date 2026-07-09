@@ -1,5 +1,5 @@
 """
-APX v1 — Artifact Provider (Phase 2 Foundation)
+APXV — Artifact Provider (Phase 2 Foundation)
 
 This module defines the IArtifactProvider interface and a production-grade
 FileArtifactProvider implementation.
@@ -10,7 +10,7 @@ Phase 2 Goals:
 - Clear separation between specification reading and artifact persistence
 - Auditability-ready design (hash chaining, provenance metadata)
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from pathlib import Path
@@ -60,14 +60,14 @@ class MinimalArtifactProvider:
     New code should prefer FileArtifactProvider.
     """
     """
-    The smallest viable artifact provider for APX v1.
+    The smallest viable artifact provider for APXV.
 
     Agents should use this instead of direct Path reads.
     """
 
     def __init__(self, base_path: Path = None):
         if base_path is None:
-            # Default to APX v1 root (parent of agents/)
+            # Default to APXV root (parent of agents/)
             self.base_path = Path(__file__).parent.parent
         else:
             self.base_path = Path(base_path)
@@ -399,7 +399,7 @@ class SqliteArtifactProvider:
         id_line = next((line for line in content.splitlines() if "**ID:**" in line or "**Rule ID:**" in line), "")
         version_line = next((line for line in content.splitlines() if "Version" in line), "")
 
-        spec_id = "APX-RULE-001"
+        spec_id = "APXV-RULE-001"
         if id_line:
             spec_id = id_line.split(":")[-1].strip().strip("*").strip()
         version = "1.0.0"

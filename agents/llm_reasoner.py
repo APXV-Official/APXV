@@ -1,5 +1,5 @@
 """
-APX v1 — LLM Reasoner (Agentic Component)
+APXV — LLM Reasoner (Agentic Component)
 
 Contract-compliant LLM agent with pluggable backends.
 Plug in Ollama, OpenAI-compatible local servers, or your own LLMBackend.
@@ -10,9 +10,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 import concurrent.futures
-import os
 
 from .agent_base import init_agent_context
+from .env import get_env
 from .agentic_contract import AgenticOutput, validate_agentic_output
 from .llm_backend import LLMBackend, SimulatedLLMBackend
 
@@ -35,7 +35,7 @@ class LLMReasoner:
 
     def __init__(
         self,
-        agent_id: str = "APX-AGENT-LLM-001",
+        agent_id: str = "APXV-AGENT-LLM-001",
         max_cost_usd: float = 0.05,
         max_latency_ms: int = 5000,
         max_execution_time_seconds: Optional[int] = None,
@@ -48,9 +48,18 @@ class LLMReasoner:
         self.max_cost_usd = max_cost_usd
         self.max_latency_ms = max_latency_ms
         if max_execution_time_seconds is None:
-            max_execution_time_seconds = int(os.environ.get("APX_LLM_TIMEOUT_SECONDS", "120"))
+            max_execution_time_seconds = int(get_env("APXV_LLM_TIMEOUT_SECONDS", "120"))
         self.max_execution_time_seconds = max_execution_time_seconds
-        self.backend = backend or SimulatedLLMBackend()
+        if backend is None:
+            resolved_base = base_path or (runtime.base_path if runtime else None)
+            if resolved_base is not None:
+                from agents.install_profile import resolve_llm_backend
+
+                self.backend = resolve_llm_backend(None, resolved_base)
+            else:
+                self.backend = SimulatedLLMBackend()
+        else:
+            self.backend = backend
 
         ctx = init_agent_context(
             agent_id=self.agent_id,

@@ -1,6 +1,6 @@
-# APXV1 — ZK Ceremony Transparency (v1.1)
+# APXV — ZK Ceremony Transparency (v1.1)
 
-APXV1 uses Groth16 with a **one-time trusted setup** per circuit. This document describes ceremony tiers, transparency artifacts, and the trust model for v1.1.0.
+APXV uses Groth16 with a **one-time trusted setup** per circuit. This document describes ceremony tiers, transparency artifacts, and the trust model for v1.1.0.
 
 ## Trust model
 
@@ -19,8 +19,8 @@ Tier A and Tier B document verification-key lineage. They do not provide the gua
 
 - Trusted setup runs locally (`setup_first_run` or per-circuit setup).
 - **Manifests** record VK and PK SHA-256 hashes and circuit versions:
-  - `rust/apx-circuits/keys/manifest.json`
-  - `rust/apx-zk/keys/entity-manifest.json`
+  - `rust/apxv-circuits/keys/manifest.json`
+  - `rust/apxv-zk/keys/entity-manifest.json`
 - **Ceremony transcript** (`managed/config/ceremony-transcript.json`) optionally aggregates both manifests with metadata.
 - **Verifier bundle** exports VK files and manifests only (no proving keys).
 
@@ -67,7 +67,7 @@ python -m scripts.ceremony_transcript --write --tier B --note "v1.1.0"
 python -m scripts.ceremony_transcript --verify
 
 # Export verifier-only artifacts (safe to distribute)
-python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
+python -m scripts.export_verifier_bundle --out dist/apxv-verifier-bundle
 ```
 
 ## Verifying release artifacts

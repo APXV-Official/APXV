@@ -1,0 +1,20 @@
+{
+  "name": "apxv-ui",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Professional local operator console UI for APXV",
+  "scripts": {
+    "dev": "pnpm --filter @apxv/web dev",
+    "dev:desktop": "pnpm --filter @apxv/desktop dev",
+    "build": "pnpm -r build",
+    "generate:api": "pnpm --filter @apxv/api-client generate",
+    "postinstall": "pnpm generate:api",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test:e2e": "pnpm --filter @apxv/web test:e2e"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

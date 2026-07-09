@@ -1,5 +1,5 @@
 """
-APX v1 — Governance Registry (Phase 2 + Step 3)
+APXV — Governance Registry (Phase 2 + Step 3)
 
 Tracks versioned governance specifications and enforces the approval
 workflow before agents consume active specs.

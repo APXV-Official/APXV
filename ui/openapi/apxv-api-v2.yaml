@@ -1,0 +1,712 @@
+openapi: 3.1.0
+info:
+  title: APXV Local API v2
+  version: 2.0.0
+  description: |
+    Local air-gapped API for APXV operator console.
+    v1 legacy paths remain on the runtime; v2 is the contract for the operator console UI.
+servers:
+  - url: http://127.0.0.1:8741
+    description: Local apxv_serve
+
+tags:
+  - name: System
+  - name: Artifacts
+  - name: Pipeline
+  - name: Jobs
+  - name: Governance
+  - name: Trust
+  - name: Backups
+  - name: Keys
+  - name: Integrations
+
+paths:
+  /health:
+    get:
+      operationId: getHealthLegacy
+      tags: [System]
+      summary: Legacy health check (no auth)
+      responses:
+        "200":
+          description: Health status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /api/v2/system/health:
+    get:
+      operationId: getSystemHealth
+      tags: [System]
+      summary: System health and integrity summary
+      responses:
+        "200":
+          description: Health status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /api/v2/system/status:
+    get:
+      operationId: getSystemStatus
+      tags: [System]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Full runtime status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeStatus"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/system/doctor:
+    get:
+      operationId: getSystemDoctor
+      tags: [System]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: check_llm
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Doctor check results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DoctorResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/system/integrity:
+    post:
+      operationId: runIntegrityCheck
+      tags: [System]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Integrity result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntegrityResult"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/artifacts:
+    get:
+      operationId: listArtifacts
+      tags: [Artifacts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+        - name: name_prefix
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Paginated artifacts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArtifactListPage"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/artifacts/{hash}:
+    get:
+      operationId: getArtifact
+      tags: [Artifacts]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/artifactHash"
+      responses:
+        "200":
+          description: Artifact payload
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/pipeline/run:
+    post:
+      operationId: runPipeline
+      tags: [Pipeline]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PipelineRunRequest"
+      responses:
+        "200":
+          description: Sync pipeline complete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PipelineRunResponse"
+        "202":
+          description: Job queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobQueued"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/jobs:
+    get:
+      operationId: listJobs
+      tags: [Jobs]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [queued, running, completed, failed]
+      responses:
+        "200":
+          description: Job list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Job"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/jobs/{id}:
+    get:
+      operationId: getJob
+      tags: [Jobs]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Job detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/verify/attestation:
+    post:
+      operationId: verifyAttestation
+      tags: [Trust]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                artifact_hash:
+                  type: string
+                real_zk:
+                  type: boolean
+                  default: true
+      responses:
+        "200":
+          description: Verification report
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/governance/specs:
+    get:
+      operationId: listGovernanceSpecs
+      tags: [Governance]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Active governance specifications
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/governance/proposals:
+    get:
+      operationId: listGovernanceProposals
+      tags: [Governance]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Proposal list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  proposals:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createGovernanceProposal
+      tags: [Governance]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [spec_type, content]
+              properties:
+                spec_type:
+                  type: string
+                  enum: [rule, workflow, knowledge]
+                content:
+                  type: string
+                summary:
+                  type: string
+                proposed_by:
+                  type: string
+      responses:
+        "201":
+          description: Proposal created
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/capabilities:
+    get:
+      operationId: getCapabilities
+      tags: [Governance]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Capability policy status
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/backups:
+    get:
+      operationId: listBackups
+      tags: [Backups]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Backup list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  backups:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createBackup
+      tags: [Backups]
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Backup created
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/keys:
+    get:
+      operationId: listApiKeys
+      tags: [Keys]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: API key metadata (no secrets)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ApiKeyMeta"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      operationId: createApiKey
+      tags: [Keys]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id:
+                  type: string
+                description:
+                  type: string
+                role:
+                  type: string
+                  default: operator
+      responses:
+        "201":
+          description: Key created (secret returned once)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiKeyCreated"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/integrations/ollama:
+    get:
+      operationId: getOllamaStatus
+      tags: [Integrations]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Ollama reachability and models
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OllamaStatus"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v2/integrations/repair:
+    post:
+      operationId: repairIntegrations
+      tags: [Integrations]
+      security:
+        - bearerAuth: []
+      summary: Re-run Ollama + Vosk bootstrap integration steps
+      responses:
+        "200":
+          description: Integration repair result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  install_json_updated:
+                    type: boolean
+                  ollama:
+                    type: object
+                  voice:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  parameters:
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 50
+    offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    artifactHash:
+      name: hash
+      in: path
+      required: true
+      schema:
+        type: string
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid API key
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+
+  schemas:
+    ErrorEnvelope:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded]
+        air_gapped:
+          type: boolean
+        sovereign_setup:
+          type: boolean
+        integrity:
+          $ref: "#/components/schemas/IntegrityResult"
+
+    IntegrityResult:
+      type: object
+      properties:
+        store_chain_valid:
+          type: boolean
+        all_audit_valid:
+          type: boolean
+        capability_policy_trusted:
+          type: boolean
+        governance_approvals_valid:
+          type: boolean
+        healthy:
+          type: boolean
+        sovereign_setup:
+          type: boolean
+        sovereign_ok:
+          type: boolean
+        sovereign_status:
+          type: string
+        sovereign_issues:
+          type: array
+          items:
+            type: string
+        audit_logs:
+          type: object
+          additionalProperties:
+            type: boolean
+
+    RuntimeStatus:
+      type: object
+      properties:
+        runtime_version:
+          type: string
+        deployment:
+          type: string
+        air_gapped:
+          type: boolean
+        integrity:
+          $ref: "#/components/schemas/IntegrityResult"
+
+    DoctorCheck:
+      type: object
+      properties:
+        name:
+          type: string
+        ok:
+          type: boolean
+        detail:
+          type: string
+        required:
+          type: string
+
+    DoctorResponse:
+      type: object
+      properties:
+        healthy:
+          type: boolean
+        checks:
+          type: array
+          items:
+            $ref: "#/components/schemas/DoctorCheck"
+
+    ArtifactListPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    PipelineRunRequest:
+      type: object
+      properties:
+        pack:
+          type: string
+          enum: [reference, document, ai]
+          default: reference
+        input_text:
+          type: string
+        input_files:
+          type: array
+          items:
+            type: string
+        attest:
+          type: boolean
+          default: false
+        async:
+          type: boolean
+          default: true
+        llm:
+          type: object
+          properties:
+            backend:
+              type: string
+              enum: [ollama, simulated]
+            model:
+              type: string
+            max_latency_ms:
+              type: integer
+
+    PipelineRunResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        result:
+          type: object
+
+    JobQueued:
+      type: object
+      properties:
+        message:
+          type: string
+        job_id:
+          type: string
+        status:
+          type: string
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+          enum: [queued, running, completed, failed]
+        payload:
+          type: object
+        result:
+          type: object
+        error:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+
+    ApiKeyMeta:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+        created_at:
+          type: string
+        description:
+          type: string
+
+    ApiKeyCreated:
+      type: object
+      properties:
+        id:
+          type: string
+        api_key:
+          type: string
+        message:
+          type: string
+
+    OllamaStatus:
+      type: object
+      properties:
+        reachable:
+          type: boolean
+        models:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string

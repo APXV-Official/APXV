@@ -134,7 +134,7 @@ def run_with_timeout(
             raise TimeoutError(error_msg) from exc
 
 
-class APXRedactionEngine:
+class APXVRedactionEngine:
     """Expanded redaction engine with entity output for downstream attestation."""
 
     def __init__(self, audit_logger: Any = None) -> None:
@@ -177,7 +177,7 @@ class APXRedactionEngine:
             total = sum(legacy_counts.values())
 
         summary = (
-            "No redactions applied per APX-RULE-001."
+            "No redactions applied per APXV-RULE-001."
             if total == 0
             else f"Applied {total} redaction(s) via backend {raw.get('backend_id', 'unknown')}."
         )
@@ -621,7 +621,7 @@ class APXRedactionEngine:
         ]
         total = sum(legacy_counts.values())
         summary = (
-            "No redactions applied per APX-RULE-001."
+            "No redactions applied per APXV-RULE-001."
             if total == 0
             else f"Applied {total} redaction(s) across {len(redactions_applied)} categories."
         )
@@ -665,7 +665,7 @@ class APXRedactionEngine:
         ]
         total = sum(legacy_counts.values())
         summary = (
-            "No redactions applied per APX-RULE-001."
+            "No redactions applied per APXV-RULE-001."
             if total == 0
             else f"Applied {total} redaction(s) across {len(redactions_applied)} categories."
         )
@@ -699,11 +699,11 @@ class APXRedactionEngine:
 
 def deep_redact_with_count(
     value: Any,
-    engine: Optional[APXRedactionEngine] = None,
+    engine: Optional[APXVRedactionEngine] = None,
     *,
     redact_names: bool = False,
 ) -> Dict[str, Any]:
-    engine = engine or APXRedactionEngine()
+    engine = engine or APXVRedactionEngine()
     entities: List[Dict[str, Any]] = []
     detections = 0
 
@@ -724,3 +724,7 @@ def deep_redact_with_count(
         return item
 
     return {"redacted": walk(value), "detections": detections, "entities": entities}
+
+
+# v1.3.x compat alias — removed in v1.4
+APXRedactionEngine = APXVRedactionEngine

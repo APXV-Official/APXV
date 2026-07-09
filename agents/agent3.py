@@ -1,10 +1,10 @@
 """
-APX v1 — Agent 3: AttestationCoordinator
+APXV — Agent 3: AttestationCoordinator
 
-This is the third and final agent in the APX v1 minimal implementation.
+This is the third and final agent in the APXV minimal implementation.
 
 Purpose:
-- Complete the end-to-end agent pipeline for the tiny APX v1 scope.
+- Complete the end-to-end agent pipeline for the tiny APXV scope.
 - Accept the full output from the WorkflowOrchestrator (Agent 2).
 - Simulate the attestation handoff step (real ZK circuits come in Step 5).
 - Apply a final governance decision layer drawing from the managed knowledge base.
@@ -19,7 +19,7 @@ demonstrable chain:
 
 This agent now uses the MinimalArtifactProvider for all specification access.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from pathlib import Path
@@ -37,10 +37,10 @@ if TYPE_CHECKING:
 
 class AttestationCoordinator:
     """
-    Final agent in the APX v1 pipeline.
+    Final agent in the APXV pipeline.
 
     Responsibilities:
-    - Drive the attestation coordination phase of APX-WF-001.
+    - Drive the attestation coordination phase of APXV-WF-001.
     - Perform governance decision based on loaded knowledge.
     - Package the final attested result with full provenance.
     - Prepare the structure that future circuits, scripts, and the
@@ -51,7 +51,7 @@ class AttestationCoordinator:
     """
 
     def __init__(self, base_path: Path = None, runtime: "APXRuntime" = None):
-        self.agent_id = "APX-AGENT-003"
+        self.agent_id = "APXV-AGENT-003"
         self.agent_name = "AttestationCoordinator"
         ctx = init_agent_context(
             agent_id=self.agent_id,
@@ -90,21 +90,21 @@ class AttestationCoordinator:
 
         self.rule_set = {
             "raw": rule_raw,
-            "id": "APX-RULE-001",
+            "id": "APXV-RULE-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(rule_raw.encode()).hexdigest(),
         }
 
         self.workflow = {
             "raw": workflow_raw,
-            "id": "APX-WF-001",
+            "id": "APXV-WF-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(workflow_raw.encode()).hexdigest(),
         }
 
         self.knowledge = {
             "raw": knowledge_raw,
-            "id": "APX-KB-001",
+            "id": "APXV-KB-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(knowledge_raw.encode()).hexdigest(),
         }
@@ -113,8 +113,8 @@ class AttestationCoordinator:
         """
         Simple governance decision logic based on the loaded knowledge base.
 
-        In a fuller system this would be much richer. For APX v1 tiny scope
-        we use a deterministic, auditable rule set derived from APX-KB-001.
+        In a fuller system this would be much richer. For APXV tiny scope
+        we use a deterministic, auditable rule set derived from APXV-KB-001.
         """
         total_redactions = proposed_artifact.get("output", {}).get("total_redactions", 0)
         redaction_categories = [
@@ -167,7 +167,7 @@ class AttestationCoordinator:
 
         # === Simulate Attestation / Proof Generation ===
         # In the real system (Step 5 + Step 7) this will call actual ZK circuits.
-        # For APX v1 we create a deterministic placeholder that matches the
+        # For APXV we create a deterministic placeholder that matches the
         # structure the future circuits will produce.
         proof_placeholder = {
             "proof_type": "groth16_placeholder",
@@ -186,8 +186,8 @@ class AttestationCoordinator:
             "attestation_id": f"attested-{hashlib.sha256(str(datetime.now(timezone.utc)).encode()).hexdigest()[:16]}",
             "completed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "agent_chain": [
-                "APX-AGENT-001",  # RuleGovernedRedactor
-                "APX-AGENT-002",  # WorkflowOrchestrator
+                "APXV-AGENT-001",  # RuleGovernedRedactor
+                "APXV-AGENT-002",  # WorkflowOrchestrator
                 self.agent_id,    # AttestationCoordinator
             ],
             "governed_by": {

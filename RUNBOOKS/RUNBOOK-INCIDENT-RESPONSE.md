@@ -1,6 +1,6 @@
-# APXV1 — Runbook: Incident Response
+# APXV — Runbook: Incident Response
 
-**Purpose:** Guide for detecting, responding to, and recovering from incidents involving an APXV1 deployment.
+**Purpose:** Guide for detecting, responding to, and recovering from incidents involving an APXV deployment.
 
 ---
 
@@ -36,7 +36,7 @@
 - Preserve current state (do not delete logs or artifacts)
 
 ### Step 2: Investigate
-- Run `python -m scripts.apx_doctor` or `python -m scripts.apx_ctl integrity` (v1.2.2+ reports `corrupt_lines` vs `chain_break` per log)
+- Run `python -m scripts.apxv_doctor` or `python -m scripts.apxv_ctl integrity` (v1.2.2+ reports `corrupt_lines` vs `chain_break` per log)
 - Verify audit log integrity (`GET /health` or `AuditLogger.verify_chain()` on affected logs)
 - Identify the scope (which artifacts, which agents, which time window)
 - Collect relevant log entries and artifact metadata

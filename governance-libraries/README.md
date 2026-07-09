@@ -1,6 +1,8 @@
 # Governance libraries
 
-Reusable governance artifacts and official agent packs for APXV1.
+Reusable governance artifacts and official agent packs for APXV.
+
+**Catalog:** [docs/PACK-CATALOG.md](../docs/PACK-CATALOG.md) · **Tutorial:** [docs/BUILD-YOUR-FIRST-PACK.md](../docs/BUILD-YOUR-FIRST-PACK.md)
 
 ## Official agent pack
 
@@ -10,7 +12,7 @@ Reusable governance artifacts and official agent packs for APXV1.
 | [apxv-pack-document-processing/](apxv-pack-document-processing/) | 0.1.0 | Batch `.txt` / `.json` folder ingest, manifest, compliance policy 2 |
 | [apxv-pack-ai-governance/](apxv-pack-ai-governance/) | 0.1.0 | Redaction + `LLMReasoner` review, compliance policy 4 |
 
-An **agent pack** includes governance, install steps, a runnable demo, capability notes, and an acceptance checklist. Agents ship in APXV1 core; each pack binds governance and pipeline logic to those agents.
+An **agent pack** includes governance, install steps, a runnable demo, capability notes, and an acceptance checklist. Agents ship in APXV core; each pack binds governance and pipeline logic to those agents.
 
 Install: see each pack's `README.md` and `ACCEPTANCE.md`.
 

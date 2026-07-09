@@ -1,0 +1,19 @@
+{
+  "name": "@apxv/desktop",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tauri dev",
+    "prebuild": "powershell -NoProfile -ExecutionPolicy Bypass -File ../../../scripts/stage-desktop-runtime.ps1",
+    "build": "tauri build",
+    "typecheck": "echo \"desktop — typecheck via @apxv/web\"",
+    "lint": "echo \"desktop — lint via @apxv/web\""
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.3.0",
+    "@tauri-apps/plugin-store": "^2.2.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.3.1"
+  }
+}

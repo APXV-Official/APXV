@@ -70,7 +70,7 @@ body:
     id: doctor
     attributes:
       label: apx_doctor output
-      description: Run `python -m scripts.apx_doctor` (or `--json`) and paste output
+      description: Run `python -m scripts.apxv_doctor` (or `--json`) and paste output
       render: shell
       placeholder: |
         Paste full doctor output here

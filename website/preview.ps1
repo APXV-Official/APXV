@@ -3,7 +3,7 @@ $Root = $PSScriptRoot
 $Url = "http://127.0.0.1:$Port/"
 
 Write-Host ""
-Write-Host "APXV1 site preview" -ForegroundColor Cyan
+Write-Host "APXV site preview" -ForegroundColor Cyan
 Write-Host "URL: $Url"
 Write-Host "Press Ctrl+C to stop."
 Write-Host ""

@@ -45,8 +45,8 @@ def test_persistent_capabilities_loaded():
         require_signed_policy=True,
     )
     assert checker.is_policy_trusted()
-    assert checker.has_capability("APX-AGENT-001", "read_specification")
-    assert checker.has_capability("APX-AGENT-003", "verify_attestation")
+    assert checker.has_capability("APXV-AGENT-001", "read_specification")
+    assert checker.has_capability("APXV-AGENT-003", "verify_attestation")
 
 
 def test_governance_registration():

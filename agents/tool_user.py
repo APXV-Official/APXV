@@ -1,5 +1,5 @@
 """
-APX v1 — Tool User Agent (Second Phase 3 Agentic Component)
+APXV — Tool User Agent (Second Phase 3 Agentic Component)
 
 This is the second concrete agentic component that implements the
 AgenticContract. It demonstrates how a tool-using agent can operate
@@ -8,7 +8,7 @@ safely within the APX governed runtime.
 It produces only structured, attestable AgenticOutput and respects
 the capability model, audit logging, and immutability requirements.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from typing import Dict, Any, List
@@ -32,7 +32,7 @@ class ToolUser(AgenticContract):
         "write_artifact",
     ]
 
-    def __init__(self, agent_id: str = "APX-AGENT-TOOL-001"):
+    def __init__(self, agent_id: str = "APXV-AGENT-TOOL-001"):
         self.agent_id = agent_id
         self.agent_name = "ToolUser"
 

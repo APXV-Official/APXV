@@ -44,7 +44,7 @@ def test_setup_first_run_fresh_instance(tmp_path):
         (tmp_path / "managed" / "config" / "capabilities.json").read_text(encoding="utf-8")
     )
     assert policy.get("signature")
-    assert "APX-AGENT-001" in policy.get("agents", {})
+    assert "APXV-AGENT-001" in policy.get("agents", {})
 
 
 def test_setup_first_run_advises_missing_hint_on_upgrade(tmp_path):
@@ -72,4 +72,4 @@ def test_setup_first_run_advises_missing_hint_on_upgrade(tmp_path):
     second = run_setup(tmp_path, setup_zk=False)
     api_step = second["steps"]["api_key"]
     assert api_step.get("hint_missing") is True
-    assert "apx_ctl api-key create" in api_step.get("hint_advisory", "")
+    assert "apxv_ctl api-key create" in api_step.get("hint_advisory", "")

@@ -16,14 +16,14 @@ from typing import Optional
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-README_SNIPPET = """# APXV1 Verifier Bundle
+README_SNIPPET = """# APXV Verifier Bundle
 
 Verification keys and manifests only — **no proving keys**.
 
 ## Contents
 
-- `governance/` — apx-circuits VKs + manifest.json
-- `entity/` — apx-zk VKs + entity-manifest.json
+- `governance/` — apxv-circuits VKs + manifest.json
+- `entity/` — apxv-zk VKs + entity-manifest.json
 - `ceremony-transcript.json` — optional signed transcript (if copied)
 
 ## Verify an attestation
@@ -50,8 +50,8 @@ def export_verifier_bundle(
         shutil.rmtree(dest)
     dest.mkdir(parents=True)
 
-    gov_src = base / "rust" / "apx-circuits" / "keys"
-    ent_src = base / "rust" / "apx-zk" / "keys"
+    gov_src = base / "rust" / "apxv-circuits" / "keys"
+    ent_src = base / "rust" / "apxv-zk" / "keys"
     gov_dest = dest / "governance"
     ent_dest = dest / "entity"
     gov_dest.mkdir()
@@ -81,7 +81,7 @@ def export_verifier_bundle(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Export APXV1 verifier-only bundle")
+    parser = argparse.ArgumentParser(description="Export APXV verifier-only bundle")
     parser.add_argument("--out", type=Path, required=True, help="Output directory")
     parser.add_argument("--base-path", type=Path, default=ROOT)
     parser.add_argument("--no-transcript", action="store_true")

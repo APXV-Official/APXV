@@ -1,4 +1,4 @@
-"""Tests for APXV1 voice privacy suite."""
+"""Tests for APXV voice privacy suite."""
 
 from __future__ import annotations
 

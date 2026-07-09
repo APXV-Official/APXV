@@ -29,6 +29,8 @@ def test_verify_integrity_includes_audit_summary(tmp_path: Path, monkeypatch):
 
     assert integrity["healthy"] is False
     assert "audit_summary" in integrity
+    assert "sovereign_ok" in integrity
+    assert integrity["sovereign_ok"] is True
     assert "system_audit.log" in integrity["audit_summary"]
     summary = integrity["audit_summary"]["system_audit.log"]
     assert summary["issue"] == "corrupt_lines"
@@ -55,6 +57,7 @@ def test_health_payload_includes_audit_summary(api_server):
         data = json.loads(resp.read().decode())
 
     assert data["status"] == "degraded"
+    assert "sovereign_setup" in data
     summary = data["integrity"]["audit_summary"]["system_audit.log"]
     assert summary["issue"] == "chain_break"
     assert summary["corrupt_line_count"] == 0

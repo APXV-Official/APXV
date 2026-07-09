@@ -1,7 +1,7 @@
 # AI Governance Template
 
 **Purpose:**  
-A reusable governance library for controlling LLM-powered and tool-using agents within APXV1.
+A reusable governance library for controlling LLM-powered and tool-using agents within APXV.
 
 This template provides a baseline set of rules, workflows, and knowledge artifacts designed to ensure that agentic components operate safely, accountably, and in compliance with defined policies.
 
@@ -23,7 +23,7 @@ This template provides a baseline set of rules, workflows, and knowledge artifac
 
 1. Copy the desired files into your `managed/rules/`, `managed/workflows/`, and `managed/knowledge/` directories.
 2. Customize thresholds, rules, and workflows as needed for your specific use case.
-3. Reference the rule file hash in your `APX-RULE-xxx` specifications.
+3. Reference the rule file hash in your `APXV-RULE-xxx` specifications.
 4. Apply via propose → approve → apply (see [docs/BUILDING.md](../../docs/BUILDING.md)).
 
 ---

@@ -10,13 +10,13 @@ description: >-
   batch manifest, and attestation with compliance policy id 2.
 
 agents:
-  - id: APX-AGENT-001
+  - id: APXV-AGENT-001
     type: deterministic
     module: agents.agent1
-  - id: APX-AGENT-002
+  - id: APXV-AGENT-002
     type: deterministic
     module: agents.agent2
-  - id: APX-AGENT-003
+  - id: APXV-AGENT-003
     type: deterministic
     module: agents.agent3
 

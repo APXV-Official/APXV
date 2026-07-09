@@ -1,5 +1,5 @@
 """
-APX v1 — Local SQLite Job Queue (Phase 4 / Step 1)
+APXV — Local SQLite Job Queue (Phase 4 / Step 1)
 
 Durable job tracking for pipeline runs. Stdlib sqlite3 only.
 """
@@ -140,12 +140,32 @@ class JobQueue:
             return None
         return self._row_to_dict(row)
 
-    def list_jobs(self, limit: int = 20) -> List[Dict[str, Any]]:
+    def count_jobs(self, status: Optional[str] = None) -> int:
         with self._connect() as conn:
-            rows = conn.execute(
-                "SELECT * FROM jobs ORDER BY created_at DESC LIMIT ?",
-                (int(limit),),
-            ).fetchall()
+            if status:
+                row = conn.execute(
+                    "SELECT COUNT(*) AS c FROM jobs WHERE status = ?",
+                    (status,),
+                ).fetchone()
+            else:
+                row = conn.execute("SELECT COUNT(*) AS c FROM jobs").fetchone()
+        return int(row["c"]) if row else 0
+
+    def list_jobs(
+        self,
+        limit: int = 20,
+        offset: int = 0,
+        status: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        query = "SELECT * FROM jobs"
+        params: List[Any] = []
+        if status:
+            query += " WHERE status = ?"
+            params.append(status)
+        query += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
+        params.extend([int(limit), int(offset)])
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
         return [self._row_to_dict(row) for row in rows]
 
     def _row_to_dict(self, row: sqlite3.Row) -> Dict[str, Any]:

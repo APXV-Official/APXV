@@ -13,7 +13,8 @@ if str(_ROOT) not in sys.path:
 from agents.agent1 import RuleGovernedRedactor
 from agents.agent2 import WorkflowOrchestrator
 from agents.agent3 import AttestationCoordinator
-from agents.llm_backend import LLMBackend, SimulatedLLMBackend
+from agents.install_profile import resolve_llm_backend
+from agents.llm_backend import LLMBackend
 from agents.llm_reasoner import LLMReasoner
 from agents.zk.compliance_policy import DEFAULT_POLICY_AI_GOVERNANCE
 
@@ -21,10 +22,10 @@ if TYPE_CHECKING:
     from agents.runtime import APXRuntime
 
 PACK_AGENT_IDS = (
-    "APX-AGENT-001",
-    "APX-AGENT-002",
-    "APX-AGENT-003",
-    "APX-AGENT-LLM-001",
+    "APXV-AGENT-001",
+    "APXV-AGENT-002",
+    "APXV-AGENT-003",
+    "APXV-AGENT-LLM-001",
 )
 
 DEFAULT_POLICY_AI = DEFAULT_POLICY_AI_GOVERNANCE
@@ -53,7 +54,10 @@ def run_governed_ai_pipeline(
     redactor = RuleGovernedRedactor(runtime=runtime)
     redactor_output = redactor.process_text(input_text)
 
-    llm = LLMReasoner(runtime=runtime, backend=backend or SimulatedLLMBackend())
+    llm = LLMReasoner(
+        runtime=runtime,
+        backend=backend or resolve_llm_backend(None, runtime.base_path),
+    )
     review_prompt = prompt or DEFAULT_REVIEW_PROMPT
     llm_output = llm.execute(
         {
@@ -80,7 +84,7 @@ def run_governed_ai_pipeline(
         "reasoning_summary": llm_output.reasoning_summary[:200],
     }
     proposed["governance_notes"] = (
-        "AI governance per APX-WF-AI-001. "
+        "AI governance per APXV-WF-AI-001. "
         f"LLM decision: {llm_output.decision}. "
         f"Compliance policy id {DEFAULT_POLICY_AI}."
     )

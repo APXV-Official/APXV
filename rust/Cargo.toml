@@ -1,5 +1,5 @@
 [workspace]
-members = ["apx-circuits", "apx-zk"]
+members = ["apxv-circuits", "apxv-zk"]
 resolver = "2"
 
 [profile.release]

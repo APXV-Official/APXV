@@ -1,6 +1,6 @@
-# APXV1 — Rule Set 1: Controlled Redaction
+# APXV — Rule Set 1: Controlled Redaction
 
-**Rule ID:** APX-RULE-001  
+**Rule ID:** APXV-RULE-001  
 **Version:** 1.0.0  
 **Effective Date:** 2026-05-31  
 **Purpose:** Define the minimum redaction behavior that any APX agent must follow when processing sensitive text.
@@ -37,27 +37,27 @@ When processing any input text, the agent **must** apply the following redaction
 - Redactions must be **deterministic** — the same input + same rule version must always produce the same redacted output.
 - The agent **must not** invent additional redaction categories beyond this rule set unless a higher-priority workflow explicitly authorizes it.
 - All redactions must be **logged** in the output artifact metadata (see Workflow 1).
-- If the input contains no sensitive data matching these rules, the agent must explicitly state: "No redactions applied per APX-RULE-001."
+- If the input contains no sensitive data matching these rules, the agent must explicitly state: "No redactions applied per APXV-RULE-001."
 
 ---
 
 ## 3. Governance & Override
 
 - This rule set can only be modified by updating this markdown file and incrementing the version.
-- Agents must re-read this file on every execution (no caching of rules across runs in APXV1).
-- If a workflow or knowledge file conflicts with this rule set, **this rule set takes precedence** unless the workflow carries an explicit "RULE-OVERRIDE" marker (not supported in APXV1 baseline).
+- Agents must re-read this file on every execution (no caching of rules across runs in APXV).
+- If a workflow or knowledge file conflicts with this rule set, **this rule set takes precedence** unless the workflow carries an explicit "RULE-OVERRIDE" marker (not supported in APXV baseline).
 
 ---
 
 ## 4. Verification Notes (for Attestation)
 
 When generating cryptographic attestation for an output, the proof system should be able to reference:
-- The exact Rule ID and Version used (`APX-RULE-001 v1.0.0`)
+- The exact Rule ID and Version used (`APXV-RULE-001 v1.0.0`)
 - The list of redaction categories that were actually triggered
 - The hash of this rule file at the time of execution (to prove the agent followed this specific version)
 
 ---
 
-**End of Rule Set APX-RULE-001**
+**End of Rule Set APXV-RULE-001**
 
-This file is the active source of truth for redaction behavior in APXV1.
+This file is the active source of truth for redaction behavior in APXV.

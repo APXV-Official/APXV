@@ -1,4 +1,4 @@
-"""Bridge attested pipeline output to apx-zk entity Groth16 proofs."""
+"""Bridge attested pipeline output to apxv-zk entity Groth16 proofs."""
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ class EntityZKBridge:
     def __init__(self, base_path: Optional[Path] = None) -> None:
         self.base_path = base_path or Path(__file__).parent.parent.parent
         self.rust_dir = self.base_path / "rust"
-        self.crate_dir = self.rust_dir / "apx-zk"
+        self.crate_dir = self.rust_dir / "apxv-zk"
         self.manifest = self.rust_dir / "Cargo.toml"
         self.poseidon = PoseidonClient(base_path=self.base_path)
 

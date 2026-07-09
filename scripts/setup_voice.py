@@ -62,7 +62,7 @@ def ensure_vosk_model(base_path: Path | None = None, *, force: bool = False) -> 
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="APXV1 voice model setup (Vosk STT)")
+    parser = argparse.ArgumentParser(description="APXV voice model setup (Vosk STT)")
     parser.add_argument("--base-path", type=Path, default=ROOT)
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()

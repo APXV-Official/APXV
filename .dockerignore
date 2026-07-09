@@ -1,0 +1,16 @@
+managed/artifacts/
+managed/audit/
+managed/backups/
+managed/config/
+managed/store/
+managed/pack-snapshots/
+managed.bak*/
+rust/target/
+rust/apxv-circuits/keys/
+rust/apxv-zk/keys/
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.ci-venv/
+dist/
+*.egg-info/

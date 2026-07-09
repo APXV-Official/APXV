@@ -1,10 +1,10 @@
 # Ollama LLM Example
 
-Plug a **local** LLM into APXV1 without changing the governance layer.
+plug a **local** LLM into APXV without changing the governance layer.
 
 ## Prerequisites
 
-1. APXV1 setup complete: `python -m scripts.setup_first_run`
+1. APXV setup complete: `python -m scripts.setup_first_run`
 2. [Ollama](https://ollama.com) installed and running locally:
 
 ```bash
@@ -12,7 +12,7 @@ ollama serve
 ollama pull llama3.2
 ```
 
-Ollama stays on `127.0.0.1` — consistent with APXV1's local-first design.
+Ollama stays on `127.0.0.1` — consistent with APXV's local-first design.
 
 ## Run
 

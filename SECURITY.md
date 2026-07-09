@@ -21,18 +21,18 @@ Include:
 
 ## Threat Model (Plain Language)
 
-APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **local, self-hosted, air-gapped** use. It is a **research foundation**, not a certified compliance product.
+APXV (*Attested Proof Execution Verified*) is designed for **local, self-hosted, air-gapped** use. It is a **research foundation**, not a certified compliance product.
 
-### APXV1 Protects Against
+### APXV Protects Against
 
-- **Casual tampering** with artifacts and audit logs (hash chains detect modification; v1.2.1+ uses locked append to reduce concurrent-write corruption; v1.2.2+ classifies `corrupt_lines` vs `chain_break` in doctor, `apx_ctl integrity`, and `/health`)
+- **Casual tampering** with artifacts and audit logs (hash chains detect modification; v1.2.1+ uses locked append to reduce concurrent-write corruption; v1.2.2+ classifies `corrupt_lines` vs `chain_break` in doctor, `apxv_ctl integrity`, and `/health`)
 - **Unaudited rule changes** (governance approval workflow required)
 - **Unsigned capability policy changes** (Ed25519-signed local policy)
-- **Accidental data egress via APXV1 itself** (localhost-only API, no built-in telemetry)
-- **Unverifiable processing claims** (Groth16 proofs bind execution to rule hashes; use `run_apx --attest` and `verify_attestation --real-zk`)
+- **Accidental data egress via APXV itself** (localhost-only API, no built-in telemetry)
+- **Unverifiable processing claims** (Groth16 proofs bind execution to rule hashes; use `run_apxv --attest` and `verify_attestation --real-zk`)
 - **Undocumented verification key lineage** (Tier A/B ceremony transcript + verifier bundle — see `docs/cryptography/CEREMONY.md`)
 
-### APXV1 Does NOT Protect Against
+### APXV Does NOT Protect Against
 
 - **Malicious users** with filesystem and key access
 - **Compromised host OS** (malware, root access)
@@ -43,8 +43,8 @@ APXV1 (*Attested Proof Execution Verified*, 1st generation) is designed for **lo
 
 ## Deployment Responsibilities
 
-1. **Back up** `managed/`, `rust/apx-circuits/keys/`, and `rust/apx-zk/keys/` regularly.
-2. **Restrict filesystem access** to the APXV1 host.
+1. **Back up** `managed/`, `rust/apxv-circuits/keys/`, and `rust/apxv-zk/keys/` regularly.
+2. **Restrict filesystem access** to the APXV host.
 3. **Bind API to localhost** only (default; do not expose to LAN/internet without additional controls).
 4. **Rotate keys** if compromise is suspected.
 5. **Change governance specs** only through the approval workflow, not direct file edits.
@@ -67,17 +67,17 @@ Treat these as secrets on every deployment.
 
 | Path | Purpose |
 |------|---------|
-| `rust/apx-circuits/keys/*.pk` / `*.vk` | Governance Groth16 keys (3 circuits) |
-| `rust/apx-zk/keys/*.pk` / `*.vk` | Entity Groth16 keys (8 circuits) |
+| `rust/apxv-circuits/keys/*.pk` / `*.vk` | Governance Groth16 keys (3 circuits) |
+| `rust/apxv-zk/keys/*.pk` / `*.vk` | Entity Groth16 keys (8 circuits) |
 | `manifest.json`, `entity-manifest.json` | VK/PK hashes and circuit version |
 
-The repository ships **reference** proving and verification keys so `run_apx --attest` works after install without an immediate re-setup. Anyone with the proving keys can generate proofs for that circuit version.
+The repository ships **reference** proving and verification keys so `run_apxv --attest` works after install without an immediate re-setup. Anyone with the proving keys can generate proofs for that circuit version.
 
 For production isolation, run `python -m scripts.setup_first_run` (or per-circuit `--force` setup) on your own host, restrict filesystem access to the resulting `.pk` files, and treat your keys as confidential. Third parties verifying your attestations need only `.vk` files or the verifier bundle (VKs only).
 
 ## ZK ceremony and trust (v1.1)
 
-APXV1 uses **single-party Groth16 trusted setup** per circuit. v1.1 adds **Tier A/B ceremony transparency**:
+APXV uses **single-party Groth16 trusted setup** per circuit. v1.1 adds **Tier A/B ceremony transparency**:
 
 - `python -m scripts.ceremony_transcript --write` commits VK/PK hashes from both manifests (+ Ed25519 signature when signing keys exist)
 - `python -m scripts.export_verifier_bundle` publishes VKs only (safe for GitHub Releases)
@@ -88,7 +88,7 @@ v1.1.0 uses single-party Groth16 trusted setup. See [docs/cryptography/CEREMONY.
 
 ## BYO ML redaction backends (v1.2)
 
-- Optional `register_backend()` on `APXRedactionEngine` — you supply the model; APXV1 does not ship weights or inference
+- Optional `register_backend()` on `APXRedactionEngine` — you supply the model; APXV does not ship weights or inference
 - Invocations can be audit-logged as `redaction_backend_invoked` (backend id + input hash + counts)
 - Groth16 entity proofs bind **`entities[]` and document hashes** produced by your pipeline — **not** semantic correctness of an external ML model
 - Treat backend outputs like any other agent output: validate before attestation
@@ -98,9 +98,9 @@ v1.1.0 uses single-party Groth16 trusted setup. See [docs/cryptography/CEREMONY.
 
 - Voice audio/transcripts flow through local STT (Vosk or simulated) then the same redaction engine as text
 - `voice-redaction` ZK circuit binds entity count, policy id, and document hashes — not raw audio in the proof bundle
-- CI uses `APX_VOICE_MODE=simulated`; local offline mode requires `pip install -e ".[voice]"` and `python -m scripts.setup_voice`
+- CI uses `APXV_VOICE_MODE=simulated`; local offline mode requires `pip install -e ".[voice]"` and `python -m scripts.setup_voice`
 - Voice entities may appear in `voice_session` for ZK commitment generation — treat attested artifacts as sensitive
 
 ## Disclaimer
 
-APXV1 is provided as-is under the Apache License 2.0. Use at your own risk for sensitive data until you have independently assessed fit for your environment.
+APXV is provided as-is under the Apache License 2.0. Use at your own risk for sensitive data until you have independently assessed fit for your environment.

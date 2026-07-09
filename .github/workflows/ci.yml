@@ -36,11 +36,11 @@ jobs:
 
       - name: Build Rust workspace (release)
         working-directory: rust
-        run: cargo build --release -p apx-circuits -p apx-zk
+        run: cargo build --release -p apxv-circuits -p apxv-zk
 
       - name: Run Rust tests
         working-directory: rust
-        run: cargo test -p apx-circuits -p apx-zk -q
+        run: cargo test -p apxv-circuits -p apxv-zk -q
 
       - name: Setup first-run (with ZK)
         run: python -m scripts.setup_first_run
@@ -51,10 +51,10 @@ jobs:
           python -m scripts.ceremony_transcript --verify
 
       - name: Doctor check (clean state)
-        run: python -m scripts.apx_doctor
+        run: python -m scripts.apxv_doctor
 
       - name: Integrity check (clean state)
-        run: python -m scripts.apx_ctl integrity
+        run: python -m scripts.apxv_ctl integrity
 
       - name: Run pytest
         run: python -m pytest tests/ -q --tb=short

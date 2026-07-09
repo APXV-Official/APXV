@@ -1,5 +1,5 @@
 """
-APX v1 — Signed Capability Policy (Phase 4 / Step 2)
+APXV — Signed Capability Policy (Phase 4 / Step 2)
 
 Versioned, Ed25519-signed capability grants for air-gapped deployments.
 Unsigned or tampered policies are rejected at runtime.

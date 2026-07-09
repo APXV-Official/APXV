@@ -22,9 +22,9 @@ if TYPE_CHECKING:
     from agents.runtime import APXRuntime
 
 PACK_AGENT_IDS = (
-    "APX-AGENT-001",
-    "APX-AGENT-002",
-    "APX-AGENT-003",
+    "APXV-AGENT-001",
+    "APXV-AGENT-002",
+    "APXV-AGENT-003",
 )
 
 SUPPORTED_SUFFIXES = frozenset({".txt", ".json"})
@@ -190,7 +190,7 @@ def process_batch_directory(
     proposed["output"]["compliance_policy_id"] = DEFAULT_POLICY_BATCH
     proposed["output"]["batch_file_count"] = manifest["file_count"]
     proposed["governance_notes"] = (
-        "Batch document processing per APX-WF-DOC-001. "
+        "Batch document processing per APXV-WF-DOC-001. "
         f"Processed {manifest['file_count']} files with compliance policy id {DEFAULT_POLICY_BATCH}."
     )
 

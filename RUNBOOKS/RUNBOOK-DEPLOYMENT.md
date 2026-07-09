@@ -1,8 +1,8 @@
-# APXV1 — Runbook: Deployment
+# APXV — Runbook: Deployment
 
 > **Note:** For first-time setup, see [docs/QUICKSTART.md](../docs/QUICKSTART.md) and [docs/DOCKER.md](../docs/DOCKER.md).
 
-**Purpose:** Guide for deploying APXV1 in production or staging environments.
+**Purpose:** Guide for deploying APXV in production or staging environments.
 
 ---
 
@@ -19,7 +19,7 @@
 ### 2.1 Build the Image
 
 ```bash
-docker build -t apx-v1:latest .
+docker build -t apxv:latest .
 ```
 
 ### 2.2 Run the Container
@@ -32,8 +32,8 @@ docker-compose up -d --build
 
 ```bash
 curl http://127.0.0.1:8741/health
-docker logs apx-v1
-# First start runs setup_first_run if needed, then apx_serve
+docker logs apxv
+# First start runs setup_first_run if needed, then apxv_serve
 ```
 
 ---
@@ -43,7 +43,7 @@ docker logs apx-v1
 ```bash
 pip install -e ".[dev]"
 python -m scripts.setup_first_run
-python -m scripts.run_apx --attest
+python -m scripts.run_apxv --attest
 python -m scripts.verify_attestation --real-zk
 ```
 
@@ -53,7 +53,7 @@ python -m scripts.verify_attestation --real-zk
 
 - All configuration is currently file-based under `managed/`
 - No environment variables are required by default
-- To change base path, set `APX_BASE_PATH` environment variable
+- To change base path, set `APXV_BASE_PATH` environment variable (legacy `APX_BASE_PATH` still read)
 
 ---
 
@@ -71,7 +71,7 @@ print('Core components healthy')
 
 ## 6. Rollback
 
-- Docker: `docker stop apx-v1 && docker rm apx-v1 && docker run ...` with previous image tag
+- Docker: `docker stop apxv && docker rm apxv && docker run ...` with previous image tag
 - Python: Revert to previous git tag and reinstall
 
 ---

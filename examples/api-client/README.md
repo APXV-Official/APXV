@@ -1,19 +1,19 @@
 # API Client Example
 
-Python client for the local APXV1 HTTP API.
+Python client for the local APXV HTTP API.
 
 ## Prerequisites
 
 1. Run setup: `python -m scripts.setup_first_run` (Linux/WSL: `python3 -m …`)
-2. Start the server: `python -m scripts.apx_serve`
+2. Start the server: `python -m scripts.apxv_serve`
 3. Set your API key:
 
 ```bash
 # PowerShell
-$env:APX_API_KEY = "your-key-here"
+$env:APXV_API_KEY = "your-key-here"
 
 # Bash
-export APX_API_KEY="your-key-here"
+export APXV_API_KEY="your-key-here"
 ```
 
 ### Where to find the key
@@ -22,13 +22,13 @@ export APX_API_KEY="your-key-here"
 |--------|------|
 | Onboard / `setup_first_run` output | Printed once when the default key is created |
 | `managed/config/OPERATOR-KEY-default-operator.txt` | Written automatically (v1.2.1+) |
-| `apx_ctl api-key create` | Any time; use `--save-hint` to write a hint file |
+| `apxv_ctl api-key create` | Any time; use `--save-hint` to write a hint file |
 
 ```bash
-python -m scripts.apx_ctl api-key create my-app --save-hint
+python -m scripts.apxv_ctl api-key create my-app --save-hint
 ```
 
-New keys work immediately while `apx_serve` is running (v1.2.1+). Hashes are stored in `managed/config/api_keys.json` - raw keys cannot be recovered from that file. Upgraded trees may lack the hint file; run `apx_ctl api-key create my-app --save-hint` or see [docs/QUICKSTART.md](../../docs/QUICKSTART.md).
+New keys work immediately while `apxv_serve` is running (v1.2.1+). Hashes are stored in `managed/config/api_keys.json` - raw keys cannot be recovered from that file. Upgraded trees may lack the hint file; run `apxv_ctl api-key create my-app --save-hint` or see [docs/QUICKSTART.md](../../docs/QUICKSTART.md).
 
 `/health` returns `degraded` when audit integrity fails (v1.2.2+ includes `integrity.audit_summary` with per-log `issue`). Pipelines may still work; see [docs/LOCAL-API.md](../../docs/LOCAL-API.md).
 

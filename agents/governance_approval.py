@@ -1,5 +1,5 @@
 """
-APX v1 — Governance Change Approval Workflow (Phase 4 / Step 3)
+APXV — Governance Change Approval Workflow (Phase 4 / Step 3)
 
 Propose → approve (signed) → apply. Direct spec edits without approval
 are rejected at runtime.

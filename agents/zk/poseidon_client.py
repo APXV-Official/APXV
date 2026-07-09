@@ -1,4 +1,4 @@
-"""Thin client for apx-zk Poseidon hash helpers (matches Rust native Poseidon)."""
+"""Thin client for apxv-zk Poseidon hash helpers (matches Rust native Poseidon)."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ class PoseidonClient:
     def __init__(self, base_path: Optional[Path] = None) -> None:
         self.base_path = base_path or Path(__file__).parent.parent.parent
         self.rust_dir = self.base_path / "rust"
-        self.crate_dir = self.rust_dir / "apx-zk"
+        self.crate_dir = self.rust_dir / "apxv-zk"
         self.manifest = self.rust_dir / "Cargo.toml"
         self._binary = resolve_apx_zk_binary(self.base_path)
 
@@ -30,7 +30,7 @@ class PoseidonClient:
         )
         if result.returncode != 0:
             raise RuntimeError(
-                f"apx-zk {' '.join(args)} failed: {result.stderr[-500:]}"
+                f"apxv-zk {' '.join(args)} failed: {result.stderr[-500:]}"
             )
         return result.stdout.strip()
 

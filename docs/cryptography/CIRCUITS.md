@@ -1,6 +1,6 @@
-# APXV1 — Groth16 Circuit Inventory (v1.2.5)
+# APXV — Groth16 Circuit Inventory (v1.3.0)
 
-APXV1 uses **Groth16 over BN254** (arkworks 0.4) in two Rust crates. This document separates **circuits that exist** from **circuits proven on the default attest path**.
+APXV uses **Groth16 over BN254** (arkworks 0.4) in two Rust crates. This document separates **circuits that exist** from **circuits proven on the default attest path**.
 
 ## Verification scope
 
@@ -8,7 +8,7 @@ Independent verification checks proof math and VK lineage. Setup honesty is a se
 
 ---
 
-## Governance track (`apx-circuits`) — 3 circuits
+## Governance track (`apxv-circuits`) — 3 circuits
 
 | Circuit | On `--attest`? | What it binds (summary) |
 |---------|----------------|-------------------------|
@@ -20,7 +20,7 @@ All three are verified by `verify_attestation --real-zk`.
 
 ---
 
-## Entity track (`apx-zk`) — 8 circuits in crate
+## Entity track (`apxv-zk`) — 8 circuits in crate
 
 | Circuit | On default `--attest`? | What it binds (summary) | Product feature required |
 |---------|------------------------|-------------------------|--------------------------|

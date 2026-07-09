@@ -1,8 +1,8 @@
 """
-APX v1 — ZK Circuit Setup
+APXV — ZK Circuit Setup
 
 Runs the one-time honest trusted setup for all three Groth16 circuits.
-Keys are persisted under rust/apx-circuits/keys/ and reused for every subsequent proof.
+Keys are persisted under rust/apxv-circuits/keys/ and reused for every subsequent proof.
 """
 
 from pathlib import Path
@@ -24,7 +24,7 @@ def ensure_zk_setup(base_path: Path | None = None, force: bool = False) -> dict:
     """Ensure trusted setup keys exist for all circuits. Returns a status report."""
     base = base_path or Path(__file__).parent.parent
     rust_dir = base / "rust"
-    crate_dir = rust_dir / "apx-circuits"
+    crate_dir = rust_dir / "apxv-circuits"
     manifest = rust_dir / "Cargo.toml"
     keys_dir = crate_dir / "keys"
 

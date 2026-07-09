@@ -49,12 +49,33 @@ def test_pack_layout_exists(pack_root: Path):
 def test_pack_agent_bindings():
     mod = _load_governance_agents()
     assert mod.PACK_AGENT_IDS == (
-        "APX-AGENT-001",
-        "APX-AGENT-002",
-        "APX-AGENT-003",
-        "APX-AGENT-LLM-001",
+        "APXV-AGENT-001",
+        "APXV-AGENT-002",
+        "APXV-AGENT-003",
+        "APXV-AGENT-LLM-001",
     )
     assert mod.DEFAULT_POLICY_AI == 4
+
+
+def test_pipeline_service_ai_governance_job_payload():
+    from agents.pipeline_service import execute_job_payload
+    from agents.runtime import APXRuntime
+
+    result = execute_job_payload(
+        {
+            "pack": "apxv-pack-ai-governance",
+            "input_text": (
+                "Contact: jane@example.com, phone (555) 123-4567, SSN 123-45-6789."
+            ),
+            "attest": False,
+            "llm": None,
+        },
+        runtime=APXRuntime(),
+    )
+    assert result["final_status"] == "ATTESTED"
+    assert result["compliance_policy_id"] == 4
+    assert result["llm_decision"] in ("APPROVED", "REVIEW_REQUIRED", "REJECTED")
+    assert result["total_redactions"] >= 1
 
 
 def test_ai_pipeline_sets_compliance_policy_id_4():

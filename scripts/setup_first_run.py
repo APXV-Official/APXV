@@ -1,5 +1,5 @@
 """
-APX v1 — First-Run Setup
+APXV — First-Run Setup
 
 Bootstraps a fresh local, air-gapped APX instance:
 - Directory structure
@@ -23,20 +23,21 @@ sys.path.insert(0, str(ROOT))
 
 from agents.auth import APIKeyAuth
 from agents.capability_policy import CapabilityPolicyError, CapabilityPolicyManager
+from agents.install_profile import PRODUCTION, write_runtime_profile
 from agents.local_api import DEFAULT_SERVER_CONFIG
-from agents.runtime import APXRuntime
+from agents.runtime import APXVRuntime
 
 DEFAULT_AGENTS = {
-    "APX-AGENT-001": ["read_specification", "write_artifact", "execute_agent"],
-    "APX-AGENT-002": ["read_specification", "write_artifact", "execute_agent"],
-    "APX-AGENT-003": [
+    "APXV-AGENT-001": ["read_specification", "write_artifact", "execute_agent"],
+    "APXV-AGENT-002": ["read_specification", "write_artifact", "execute_agent"],
+    "APXV-AGENT-003": [
         "read_specification",
         "write_artifact",
         "execute_agent",
         "verify_attestation",
     ],
-    "APX-AGENT-LLM-001": ["read_specification", "write_artifact", "execute_agent"],
-    "APX-AGENT-TOOL-001": ["read_specification", "write_artifact", "execute_agent"],
+    "APXV-AGENT-LLM-001": ["read_specification", "write_artifact", "execute_agent"],
+    "APXV-AGENT-TOOL-001": ["read_specification", "write_artifact", "execute_agent"],
 }
 
 RUNTIME_DIRS = (
@@ -45,8 +46,8 @@ RUNTIME_DIRS = (
     "managed/backups",
     "managed/config",
     "managed/store/blobs",
-    "rust/apx-circuits/keys",
-    "rust/apx-zk/keys",
+    "rust/apxv-circuits/keys",
+    "rust/apxv-zk/keys",
 )
 
 
@@ -116,13 +117,13 @@ def ensure_api_key(base_path: Path) -> dict:
             result["hint_advisory"] = (
                 "Default API key exists but OPERATOR-KEY-default-operator.txt is missing "
                 "(common after in-place upgrade). Create a hint file: "
-                "python -m scripts.apx_ctl api-key create my-key --save-hint"
+                "python -m scripts.apxv_ctl api-key create my-key --save-hint"
             )
     return result
 
 
 def verify_zk_keys(base_path: Path) -> dict:
-    keys_dir = base_path / "rust" / "apx-circuits" / "keys"
+    keys_dir = base_path / "rust" / "apxv-circuits" / "keys"
     circuits = ("redaction", "rule-binding", "pipeline")
     status = {}
     all_ready = True
@@ -138,7 +139,7 @@ def verify_zk_keys(base_path: Path) -> dict:
 def verify_entity_zk_keys(base_path: Path) -> dict:
     from scripts.entity_zk_manifest import ENTITY_CIRCUITS
 
-    keys_dir = base_path / "rust" / "apx-zk" / "keys"
+    keys_dir = base_path / "rust" / "apxv-zk" / "keys"
     status = {}
     all_ready = True
     for circuit in ENTITY_CIRCUITS:
@@ -156,10 +157,12 @@ def run_setup(base_path: Path, *, setup_zk: bool = True) -> dict:
     ensure_directories(base_path)
     report["steps"]["directories"] = "ok"
 
+    report["steps"]["runtime_profile"] = write_runtime_profile(base_path, PRODUCTION)
+
     report["steps"]["capability_policy"] = ensure_capability_policy(base_path)
     report["steps"]["server_config"] = ensure_server_config(base_path)
 
-    runtime = APXRuntime(base_path=base_path)
+    runtime = APXVRuntime(base_path=base_path)
     report["steps"]["governance_bootstrap"] = runtime.governance.approval.bootstrap_active_specs_if_needed()
 
     report["steps"]["api_key"] = ensure_api_key(base_path)
@@ -229,9 +232,9 @@ def print_report(report: dict) -> None:
     else:
         if zk.get("setup_ran"):
             print()
-            print("Governance ZK setup: keys generated under rust/apx-circuits/keys/")
+            print("Governance ZK setup: keys generated under rust/apxv-circuits/keys/")
         if entity_zk.get("setup_ran"):
-            print("Entity ZK setup: keys generated under rust/apx-zk/keys/")
+            print("Entity ZK setup: keys generated under rust/apxv-zk/keys/")
     if zk_keys:
         print(f"Governance ZK keys ready: {'yes' if zk_keys.get('ready') else 'no'}")
     if entity_zk_keys:
@@ -240,8 +243,8 @@ def print_report(report: dict) -> None:
     print()
     print("Backup these paths regularly:")
     print("  managed/")
-    print("  rust/apx-circuits/keys/")
-    print("  rust/apx-zk/keys/")
+    print("  rust/apxv-circuits/keys/")
+    print("  rust/apxv-zk/keys/")
     print()
     print("Integrity check:")
     integrity = report["integrity"]
@@ -252,9 +255,9 @@ def print_report(report: dict) -> None:
     print(f"  Governance approvals: {'valid' if integrity['governance_approvals_valid'] else 'invalid'}")
     print()
     print("Next steps:")
-    print("  python -m scripts.apx_ctl integrity")
-    print("  python -m scripts.apx_serve")
-    print("  python -m scripts.run_apx --attest")
+    print("  python -m scripts.apxv_ctl integrity")
+    print("  python -m scripts.apxv_serve")
+    print("  python -m scripts.run_apxv --attest")
     print("=" * 60)
 
 

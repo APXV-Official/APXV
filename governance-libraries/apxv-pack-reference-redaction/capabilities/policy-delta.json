@@ -1,4 +1,4 @@
 {
-  "note": "setup_first_run already grants APX-AGENT-001, APX-AGENT-002, and APX-AGENT-003 in the default signed capability policy.",
+  "note": "setup_first_run already grants APXV-AGENT-001, APXV-AGENT-002, and APXV-AGENT-003 in the default signed capability policy.",
   "agents_to_add": {}
 }

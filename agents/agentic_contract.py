@@ -1,5 +1,5 @@
 """
-APX v1 — Agentic Contract (Phase 3 Foundation)
+APXV — Agentic Contract (Phase 3 Foundation)
 
 This module defines the mandatory contract that any LLM-powered or
 tool-using agent must follow to operate within the APX governed runtime.
@@ -8,7 +8,7 @@ The contract ensures that agentic components remain attestable,
 auditable, and constrained — preserving the integrity of the
 deterministic core established in Phases 1 and 2.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from dataclasses import dataclass, field

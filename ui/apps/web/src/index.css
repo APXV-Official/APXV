@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@source "../../../packages/ui/src";
+@import "@apxv/ui/styles.css";
+
+@theme {
+  --color-sidebar: hsl(var(--sidebar));
+  --color-surface: hsl(var(--surface));
+  --color-surface-elevated: hsl(var(--surface-elevated));
+  --spacing-page-x: var(--page-x);
+  --spacing-page-y: var(--page-y);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+main {
+  background:
+    radial-gradient(ellipse 100% 70% at 50% -20%, hsl(var(--primary) / 0.045), transparent 55%),
+    hsl(var(--background));
+}

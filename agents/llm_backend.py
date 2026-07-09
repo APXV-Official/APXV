@@ -1,5 +1,5 @@
 """
-APX v1 — Pluggable LLM Backends
+APXV — Pluggable LLM Backends
 
 Swap in any local or remote LLM by implementing LLMBackend.
 APX stays governed: backends return text; agents produce AgenticOutput.
@@ -109,6 +109,11 @@ class OllamaLLMBackend:
         try:
             with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
                 body = json.loads(resp.read().decode("utf-8"))
+        except TimeoutError as exc:
+            raise RuntimeError(
+                f"Ollama request timed out ({self.base_url}). "
+                "Is Ollama responding? Try a smaller model or increase APX_LLM_TIMEOUT_SECONDS."
+            ) from exc
         except urllib.error.URLError as exc:
             raise RuntimeError(
                 f"Ollama request failed ({self.base_url}). "

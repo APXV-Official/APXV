@@ -1,4 +1,4 @@
-"""APX v1 integration tests for the governed agent pipeline."""
+"""APXV integration tests for the governed agent pipeline."""
 
 import json
 import subprocess

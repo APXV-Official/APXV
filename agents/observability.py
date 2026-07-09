@@ -1,12 +1,12 @@
 """
-APX v1 — Optional Observability Helpers (BYO / DIY)
+APXV — Optional Observability Helpers (BYO / DIY)
 
 This module provides simple helper functions for users who want to
 build their own metrics or export logs to external systems.
 
 It is completely optional and not used by the core APX runtime.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 import json

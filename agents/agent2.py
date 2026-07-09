@@ -1,10 +1,10 @@
 """
-APX v1 — Agent 2: WorkflowOrchestrator
+APXV — Agent 2: WorkflowOrchestrator
 
-This is the second of the three small agents in the APX v1 minimal implementation.
+This is the second of the three small agents in the APXV minimal implementation.
 
 Purpose:
-- Explicitly execute the workflow defined in APX-WF-001.
+- Explicitly execute the workflow defined in APXV-WF-001.
 - Demonstrate orchestration across the managed layer (rules + workflow + knowledge).
 - Accept output from Agent 1 (or raw input) and drive the process through
   the full 6-step workflow as closely as possible within current scope.
@@ -18,7 +18,7 @@ on workflow fidelity and artifact packaging.
 
 It now uses the MinimalArtifactProvider for all governed specification access.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from pathlib import Path
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 class WorkflowOrchestrator:
     """
-    Agent that drives the exact workflow defined in APX-WF-001.
+    Agent that drives the exact workflow defined in APXV-WF-001.
 
     It coordinates the steps:
     1. Load active rules, workflow, and knowledge
@@ -52,7 +52,7 @@ class WorkflowOrchestrator:
     """
 
     def __init__(self, base_path: Path = None, runtime: "APXRuntime" = None):
-        self.agent_id = "APX-AGENT-002"
+        self.agent_id = "APXV-AGENT-002"
         self.agent_name = "WorkflowOrchestrator"
         ctx = init_agent_context(
             agent_id=self.agent_id,
@@ -91,21 +91,21 @@ class WorkflowOrchestrator:
 
         self.rule_set = {
             "raw": rule_raw,
-            "id": "APX-RULE-001",
+            "id": "APXV-RULE-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(rule_raw.encode()).hexdigest(),
         }
 
         self.workflow = {
             "raw": workflow_raw,
-            "id": "APX-WF-001",
+            "id": "APXV-WF-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(workflow_raw.encode()).hexdigest(),
         }
 
         self.knowledge = {
             "raw": knowledge_raw,
-            "id": "APX-KB-001",
+            "id": "APXV-KB-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(knowledge_raw.encode()).hexdigest(),
         }
@@ -125,7 +125,7 @@ class WorkflowOrchestrator:
         redactor_output: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Execute the full workflow defined in APX-WF-001.
+        Execute the full workflow defined in APXV-WF-001.
 
         You can pass either:
         - raw input_text (orchestrator will simulate redaction), or
@@ -199,7 +199,7 @@ class WorkflowOrchestrator:
                 "entity_count": entity_count,
             },
             "execution_trace": execution_trace,
-            "governance_notes": "Followed APX-WF-001 exactly. All redactions deterministic per APX-RULE-001.",
+            "governance_notes": "Followed APXV-WF-001 exactly. All redactions deterministic per APXV-RULE-001.",
         }
 
         # === Step 6: Prepare Attestation Request Payload ===

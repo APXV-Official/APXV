@@ -1,5 +1,5 @@
 """
-APX v1 — ZK Key Manifest (Phase 1 Criterion #4)
+APXV — ZK Key Manifest (Phase 1 Criterion #4)
 
 Tracks versioned verification keys, their hashes, and circuit versions.
 Used to detect wrong or stale VKs during proof generation and verification.
@@ -16,7 +16,7 @@ import json
 CIRCUIT_VERSION = "1.1.0"
 MANIFEST_VERSION = "1.0.0"
 CIRCUITS = ("redaction", "rule-binding", "pipeline")
-GOVERNANCE_KEYS_DIR = "rust/apx-circuits/keys"
+GOVERNANCE_KEYS_DIR = "rust/apxv-circuits/keys"
 
 
 def _sha256_file(path: Path) -> str:
@@ -25,7 +25,7 @@ def _sha256_file(path: Path) -> str:
 
 def governance_keys_dir(base_path: Optional[Path] = None) -> Path:
     base = base_path or Path(__file__).parent.parent
-    return base / "rust" / "apx-circuits" / "keys"
+    return base / "rust" / "apxv-circuits" / "keys"
 
 
 def manifest_path(base_path: Optional[Path] = None) -> Path:

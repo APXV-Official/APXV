@@ -1,13 +1,13 @@
 """
-APXV1 onboarding — setup, pack demo, attest, and independent verify.
+APXV onboarding — setup, pack demo, attest, and independent verify.
 
     python -m scripts.onboard
     python -m scripts.onboard --pack document
     python -m scripts.onboard --pack all
 
-Used by install.ps1 / install.sh. In Docker (ZK keys baked in image):
+Used by install-full.ps1 / install-full.sh (and install-docker) after sovereign bootstrap.
 
-    python -m scripts.onboard --skip-zk
+    python -m scripts.onboard --skip-setup
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ def _run(label: str, args: list[str], *, step: int, total: int) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="APXV1 onboarding — setup, pack demo, attest, verify"
+        description="APXV onboarding — setup, pack demo, attest, verify"
     )
     parser.add_argument(
         "--skip-setup",
@@ -84,7 +84,7 @@ def main() -> int:
     parser.add_argument(
         "--skip-zk",
         action="store_true",
-        help="Pass --skip-zk to setup_first_run (Docker image with baked keys)",
+        help=argparse.SUPPRESS,
     )
     parser.add_argument(
         "--pack",
@@ -106,21 +106,35 @@ def main() -> int:
 
     pack_title = args.pack if args.pack != "all" else "all official packs"
     print("=" * 60)
-    print("APXV1 onboarding")
+    print("APXV onboarding")
     print(f"Pack demo: {pack_title} → attest → verify")
     print("=" * 60)
 
     if not args.skip_setup:
-        setup_args = [py, "-m", "scripts.setup_first_run"]
         if args.skip_zk:
-            setup_args.append("--skip-zk")
-        _run("First-run setup", setup_args, step=step, total=total)
+            print(
+                "WARNING: --skip-zk is deprecated (pre-v1.3 Docker). "
+                "Use apxv_bootstrap or --skip-setup after sovereign bootstrap.",
+                file=sys.stderr,
+            )
+            setup_args = [py, "-m", "scripts.setup_first_run", "--skip-zk"]
+            _run("First-run setup (legacy)", setup_args, step=step, total=total)
+        else:
+            bootstrap_args = [
+                py,
+                "-m",
+                "scripts.apxv_bootstrap",
+                "--skip-ollama",
+                "--skip-voice",
+                "--skip-smoke",
+            ]
+            _run("Sovereign bootstrap", bootstrap_args, step=step, total=total)
         step += 1
 
-    _run("Doctor check", [py, "-m", "scripts.apx_doctor"], step=step, total=total)
+    _run("Doctor check", [py, "-m", "scripts.apxv_doctor"], step=step, total=total)
     step += 1
 
-    _run("Integrity check", [py, "-m", "scripts.apx_ctl", "integrity"], step=step, total=total)
+    _run("Integrity check", [py, "-m", "scripts.apxv_ctl", "integrity"], step=step, total=total)
     step += 1
 
     for pack_name, demo_path in pack_runs:
@@ -153,8 +167,8 @@ def main() -> int:
         print("  Pack demo:  final_status=ATTESTED, compliance_policy_id=4")
     else:
         print("  Pack demos: reference + document + ai (see output above)")
-    print("  Quick redo: python -m scripts.apx_demo --pack", args.pack)
-    print("  Next:       python -m scripts.apx_serve")
+    print("  Quick redo: python -m scripts.apxv_demo --pack", args.pack)
+    print("  Next:       python -m scripts.apxv_serve")
     print("  Docs:       docs/QUICKSTART.md · docs/BUILDING.md")
     print("=" * 60)
     return 0

@@ -1,4 +1,4 @@
-"""Thin bindings to APXV1 core agents — no duplicate pipeline logic."""
+"""Thin bindings to APXV core agents — no duplicate pipeline logic."""
 
 from __future__ import annotations
 
@@ -14,9 +14,9 @@ from agents.agent2 import WorkflowOrchestrator
 from agents.agent3 import AttestationCoordinator
 
 PACK_AGENT_IDS = (
-    "APX-AGENT-001",
-    "APX-AGENT-002",
-    "APX-AGENT-003",
+    "APXV-AGENT-001",
+    "APXV-AGENT-002",
+    "APXV-AGENT-003",
 )
 
 __all__ = [

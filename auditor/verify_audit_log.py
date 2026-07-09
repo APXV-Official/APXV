@@ -8,7 +8,7 @@ has not been tampered with by checking the cryptographic chain.
 Usage:
     python verify_audit_log.py /path/to/audit.log
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 import json

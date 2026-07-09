@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Optional, Tuple
 
+from ..env import get_env
+from ..install_profile import ProductionIntegrationError, get_install_profile, PRODUCTION
 from .local_backends import Pyttsx3TTSProvider, VoskSTTProvider
 from .providers import (
-    APXSTTProvider,
-    APXTTSProvider,
+    APXVSTTProvider,
+    APXVTTSProvider,
     SimulatedSTTProvider,
     SimulatedTTSProvider,
     VoiceBackendError,
@@ -17,7 +18,7 @@ from .providers import (
 
 
 def voice_mode() -> str:
-    return os.environ.get("APX_VOICE_MODE", "local").strip().lower()
+    return get_env("APXV_VOICE_MODE", "local").strip().lower()
 
 
 def resolve_voice_providers(
@@ -25,26 +26,38 @@ def resolve_voice_providers(
     *,
     mode: Optional[str] = None,
     stt_transcript: Optional[str] = None,
-) -> Tuple[APXSTTProvider, APXTTSProvider, str]:
+) -> Tuple[APXVSTTProvider, APXVTTSProvider, str]:
     """
     Return (stt, tts, resolved_mode).
 
-    APX_VOICE_MODE:
-      - simulated — CI / no model deps
-      - local     — Vosk + pyttsx3 when available, else simulated fallback
+    APXV_VOICE_MODE:
+      - simulated — CI profile only (pytest)
+      - local     — Vosk + pyttsx3; production requires Vosk (no fallback)
     """
     selected = (mode or voice_mode()).lower()
+    profile = get_install_profile(base_path)
+
     if selected == "simulated":
+        if profile == PRODUCTION:
+            raise ProductionIntegrationError(
+                "Simulated voice mode is disabled in production profile. "
+                "Install Vosk and run: python -m scripts.apxv_bootstrap"
+            )
         return SimulatedSTTProvider(stt_transcript), SimulatedTTSProvider(), "simulated"
 
     if selected != "local":
-        raise ValueError(f"Unknown APX_VOICE_MODE: {selected}")
+        raise ValueError(f"Unknown APXV_VOICE_MODE: {selected}")
 
-    stt: APXSTTProvider
-    tts: APXTTSProvider
+    stt: APXVSTTProvider
+    tts: APXVTTSProvider
     try:
         stt = VoskSTTProvider(base_path)
         tts = Pyttsx3TTSProvider()
         return stt, tts, "local"
-    except VoiceBackendError:
+    except VoiceBackendError as exc:
+        if profile == PRODUCTION:
+            raise ProductionIntegrationError(
+                "Vosk voice backend required in production profile. "
+                "Run: python -m scripts.setup_voice"
+            ) from exc
         return SimulatedSTTProvider(stt_transcript), SimulatedTTSProvider(), "simulated-fallback"

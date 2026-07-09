@@ -8,7 +8,7 @@ maintains a valid cryptographic chain (previous_artifact links).
 Usage:
     python verify_artifact_chain.py /path/to/managed/artifacts
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 import json

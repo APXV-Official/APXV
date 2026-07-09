@@ -4,7 +4,7 @@ Create (or update) a GitHub Release for an existing tag and upload the verifier 
 Requires GITHUB_TOKEN or GH_TOKEN with repo scope.
 
 Example:
-  python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle-v1.1.0
+  python -m scripts.export_verifier_bundle --out dist/apxv-verifier-bundle-v1.1.0
   set GITHUB_TOKEN=ghp_...
   python -m scripts.publish_github_release --tag v1.1.0
 """
@@ -160,12 +160,12 @@ def main() -> int:
     parser.add_argument(
         "--bundle-zip",
         type=Path,
-        default=ROOT / "dist" / "apxv1-verifier-bundle-v1.1.0.zip",
+        default=ROOT / "dist" / "apxv-verifier-bundle-v1.1.0.zip",
     )
     parser.add_argument(
         "--bundle-dir",
         type=Path,
-        default=ROOT / "dist" / "apxv1-verifier-bundle-v1.1.0",
+        default=ROOT / "dist" / "apxv-verifier-bundle-v1.1.0",
     )
     parser.add_argument("--notes", type=Path, default=CHANGELOG_PATH)
     parser.add_argument("--draft", action="store_true")

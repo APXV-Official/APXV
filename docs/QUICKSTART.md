@@ -1,64 +1,68 @@
-# APXV1 Quickstart (15 Minutes)
+# APXV Quickstart (15 Minutes)
 
-**APXV** is the platform; **APXV1** is this open-source implementation. **v1.2.5** is the current release (final v1.2.x consolidation): one-command onboarding, three official agent packs, and `merkle-inclusion` / `compliance` on the default attest path.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3.0** adds sovereign local trust: every deployment generates **operator-owned** ZK keys, Pack Studio, API v2, and a local operator UI.
 
-## One command
+## Choose your path
 
-Pick the path that matches your machine:
+| Path | Who | One command / action |
+|------|-----|----------------------|
+| **Desktop** | Individual operators | [Download MSI or Linux installer](INSTALL-USER.md) → bootstrap wizard |
+| **Docker** | Teams, servers, no local Rust | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` |
+| **Native** | Contributors, power users | `.\scripts\install-full.ps1` or `./scripts/install-full.sh` |
 
-| Path | Prerequisites | Command |
-|------|---------------|---------|
-| **Native** | Python 3.9+, Rust ([install guide](INSTALL-RUST.md)) | `.\scripts\install.ps1` or `./scripts/install.sh` |
-| **Docker** | Docker + Compose only | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` |
+All paths run the same sovereign contract: `apxv_bootstrap` → your ZK keys → `install.json` with `sovereign_setup: true`.
 
-Both run the same onboarding: `setup` → doctor → integrity → **pack demo** → `run_apx --attest` → `verify_attestation --real-zk`.
+Legacy `install.ps1` / `install.sh` redirect to **install-full**. See [SOVEREIGN-SETUP.md](SOVEREIGN-SETUP.md) for the trust model.
 
-Expected finale:
+### Expected finale
+
+After bootstrap completes:
 
 - `Pack demo complete: final_status=ATTESTED, total_redactions=4`
 - `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]`
 
-First native install may take a few minutes while Rust compiles. Docker build is slower once, then cached.
+First native install may take **20–60 minutes** (Rust compile + 11-circuit setup). Docker build is slower once, then cached. Desktop wizard shows per-step progress.
 
-Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
+Re-run demos without reinstalling: `python -m scripts.onboard --skip-setup`
 
 **Command cheat sheet:**
 
 | OS | Install | Demo / CLI |
 |----|---------|------------|
-| Linux / WSL | `./scripts/install.sh` then `source .venv/bin/activate` | `python3 -m scripts.apx_demo --pack all` |
-| Windows | `.\scripts\install.ps1` | `py -3 -m scripts.apx_demo --pack all` |
+| Linux / WSL | `./scripts/install-full.sh` then `source .venv/bin/activate` | `python3 -m scripts.apxv_demo --pack all` |
+| Windows | `.\scripts\install-full.ps1` | `py -3 -m scripts.apxv_demo --pack all` |
 | Docker (any) | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` | `curl http://127.0.0.1:8741/health` |
+| Desktop | Installer from [Releases](https://github.com/APXV-Official/APXV/releases) | Launch app → wizard |
 
 On Linux/WSL, use `python3` (or activated `.venv`) if bare `python` is not on PATH.
 
-**API key after onboard:** printed once in the terminal, or read `managed/config/OPERATOR-KEY-default-operator.txt`, or create with `python -m scripts.apx_ctl api-key create my-key --save-hint`.
+**API key after onboard:** printed once in the terminal, or read `managed/config/OPERATOR-KEY-default-operator.txt`, or create with `python -m scripts.apxv_ctl api-key create my-key --save-hint`.
 
-Polluted runtime state from prior experiments: `.\scripts\install.ps1 -Fresh` or `.\scripts\install-docker.ps1 -Fresh` (clears audit/config/store; keeps governance templates)
+Polluted runtime state from prior experiments: `.\scripts\install-full.ps1 -Fresh` or `.\scripts\install-docker.ps1 -Fresh` (clears audit/config/store; keeps governance templates)
 
-## 5-minute path (already installed)
+## 5-minute path (already bootstrapped)
 
-If `setup_first_run` is done, skip reinstall and run:
+If sovereign bootstrap is done, skip reinstall and run:
 
 ```bash
-./scripts/apx_demo.sh                    # reference pack (default)
-./scripts/apx_demo.sh --pack document    # Document Processing Pack
-./scripts/apx_demo.sh --pack ai          # AI Governance Pack
-./scripts/apx_demo.sh --pack all         # all packs, then attest + verify
+./scripts/apxv_demo.sh                    # reference pack (default)
+./scripts/apxv_demo.sh --pack document    # Document Processing Pack
+./scripts/apxv_demo.sh --pack ai          # AI Governance Pack (needs Ollama)
+./scripts/apxv_demo.sh --pack all         # all packs, then attest + verify
 ```
 
-Windows: `.\scripts\apx_demo.ps1` (add `-Pack document` etc.)
+Windows: `.\scripts\apxv_demo.ps1` (add `-Pack document` etc.)
 
 The script prints the latest ZK attested artifact path when verification succeeds.
 
 ## Linux and WSL
 
-**Recommended:** use the project virtualenv created by `install.sh` (`.venv/`).
+**Recommended:** use the project virtualenv created by `install-full.sh` (`.venv/`).
 
 ```bash
-./scripts/install.sh
+./scripts/install-full.sh
 source .venv/bin/activate
-./scripts/apx_demo.sh
+./scripts/apxv_demo.sh
 ```
 
 **WSL / Ubuntu / Debian prerequisites** (before native install):
@@ -68,7 +72,7 @@ sudo apt update
 sudo apt install -y build-essential python3-venv curl
 ```
 
-- **build-essential** — Rust compiles `apx-circuits` and `apx-zk` on first attest (1–3 minutes).
+- **build-essential** — Rust compiles `apxv-circuits` and `apxv-zk` during bootstrap.
 - **python3-venv** — creates `.venv` when system pip is restricted (common on Ubuntu).
 
 If `python3 -m venv` fails, install the version-specific package, e.g. `sudo apt install -y python3.12-venv`.
@@ -84,23 +88,25 @@ python -m scripts.onboard --skip-setup --pack all
 
 ```bash
 pip install -e ".[dev,voice]"
-python -m scripts.onboard
+python -m scripts.apxv_bootstrap
 ```
 
 Save any API keys or signing PEMs printed during setup.
 
-Optional voice model: `python -m scripts.setup_voice` (~40 MB Vosk download).
+Optional voice model: included in bootstrap step 7, or `python -m scripts.setup_voice` (~40 MB Vosk download).
 
 Official packs: [Reference Redaction](../governance-libraries/apxv-pack-reference-redaction/), [Document Processing](../governance-libraries/apxv-pack-document-processing/), [AI Governance](../governance-libraries/apxv-pack-ai-governance/). Index: [governance-libraries/README.md](../governance-libraries/README.md). Custom agents: [BUILDING.md](BUILDING.md).
 
-### Voice attest (platform)
+### Voice attest (production)
+
+With Vosk installed via bootstrap:
 
 ```bash
-# Simulated STT (no model) — same as CI
-APX_VOICE_MODE=simulated python -m scripts.run_apx \
-  --voice-transcript "Email me at user@example.com" --attest
+python -m scripts.run_apxv --voice-transcript "Email me at user@example.com" --attest
 python -m scripts.verify_attestation --real-zk
 ```
+
+Simulated voice is **CI-only** (`APXV_PROFILE=ci`), not available in production operator paths.
 
 ### Ceremony transcript (optional)
 
@@ -109,42 +115,58 @@ After setup, commit VK lineage for releases:
 ```bash
 python -m scripts.ceremony_transcript --write --tier B
 python -m scripts.ceremony_transcript --verify
-python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
+python -m scripts.export_verifier_bundle --out dist/apxv-verifier-bundle
 ```
 
-Verifier VKs are unchanged since v1.1.0 — download from [GitHub Releases](https://github.com/APXV-Official/APXV/releases) or export your own. See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
+Verifier VK **circuit semantics** are unchanged since v1.1.0 — your ceremony still produces **your** key files. See [cryptography/CEREMONY.md](cryptography/CEREMONY.md) and [cryptography/CIRCUITS.md](cryptography/CIRCUITS.md).
 
 ## Run the local API
 
 ```bash
-python -m scripts.apx_serve
+python -m scripts.apxv_serve
 ```
 
 Open `http://127.0.0.1:8741/health` (no auth required).
 
 ### API key
 
-On first `setup_first_run` or `apx_serve`, the default key is printed once and written to:
+On first bootstrap or `apxv_serve`, the default key is printed once and written to:
 
 `managed/config/OPERATOR-KEY-default-operator.txt`
 
-If you missed it, create a new key (works immediately - no server restart required in v1.2.1+):
+If you missed it, create a new key (works immediately — no server restart required in v1.2.1+):
 
 ```bash
-python -m scripts.apx_ctl api-key create my-app --save-hint --description "Local development"
+python -m scripts.apxv_ctl api-key create my-app --save-hint --description "Local development"
 ```
 
 Set environment variable:
 
 ```bash
-export APX_API_KEY="<key-from-output-or-hint-file>"
+export APXV_API_KEY="<key-from-output-or-hint-file>"
 ```
+
+## Operator UI
+
+With bootstrap done and the API running:
+
+```bash
+# Terminal 1 — runtime
+python -m scripts.apxv_serve
+
+# Terminal 2 — UI (monorepo checkout)
+cd ui && pnpm install && pnpm dev
+```
+
+Open http://localhost:5173 → paste operator API key. Or use the **desktop app** — [INSTALL-USER.md](INSTALL-USER.md).
+
+Guide: [ui/docs/OPERATOR-GUIDE.md](../../ui/docs/OPERATOR-GUIDE.md)
 
 ## Try the examples
 
 ```bash
-python examples/hello-agent/hello_agent.py "hello APXV1"
-APX_API_KEY=<key> python examples/api-client/run_pipeline.py
+python examples/hello-agent/hello_agent.py "hello APXV"
+APXV_API_KEY=<key> python examples/api-client/run_pipeline.py
 ```
 
 ## Build something
@@ -158,28 +180,25 @@ See [DOCKER.md](DOCKER.md). Use **fresh volumes** — do not mount a dev `manage
 ## Troubleshooting
 
 ```bash
-python -m scripts.apx_doctor
+python -m scripts.apxv_doctor
 ```
 
-If `apx_doctor` or `apx_ctl integrity` fails after heavy local testing, read the per-log hint (v1.2.2+):
+Confirm `sovereign_setup: true` in doctor output and `managed/config/install.json`.
 
-- **corrupt lines** (`corrupt_line_count` > 0) — back up `managed/`, remove affected files under `managed/audit/`, run `python -m scripts.setup_first_run`
-- **chain break** (`corrupt_line_count` == 0, `chain_valid` false) — common on long-lived dev trees; remove `managed/audit/*.log` and run setup, or `python -m scripts.fresh_reset` for a full local reset
+If `apxv_doctor` or `apxv_ctl integrity` fails after heavy local testing, read the per-log hint (v1.2.2+):
+
+- **corrupt lines** (`corrupt_line_count` > 0) — back up `managed/`, remove affected files under `managed/audit/`, re-run bootstrap
+- **chain break** (`corrupt_line_count` == 0, `chain_valid` false) — common on long-lived dev trees; remove `managed/audit/*.log` and re-run bootstrap, or `python -m scripts.fresh_reset` for a full local reset
+- **vendor key guard** — remove copied pre-v1.3 keys and re-run `apxv_bootstrap` — [SOVEREIGN-SETUP.md](SOVEREIGN-SETUP.md)
 
 Pipelines may still work while `/health` shows `degraded`. See [RUNBOOKS/RUNBOOK-UPGRADE.md](../RUNBOOKS/RUNBOOK-UPGRADE.md).
 
-### Upgrading from v1.2.0 / v1.2.1 without re-setup
+### Upgrading from v1.2.x
 
-In-place upgrades keep `managed/config/api_keys.json` but may lack `OPERATOR-KEY-default-operator.txt` (added in v1.2.1). Create a hint file without rotating keys:
+See [MIGRATION-v1.3.md](MIGRATION-v1.3.md). Re-run sovereign bootstrap if you used pre-v1.3 Docker images that shipped proving keys in the image.
 
-```bash
-python -m scripts.apx_ctl api-key create my-key --save-hint --description "Post-upgrade hint"
-```
+**Docker:** if `docker compose up` fails with `container name "/apxv" is already in use` (or legacy `/apx-v1`), run `docker rm -f apxv apx-v1` then retry. `install-docker.ps1` and `install-docker.sh` do this automatically (v1.2.2+). See [DOCKER.md](DOCKER.md).
 
-Or re-run `python -m scripts.setup_first_run` — it prints an advisory if the hint file is missing.
+First `run_apxv --attest` after bootstrap can take 1–3 minutes while Rust warms up; `apxv_doctor` may show `apxv-circuits=no` until binaries are on PATH even when attest works.
 
-**Docker:** if `docker compose up` fails with `container name "/apx-v1" is already in use`, run `docker rm -f apx-v1` then retry. `install-docker.ps1` and `install-docker.sh` do this automatically (v1.2.2+). See [DOCKER.md](DOCKER.md).
-
-First `run_apx --attest` can take 1–3 minutes while Rust compiles; `apx_doctor` may show `apx-circuits=no` until binaries are on PATH even when attest works.
-
-See [SECURITY.md](../SECURITY.md) for what APXV1 does and does not protect.
+See [SECURITY.md](../SECURITY.md) for what APXV does and does not protect.

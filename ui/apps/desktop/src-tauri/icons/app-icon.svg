@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+  <rect width="1024" height="1024" rx="224" fill="#10141c"/>
+  <rect x="32" y="32" width="960" height="960" rx="192" stroke="#4a9eff" stroke-opacity="0.35" stroke-width="8"/>
+  <text
+    x="512"
+    y="572"
+    text-anchor="middle"
+    font-family="Inter, Segoe UI, system-ui, sans-serif"
+    font-size="248"
+    font-weight="700"
+    fill="#f4f7fb"
+    letter-spacing="-6"
+  >APXV</text>
+</svg>

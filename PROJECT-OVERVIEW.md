@@ -1,16 +1,16 @@
-# APXV1 — Project Guide
+# APXV — Project Guide
 
-**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **APXV1** is the first-generation open-source implementation.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform.
 
-**Version:** 1.2.5 · **License:** Apache 2.0
+**Version:** 1.3.0 · **License:** Apache 2.0
 
 This guide describes the repository layout, core components, and documentation index. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ---
 
-## What APXV1 Provides
+## What APXV Provides
 
-APXV (Attested Proof Execution Verified) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. APXV1 is the first-generation open-source implementation. Code modules use the `APX` prefix; the product name is **APXV1**.
+APXV is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. Legacy code modules retain `APX*` aliases (e.g. `APXRuntime = APXVRuntime`) for one release; new artifacts use `APXV-*` IDs.
 
 | Capability | Description |
 |------------|-------------|
@@ -27,7 +27,7 @@ APXV (Attested Proof Execution Verified) is an air-gapped governed agent platfor
 | **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
 | **Pluggable LLMs** | Optional backends (Ollama example included) |
 
-APXV1 is a **foundation for builders** — not a finished consumer product and not HIPAA/SOC2/GDPR certified. See [SECURITY.md](SECURITY.md) for the threat model.
+APXV is a **foundation for builders** — not a finished consumer product and not HIPAA/SOC2/GDPR certified. See [SECURITY.md](SECURITY.md) for the threat model.
 
 ---
 
@@ -41,9 +41,9 @@ APXV1 is a **foundation for builders** — not a finished consumer product and n
 | Voice suite + ceremony transparency (v1.1) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
 | Official agent packs (v1.2) | Reference Redaction, Document Processing, AI Governance |
-| Current version | **v1.2.5** |
+| Current version | **v1.3.0** |
 
-The reference 3-agent pipeline (redact → orchestrate → attest), three official pack smoke tests, voice path, and dual-track Groth16 verification are covered by **356 automated tests** (1 optional Vosk skip; see `python -m pytest tests/ -q`).
+The reference 3-agent pipeline (redact → orchestrate → attest), three official pack smoke tests, voice path, dual-track Groth16 verification, sovereign bootstrap, and API v2 are covered by **756 automated tests** (1 optional Vosk skip; see `python -m pytest tests/ -q`).
 
 ---
 
@@ -56,7 +56,7 @@ flowchart TB
     Approval[propose → approve → apply]
   end
 
-  subgraph runtime [APXV1 Runtime]
+  subgraph runtime [APXV Runtime]
     API[Local API :8741]
     Cap[Signed capabilities]
     Redact[RedactionEngine v3]
@@ -66,8 +66,8 @@ flowchart TB
   end
 
   subgraph crypto [Attestation]
-    ZKA[Governance ZK — apx-circuits]
-    ZKB[Entity ZK — apx-zk]
+    ZKA[Governance ZK — apxv-circuits]
+    ZKB[Entity ZK — apxv-zk]
     Verify[Independent verify]
   end
 
@@ -92,7 +92,7 @@ flowchart TB
 | **Governance & control** | CapabilityChecker, AuditLogger, GovernanceRegistry |
 | **Cryptographic layer** | Dual Groth16 tracks over BN254 (arkworks) |
 
-**Packs vs platform:** APXV1 core provides the runtime and 3-agent pipeline pattern. [Agent packs](governance-libraries/) supply governance specs, install steps, and acceptance for a vertical — they bind to core agents rather than replacing the runtime. See [README.md](README.md#agent-packs--extend-the-foundation).
+**Packs vs platform:** APXV core provides the runtime and 3-agent pipeline pattern. [Agent packs](governance-libraries/) supply governance specs, install steps, and acceptance for a vertical — they bind to core agents rather than replacing the runtime. See [README.md](README.md#agent-packs--extend-the-foundation).
 
 ---
 
@@ -116,10 +116,10 @@ flowchart TB
 
 | Component | Role |
 |-----------|------|
-| `apx-circuits/` | Governance Groth16 circuits: redaction, rule-binding, pipeline |
-| `apx-zk/` | Entity Groth16 circuits (8 in crate; 3–4 + voice on default attest — see `docs/cryptography/CIRCUITS.md`) |
-| `apx-circuits/keys/` | Reference governance `.pk`/`.vk` + `manifest.json` (re-run setup for your own keys) |
-| `apx-zk/keys/` | Reference entity `.pk`/`.vk` + `entity-manifest.json` (re-run setup for your own keys) |
+| `apxv-circuits/` | Governance Groth16 circuits: redaction, rule-binding, pipeline |
+| `apxv-zk/` | Entity Groth16 circuits (8 in crate; 3–4 + voice on default attest — see `docs/cryptography/CIRCUITS.md`) |
+| `apxv-circuits/keys/` | Reference governance `.pk`/`.vk` + `manifest.json` (re-run setup for your own keys) |
+| `apxv-zk/keys/` | Reference entity `.pk`/`.vk` + `entity-manifest.json` (re-run setup for your own keys) |
 
 ### Scripts and CLI (`scripts/`)
 
@@ -130,15 +130,15 @@ flowchart TB
 | `onboard.py` | Guided onboarding (setup → pack → attest → verify) |
 | `setup_first_run.py` | First-run setup (governance + entity ZK by default) |
 | `setup_entity_zk.py` | Entity circuit trusted setup only |
-| `apx_doctor.py` | Prerequisites and health check |
-| `apx_ctl.py` | Integrity, API keys, governance, backups |
+| `apxv_doctor.py` | Prerequisites and health check |
+| `apxv_ctl.py` | Integrity, API keys, governance, backups |
 | `run_apx.py` | Full pipeline (`--attest`, `--voice-transcript`, `--voice-file`, optional `--encrypt`) |
 | `verify_attestation.py` | Independent dual-track ZK verification (`--real-zk`) |
 | `ceremony_transcript.py` | Tier A/B ceremony transcript write/verify |
 | `export_verifier_bundle.py` | Publishable VK-only bundle for releases |
 | `setup_voice.py` | Download Vosk model for local STT |
 | `run_voice_demo.py` | Standalone voice privacy demo |
-| `apx_serve.py` | Local HTTP API |
+| `apxv_serve.py` | Local HTTP API |
 
 ### Examples & templates
 
@@ -163,12 +163,12 @@ flowchart TB
 
 | Check | Coverage |
 |-------|----------|
-| Unit & integration tests | `tests/` (352 pass locally; voice, ceremony, packs, dual ZK E2E, integrity diagnostics) |
-| Rust tests | `cargo test` in `apx-circuits` + `apx-zk` |
+| Unit & integration tests | `tests/` (756 in CI; voice, ceremony, packs, dual ZK E2E, integrity diagnostics) |
+| Rust tests | `cargo test` in `apxv-circuits` + `apxv-zk` |
 | CI | `.github/workflows/ci.yml` — pytest, voice extras, ceremony, setup, doctor, integrity |
 | Independent ZK verify | `python -m scripts.verify_attestation --real-zk` |
 
-If `apx_doctor` reports a broken audit chain on a long-lived dev tree, reset local audit state and re-run setup:
+If `apxv_doctor` reports a broken audit chain on a long-lived dev tree, reset local audit state and re-run setup:
 
 ```bash
 # Remove polluted audit logs, then:
@@ -202,4 +202,4 @@ Fresh installs and CI environments should report **HEALTHY** without this step.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports should include output from `python -m scripts.apx_doctor` and steps to reproduce.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports should include output from `python -m scripts.apxv_doctor` and steps to reproduce.

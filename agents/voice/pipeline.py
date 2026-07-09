@@ -7,13 +7,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agents.redaction import APXRedactionEngine
+from agents.redaction import APXVRedactionEngine
 from agents.zk.entity_commitment import string_to_field
 
 from .factory import resolve_voice_providers
-from .providers import APXSTTProvider, APXTTSProvider
+from .providers import APXVSTTProvider, APXVTTSProvider
 
-# voice-redaction circuit: policy_id 3 = redaction policy (rust/apx-zk voice_redaction.rs)
+# voice-redaction circuit: policy_id 3 = redaction policy (rust/apxv-zk voice_redaction.rs)
 VOICE_REDACTION_POLICY_ID = 3
 
 
@@ -34,8 +34,8 @@ class VoicePrivacyPipeline:
         self,
         base_path: Optional[Path] = None,
         *,
-        stt: Optional[APXSTTProvider] = None,
-        tts: Optional[APXTTSProvider] = None,
+        stt: Optional[APXVSTTProvider] = None,
+        tts: Optional[APXVTTSProvider] = None,
         voice_mode: Optional[str] = None,
     ) -> None:
         self.base_path = base_path or Path(__file__).resolve().parent.parent.parent
@@ -47,7 +47,7 @@ class VoicePrivacyPipeline:
             self.stt, self.tts, self.voice_mode = resolve_voice_providers(
                 self.base_path, mode=voice_mode
             )
-        self.redaction = APXRedactionEngine()
+        self.redaction = APXVRedactionEngine()
 
     def process_audio(
         self,

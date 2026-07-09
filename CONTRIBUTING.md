@@ -1,6 +1,6 @@
-# Contributing to APXV1
+# Contributing to APXV
 
-Thank you for your interest in **APXV1**. **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. **APXV1** is the first-generation open-source implementation.
+Thank you for your interest in **APXV** (*Attested Proof Execution Verified*) — an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs.
 
 ## Getting Started
 
@@ -25,9 +25,12 @@ Thank you for your interest in **APXV1**. **APXV** (*Attested Proof Execution Ve
    python -m pytest tests/ -v
    ```
 
-   On Linux/WSL use `python3` if `python` is not on PATH. API tests bind an ephemeral port — they can run while `apx_serve` listens on `8741`.
+   On Linux/WSL use `python3` if `python` is not on PATH. API tests bind an ephemeral port — they can run while `apxv_serve` listens on `8741`.
 
-   For CI parity on voice paths: `APX_VOICE_MODE=simulated python -m pytest tests/ -v`
+   Pytest sets `APXV_PROFILE=ci` automatically (simulated LLM/voice allowed). Do not use
+   `ci` in operator bootstrap, Docker entrypoint, or MSI paths.
+
+   For explicit CI parity on voice paths: `APXV_VOICE_MODE=simulated python -m pytest tests/ -v`
 
 ### Windows vs Linux
 
@@ -35,7 +38,7 @@ Thank you for your interest in **APXV1**. **APXV** (*Attested Proof Execution Ve
 |------|---------------|---------|
 | Python | `python3` or `.venv/bin/python` after `install.sh` | `py -3` or `python` after `install.ps1` |
 | Tests | `python3 -m pytest tests/ -v` | `py -3 -m pytest tests/ -v` |
-| API server | Safe to run pytest while `apx_serve` uses port 8741 (tests use ephemeral ports) | Same |
+| API server | Safe to run pytest while `apxv_serve` uses port 8741 (tests use ephemeral ports) | Same |
 | Docker smoke | `./scripts/install-docker.sh` | `.\scripts\install-docker.ps1` (requires Docker Desktop) |
 
 ## Development Principles
@@ -49,7 +52,7 @@ Thank you for your interest in **APXV1**. **APXV** (*Attested Proof Execution Ve
 
 1. Keep changes focused — one logical change per PR.
 2. Add or update tests for behavior changes.
-3. Run `python -m scripts.apx_ctl integrity` before submitting.
+3. Run `python -m scripts.apxv_ctl integrity` before submitting.
 4. Update docs when changing user-visible behavior.
 
 ### Release notes (maintainers)
@@ -62,7 +65,7 @@ Use the **Bug report** issue template when possible. At minimum include:
 
 - OS and Python version
 - Whether Rust/ZK setup completed
-- Output from `python -m scripts.apx_doctor` (preferred) or `python -m scripts.apx_ctl integrity`
+- Output from `python -m scripts.apxv_doctor` (preferred) or `python -m scripts.apxv_ctl integrity`
 - Fresh install vs reused `managed/` folder (integrity failures are common on polluted dev trees; v1.2.2+ reports `issue: corrupt_lines` or `chain_break` in doctor output)
 
 Do **not** include API keys, signing keys, or real PII in issue reports.

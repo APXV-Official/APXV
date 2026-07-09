@@ -1,0 +1,22 @@
+# APXV — static UI (nginx) for Docker Compose.
+# Build context: apxv-v1.3-remaster/ (parent of runtime/ and ui/)
+
+FROM node:20-bookworm-slim AS ui-build
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+WORKDIR /workspace/ui
+COPY ui/package.json ui/pnpm-lock.yaml ui/pnpm-workspace.yaml ./
+COPY ui/packages ./packages
+COPY ui/apps/web ./apps/web
+COPY ui/openapi ./openapi
+RUN pnpm install --frozen-lockfile
+ARG VITE_APXV_DOCKER=true
+ENV VITE_APXV_DOCKER=$VITE_APXV_DOCKER
+RUN pnpm --filter @apxv/web build
+
+FROM nginx:1.27-alpine
+RUN apk add --no-cache curl
+COPY runtime/docker/nginx-default.conf /etc/nginx/conf.d/default.conf
+COPY --from=ui-build /workspace/ui/apps/web/dist /usr/share/nginx/html
+EXPOSE 80
+HEALTHCHECK --interval=15s --timeout=5s --retries=3 --start-period=15s \
+  CMD curl -fsS http://127.0.0.1/ >/dev/null || exit 1

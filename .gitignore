@@ -43,6 +43,19 @@ managed/config/server.json
 managed/config/runtime.json
 managed/config/ceremony-transcript.json
 managed/config/capability_policy_history/
+managed/governance/
+managed/managed/
+managed/config/install.json
+
+# UI monorepo build artifacts
+ui/node_modules/
+ui/**/node_modules/
+ui/**/dist/
+ui/apps/desktop/src-tauri/target/
+ui/apps/desktop/runtime-payload/
+ui/.turbo/
+ui/**/test-results/
+ui/**/playwright-report/
 
 # Personal resume notes (not for public repo)
 docs/resume/

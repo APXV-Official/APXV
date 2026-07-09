@@ -23,8 +23,8 @@ LEGACY_POLICY = {
     "version": "1.0.0",
     "deployment": "local-airgapped",
     "agents": {
-        "APX-AGENT-001": ["read_specification", "write_artifact"],
-        "APX-AGENT-003": ["verify_attestation"],
+        "APXV-AGENT-001": ["read_specification", "write_artifact"],
+        "APXV-AGENT-003": ["verify_attestation"],
     },
 }
 
@@ -60,7 +60,7 @@ def test_capability_checker_rejects_tampered_policy(policy_env):
 
     policy_path = policy_env / "managed" / "config" / "capabilities.json"
     signed = json.loads(policy_path.read_text(encoding="utf-8"))
-    signed["agents"]["APX-AGENT-001"].append("admin")
+    signed["agents"]["APXV-AGENT-001"].append("admin")
     policy_path.write_text(json.dumps(signed, indent=2), encoding="utf-8")
 
     logger = AuditLogger(log_path=policy_env / "managed" / "audit" / "cap.log")
@@ -70,7 +70,7 @@ def test_capability_checker_rejects_tampered_policy(policy_env):
         require_signed_policy=True,
     )
     assert checker.is_policy_trusted() is False
-    assert checker.has_capability("APX-AGENT-001", "read_specification") is False
+    assert checker.has_capability("APXV-AGENT-001", "read_specification") is False
 
 
 def test_capability_checker_loads_signed_policy(policy_env):
@@ -84,8 +84,8 @@ def test_capability_checker_loads_signed_policy(policy_env):
         require_signed_policy=True,
     )
     assert checker.is_policy_trusted() is True
-    assert checker.has_capability("APX-AGENT-001", "read_specification")
-    assert checker.has_capability("APX-AGENT-003", "verify_attestation")
+    assert checker.has_capability("APXV-AGENT-001", "read_specification")
+    assert checker.has_capability("APXV-AGENT-003", "verify_attestation")
 
 
 def test_policy_version_chain(policy_env):
@@ -99,7 +99,7 @@ def test_policy_version_chain(policy_env):
     )
 
     v2_agents = copy.deepcopy(LEGACY_POLICY["agents"])
-    v2_agents["APX-AGENT-002"] = ["read_specification"]
+    v2_agents["APXV-AGENT-002"] = ["read_specification"]
     signed_v2 = manager.publish_policy(v2_agents, description="add agent 002")
     assert signed_v2["policy_version"] == 2
     assert signed_v2["previous_policy_hash"] == policy_content_hash(v1)
@@ -116,11 +116,11 @@ def test_grant_and_publish_increments_version(policy_env):
         base_path=policy_env,
         require_signed_policy=True,
     )
-    checker.grant_capability("APX-AGENT-002", "read_specification", persist=True)
+    checker.grant_capability("APXV-AGENT-002", "read_specification", persist=True)
     status = checker.get_status()
     assert status["policy_verified"] is True
     assert status["policy_version"] == 2
-    assert checker.has_capability("APX-AGENT-002", "read_specification")
+    assert checker.has_capability("APXV-AGENT-002", "read_specification")
 
 
 def test_apx_ctl_policy_verify_roundtrip(policy_env):

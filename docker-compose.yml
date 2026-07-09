@@ -1,18 +1,18 @@
 services:
-  apx-v1:
+  apxv:
     build: .
-    image: apx-v1:latest
-    container_name: apx-v1
+    image: apxv:latest
+    container_name: apxv
     restart: unless-stopped
     ports:
       - "127.0.0.1:8741:8741"
     volumes:
       - ./managed:/app/managed
-      - ./rust/apx-circuits/keys:/app/rust/apx-circuits/keys
-      - ./rust/apx-zk/keys:/app/rust/apx-zk/keys
+      - ./rust/apxv-circuits/keys:/app/rust/apxv-circuits/keys
+      - ./rust/apxv-zk/keys:/app/rust/apxv-zk/keys
     environment:
-      - APX_BASE_PATH=/app
-      - APX_CONTAINER_BIND=1
+      - APXV_BASE_PATH=/app
+      - APXV_CONTAINER_BIND=1
     healthcheck:
       test:
         [

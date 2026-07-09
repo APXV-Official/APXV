@@ -1,6 +1,6 @@
-# APXV1 — Runbook: Upgrade & Rollback
+# APXV — Runbook: Upgrade & Rollback
 
-**Purpose:** Safe upgrade and rollback procedures for an APXV1 deployment.
+**Purpose:** Safe upgrade and rollback procedures for an APXV deployment.
 
 ---
 
@@ -13,7 +13,7 @@ Before performing any upgrade:
    - Store the backup in a secure, separate location.
 
 2. **Verify current system health**
-   - Run `python -m scripts.apx_doctor` (preferred) or `python -m scripts.apx_ctl integrity`.
+   - Run `python -m scripts.apxv_doctor` (preferred) or `python -m scripts.apxv_ctl integrity`.
    - Confirm all services/containers are running normally.
 
 3. **Document the current version**
@@ -26,9 +26,9 @@ Before performing any upgrade:
 ### 2.1 Pull or Build New Image
 
 ```bash
-docker pull your-registry/apx-v1:<new-version>
+docker pull your-registry/apxv:<new-version>
 # or
-docker build -t apx-v1:<new-version> .
+docker build -t apxv:<new-version> .
 ```
 
 ### 2.2 Stop the Running Container
@@ -43,7 +43,7 @@ docker compose down
 docker compose up -d --build
 ```
 
-Or use the one-command installer (removes stale `apx-v1` automatically since v1.2.2):
+Or use the one-command installer (removes stale containers — `apxv` on v1.3, legacy `apx-v1` on v1.2 — since v1.2.2):
 
 ```powershell
 .\scripts\install-docker.ps1
@@ -56,9 +56,9 @@ Or use the one-command installer (removes stale `apx-v1` automatically since v1.
 ### 2.4 Post-Upgrade Verification
 
 - Check logs for successful startup
-- Run `python -m scripts.apx_doctor`
+- Run `python -m scripts.apxv_doctor`
 - Verify recent artifacts are still readable
-- Test a small end-to-end attestation flow (`apx_demo --pack reference`)
+- Test a small end-to-end attestation flow (`apxv_demo --pack reference`)
 
 ---
 
@@ -70,7 +70,7 @@ Or use the one-command installer (removes stale `apx-v1` automatically since v1.
    ```bash
    pip install -e . --upgrade
    ```
-4. Restart the application (`apx_serve` or Docker)
+4. Restart the application (`apxv_serve` or Docker)
 5. Verify as above
 
 ### 3.1 API key hint file (v1.2.0 → v1.2.2 in-place)
@@ -80,7 +80,7 @@ v1.2.1+ writes `managed/config/OPERATOR-KEY-default-operator.txt` on fresh setup
 Create a new hint without server restart (hot-reload in v1.2.1+):
 
 ```bash
-python -m scripts.apx_ctl api-key create my-app --save-hint --description "Post-upgrade"
+python -m scripts.apxv_ctl api-key create my-app --save-hint --description "Post-upgrade"
 ```
 
 Or run `python -m scripts.setup_first_run` — it prints an advisory if the default hint file is missing.
@@ -89,7 +89,7 @@ Or run `python -m scripts.setup_first_run` — it prints an advisory if the defa
 
 ## 4. Degraded integrity after upgrade (v1.2.2+)
 
-Long-lived `managed/` trees often show **NEEDS ATTENTION** while pipelines still work. Use per-log diagnostics from `apx_doctor`, `apx_ctl integrity`, or `GET /health`:
+Long-lived `managed/` trees often show **NEEDS ATTENTION** while pipelines still work. Use per-log diagnostics from `apxv_doctor`, `apxv_ctl integrity`, or `GET /health`:
 
 | Symptom | `issue` | Recovery |
 |---------|---------|----------|
@@ -102,7 +102,7 @@ Long-lived `managed/` trees often show **NEEDS ATTENTION** while pipelines still
 Example chain-break (common on dev machines):
 
 ```
-apx_ctl integrity
+apxv_ctl integrity
   system_audit.log: chain_break (0 corrupt lines, chain_valid=false)
   Recovery: Remove managed/audit/*.log and run setup_first_run
 ```
@@ -130,8 +130,9 @@ If the upgrade causes issues:
 
 ## 6. Data Migration Notes
 
-- APXV1 currently uses file-based storage under `managed/`
+- APXV uses file-based storage under `managed/`
 - Most upgrades should not require data migration
+- **v1.2.5 → v1.3.0:** full rename and API v2 — see [docs/MIGRATION-v1.3.md](../docs/MIGRATION-v1.3.md)
 - If a future version introduces breaking changes to artifact or log formats, migration steps will be documented in the release notes
 
 ---
@@ -146,4 +147,4 @@ If the upgrade causes issues:
 
 ---
 
-*Last updated: 2026-07-02*
+*Last updated: 2026-07-05*

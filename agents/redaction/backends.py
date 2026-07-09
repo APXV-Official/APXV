@@ -3,17 +3,18 @@
 from __future__ import annotations
 
 import hashlib
-import os
 import re
 import sys
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
+from ..env import get_env
+
 RedactionBackendHandler = Callable[..., Dict[str, Any]]
 
 
 def _dev_warnings_enabled() -> bool:
-    return os.environ.get("APX_DEV_WARNINGS", "").strip().lower() in ("1", "true", "yes")
+    return get_env("APXV_DEV_WARNINGS", "").strip().lower() in ("1", "true", "yes")
 
 
 def _entity_shape_issues(entities: List[Any]) -> List[str]:
@@ -94,7 +95,7 @@ class RedactionBackendRegistry:
         if _dev_warnings_enabled():
             for message in _entity_shape_issues(entities):
                 print(
-                    f"WARNING [APX_DEV_WARNINGS]: BYO backend {backend_id}: {message}",
+                    f"WARNING [APXV_DEV_WARNINGS]: BYO backend {backend_id}: {message}",
                     file=sys.stderr,
                 )
         payload = {

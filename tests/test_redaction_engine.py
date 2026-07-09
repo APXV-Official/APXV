@@ -29,7 +29,7 @@ def test_sample_input_redacts_four_categories():
 def test_no_sensitive_data_summary():
     result = ENGINE.apply("Hello world, nothing sensitive here.")
     assert result["total_redactions"] == 0
-    assert result["redaction_summary"] == "No redactions applied per APX-RULE-001."
+    assert result["redaction_summary"] == "No redactions applied per APXV-RULE-001."
 
 
 def test_luhn_rejects_invalid_card():

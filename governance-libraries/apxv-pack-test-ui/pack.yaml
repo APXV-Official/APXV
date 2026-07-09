@@ -1,0 +1,20 @@
+# APXV Agent Pack manifest
+pack_id: apxv-pack-test-ui
+name: Test UI Pack
+version: 0.1.0
+requires_apxv1: ">=1.2.0"
+description: >-
+  Created by test
+
+agents:
+  - id: APXV-AGENT-CUSTOM-001
+    type: deterministic
+    module: agents.custom_agents
+
+governance:
+  rules:
+    - governance/rules/RULE-CUSTOM-001.md
+  workflows:
+    - governance/workflows/WORKFLOW-CUSTOM-001.md
+  knowledge:
+    - governance/knowledge/KB-CUSTOM-001.md

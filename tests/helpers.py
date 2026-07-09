@@ -1,7 +1,8 @@
-"""Shared helpers for APXV1 integration tests."""
+"""Shared helpers for APXV integration tests."""
 
 from __future__ import annotations
 
+import shutil
 import sys
 from pathlib import Path
 
@@ -38,3 +39,16 @@ def seed_test_instance(target: Path) -> str | None:
     if not report["healthy"]:
         raise RuntimeError(f"Test instance setup unhealthy: {report}")
     return report["steps"]["api_key"].get("api_key")
+
+
+def seed_governance_libraries(target: Path, source_root: Path | None = None) -> None:
+    """Copy shipped packs into an isolated test tree (avoids writing to package root)."""
+    source = (source_root or ROOT) / "governance-libraries"
+    dest = target / "governance-libraries"
+    if dest.exists():
+        return
+    shutil.copytree(
+        source,
+        dest,
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+    )

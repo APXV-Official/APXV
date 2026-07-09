@@ -1,7 +1,7 @@
 """
-APX v1 — Script 3: verify_attestation.py
+APXV — Script 3: verify_attestation.py
 
-Python-side attestation verifier for the APX v1 tiny scope.
+Python-side attestation verifier for the APXV tiny scope.
 
 This script:
 - Re-validates the Python-side hashes and provenance chain
@@ -12,7 +12,7 @@ This script:
 Note: This is NOT a cryptographic ZK verifier. Real Groth16 verification
 will be added in Step 7 using the Rust circuits.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from pathlib import Path
@@ -42,7 +42,7 @@ def attested_for_python_checks(attested_result: Dict[str, Any], base_path: Path)
 
 def verify_python_attestation(attested_result: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Perform a full Python-side verification of an APX v1 attested result.
+    Perform a full Python-side verification of an APXV attested result.
 
     Returns a report with pass/fail for each check.
     """
@@ -110,12 +110,15 @@ def verify_python_attestation(attested_result: Dict[str, Any]) -> Dict[str, Any]
     }
     report["checks"].append(check3)
 
-    # Check 4: Agent chain is complete
-    expected_chain = ["APX-AGENT-001", "APX-AGENT-002", "APX-AGENT-003"]
+    # Check 4: Agent chain is complete (APXV canonical; APX legacy accepted)
+    from agents.id_compat import normalize_agent_id
+
+    expected_chain = ["APXV-AGENT-001", "APXV-AGENT-002", "APXV-AGENT-003"]
     actual_chain = attested_result.get("agent_chain", [])
+    normalized = [normalize_agent_id(aid) for aid in actual_chain]
     check4 = {
         "name": "agent_chain_complete",
-        "passed": actual_chain == expected_chain,
+        "passed": normalized == expected_chain,
         "details": f"Chain: {actual_chain}",
     }
     report["checks"].append(check4)
@@ -255,7 +258,7 @@ def verify_entity_zk_independent(
     circuit: str = "redaction-v1",
     proof_key: str | None = None,
 ) -> dict:
-    """Independent Groth16 verification for entity circuits (apx-zk)."""
+    """Independent Groth16 verification for entity circuits (apxv-zk)."""
     import subprocess
     import tempfile
 
@@ -290,7 +293,7 @@ def verify_entity_zk_independent(
         proof_file.write_text(json.dumps(verify_payload, indent=2), encoding="utf-8")
 
         rust_dir = base_path / "rust"
-        crate_dir = rust_dir / "apx-zk"
+        crate_dir = rust_dir / "apxv-zk"
         manifest = rust_dir / "Cargo.toml"
 
         from agents.zk.poseidon_client import build_apx_zk_command
@@ -398,10 +401,10 @@ def main():
     print(json.dumps(report, indent=2))
 
     if report["overall_status"] == "VERIFIED":
-        print("\n✓ All Python-side checks passed.")
+        print("\n? All Python-side checks passed.")
         print("  The attested_result is consistent with the living markdown specs (hash/provenance checks).")
     else:
-        print("\n✗ Python-side verification failed. See checks above.")
+        print("\n? Python-side verification failed. See checks above.")
 
     if use_real_zk:
         print("\n" + "=" * 70)

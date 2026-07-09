@@ -22,8 +22,8 @@ RUNTIME_REL_PATHS = (
     "managed/backups",
     "managed/config",
     "managed/store",
-    "rust/apx-circuits/keys",
-    "rust/apx-zk/keys",
+    "rust/apxv-circuits/keys",
+    "rust/apxv-zk/keys",
 )
 
 GOVERNANCE_REL_PATHS = (

@@ -30,18 +30,18 @@ def test_build_transcript_matches_manifests():
 def test_write_and_verify_transcript(tmp_path):
     for spec in ("rules", "workflows", "knowledge"):
         (tmp_path / "managed" / spec).mkdir(parents=True, exist_ok=True)
-    (tmp_path / "rust" / "apx-circuits" / "keys").mkdir(parents=True)
-    (tmp_path / "rust" / "apx-zk" / "keys").mkdir(parents=True)
+    (tmp_path / "rust" / "apxv-circuits" / "keys").mkdir(parents=True)
+    (tmp_path / "rust" / "apxv-zk" / "keys").mkdir(parents=True)
     import shutil
 
     shutil.copytree(
-        ROOT / "rust" / "apx-circuits" / "keys",
-        tmp_path / "rust" / "apx-circuits" / "keys",
+        ROOT / "rust" / "apxv-circuits" / "keys",
+        tmp_path / "rust" / "apxv-circuits" / "keys",
         dirs_exist_ok=True,
     )
     shutil.copytree(
-        ROOT / "rust" / "apx-zk" / "keys",
-        tmp_path / "rust" / "apx-zk" / "keys",
+        ROOT / "rust" / "apxv-zk" / "keys",
+        tmp_path / "rust" / "apxv-zk" / "keys",
         dirs_exist_ok=True,
     )
 
@@ -58,18 +58,18 @@ def test_write_and_verify_transcript(tmp_path):
 def test_verify_fails_on_tamper(tmp_path):
     for spec in ("rules", "workflows", "knowledge"):
         (tmp_path / "managed" / spec).mkdir(parents=True, exist_ok=True)
-    (tmp_path / "rust" / "apx-circuits" / "keys").mkdir(parents=True)
-    (tmp_path / "rust" / "apx-zk" / "keys").mkdir(parents=True)
+    (tmp_path / "rust" / "apxv-circuits" / "keys").mkdir(parents=True)
+    (tmp_path / "rust" / "apxv-zk" / "keys").mkdir(parents=True)
     import shutil
 
     shutil.copytree(
-        ROOT / "rust" / "apx-circuits" / "keys",
-        tmp_path / "rust" / "apx-circuits" / "keys",
+        ROOT / "rust" / "apxv-circuits" / "keys",
+        tmp_path / "rust" / "apxv-circuits" / "keys",
         dirs_exist_ok=True,
     )
     shutil.copytree(
-        ROOT / "rust" / "apx-zk" / "keys",
-        tmp_path / "rust" / "apx-zk" / "keys",
+        ROOT / "rust" / "apxv-zk" / "keys",
+        tmp_path / "rust" / "apxv-zk" / "keys",
         dirs_exist_ok=True,
     )
     from scripts.setup_first_run import run_setup

@@ -1,22 +1,22 @@
-# APXV1 — Trusted Setup Process
+# APXV — Trusted Setup Process
 
-**Circuit Version:** see `rust/apx-circuits/keys/manifest.json` (governance) and `rust/apx-zk/keys/entity-manifest.json` (entity)
+**Circuit Version:** see `rust/apxv-circuits/keys/manifest.json` (governance) and `rust/apxv-zk/keys/entity-manifest.json` (entity)
 
 ## Overview
 
-APXV1 uses Groth16 over BN254 (arkworks 0.4). Each circuit requires a **one-time trusted setup** that produces a ProvingKey (PK) and VerifyingKey (VK). These keys are persisted and reused for all subsequent proofs.
+APXV uses Groth16 over BN254 (arkworks 0.4). Each circuit requires a **one-time trusted setup** that produces a ProvingKey (PK) and VerifyingKey (VK). These keys are persisted and reused for all subsequent proofs.
 
-APXV1 v1.1.0 has **two key directories**:
+APXV v1.1.0 has **two key directories**:
 
 | Track | Crate | Keys directory | Manifest |
 |-------|-------|----------------|----------|
-| Governance (Track A) | `apx-circuits` | `rust/apx-circuits/keys/` | `manifest.json` |
-| Entity (Track B) | `apx-zk` | `rust/apx-zk/keys/` | `entity-manifest.json` |
+| Governance (Track A) | `apxv-circuits` | `rust/apxv-circuits/keys/` | `manifest.json` |
+| Entity (Track B) | `apxv-zk` | `rust/apxv-zk/keys/` | `entity-manifest.json` |
 
 ## When Setup Is Required
 
 Run setup when:
-- First deploying APXV1
+- First deploying APXV
 - Circuit code changes (version bump in manifest)
 - Keys are missing from either key directory
 - Verification fails with VK mismatch errors
@@ -36,11 +36,11 @@ python -m scripts.setup_entity_zk
 python -m scripts.setup_entity_zk --force
 
 # Manual per-circuit setup (prefer pre-built release binaries)
-rust/target/release/apx-circuits setup redaction
-rust/target/release/apx-zk setup redaction-v1
+rust/target/release/apxv-circuits setup redaction
+rust/target/release/apxv-zk setup redaction-v1
 ```
 
-Run manual setup from the respective crate directory (`rust/apx-circuits/` or `rust/apx-zk/`) after `cargo build --release`.
+Run manual setup from the respective crate directory (`rust/apxv-circuits/` or `rust/apxv-zk/`) after `cargo build --release`.
 
 ## What Happens During Setup
 
@@ -66,18 +66,18 @@ For an isolated trust boundary, run `setup_first_run` (or `--force` per-circuit 
 
 | File | Purpose |
 |------|---------|
-| `rust/apx-circuits/keys/redaction.pk` | Proving key (confidential on your deployment) |
-| `rust/apx-circuits/keys/redaction.vk` | Verifying key (distributable) |
-| `rust/apx-circuits/keys/rule-binding.pk` / `.vk` | Rule-binding circuit keys |
-| `rust/apx-circuits/keys/pipeline.pk` / `.vk` | Pipeline circuit keys |
-| `rust/apx-circuits/keys/manifest.json` | VK hashes, circuit version, setup timestamps |
+| `rust/apxv-circuits/keys/redaction.pk` | Proving key (confidential on your deployment) |
+| `rust/apxv-circuits/keys/redaction.vk` | Verifying key (distributable) |
+| `rust/apxv-circuits/keys/rule-binding.pk` / `.vk` | Rule-binding circuit keys |
+| `rust/apxv-circuits/keys/pipeline.pk` / `.vk` | Pipeline circuit keys |
+| `rust/apxv-circuits/keys/manifest.json` | VK hashes, circuit version, setup timestamps |
 
 ## Key Files (Entity)
 
 | File | Purpose |
 |------|---------|
-| `rust/apx-zk/keys/<circuit>.pk` / `.vk` | Per-circuit entity proving/verification keys |
-| `rust/apx-zk/keys/entity-manifest.json` | Entity VK hashes and circuit version |
+| `rust/apxv-zk/keys/<circuit>.pk` / `.vk` | Per-circuit entity proving/verification keys |
+| `rust/apxv-zk/keys/entity-manifest.json` | Entity VK hashes and circuit version |
 
 ## Ceremony transparency (v1.1)
 
@@ -86,7 +86,7 @@ After setup, generate auditable VK lineage:
 ```bash
 python -m scripts.ceremony_transcript --write --tier B
 python -m scripts.ceremony_transcript --verify
-python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
+python -m scripts.export_verifier_bundle --out dist/apxv-verifier-bundle
 ```
 
 See [CEREMONY.md](CEREMONY.md) for tiers, trust model, and limitations. See [CIRCUITS.md](CIRCUITS.md) for which circuits run on `--attest`.

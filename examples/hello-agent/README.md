@@ -1,6 +1,6 @@
 # Hello Agent Example
 
-Minimal custom governed agent for APXV1.
+Minimal custom governed agent for APXV.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ python -m scripts.setup_first_run
 
 On Linux/WSL use `python3` if `python` is not on PATH.
 
-The example reuses `APX-AGENT-LLM-001` from the default capability policy.
+The example reuses `APXV-AGENT-LLM-001` from the default capability policy.
 
 ## Run
 

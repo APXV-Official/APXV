@@ -1,9 +1,9 @@
-# APXV1 — Knowledge 1: Redaction Examples, Edge Cases & Definitions
+# APXV — Knowledge 1: Redaction Examples, Edge Cases & Definitions
 
-**Knowledge ID:** APX-KB-001  
+**Knowledge ID:** APXV-KB-001  
 **Version:** 1.0.0  
 **Effective Date:** 2026-05-31  
-**Supports:** APX-RULE-001 and APX-WF-001  
+**Supports:** APXV-RULE-001 and APXV-WF-001  
 **Purpose:** Provide concrete examples, clarifications, and definitions so agents can apply the redaction rules and workflow consistently and correctly.
 
 ---
@@ -14,7 +14,7 @@
 **Input:**  
 "Please contact john.doe@company.com for more information."
 
-**Output (per APX-RULE-001):**  
+**Output (per APXV-RULE-001):**  
 "Please contact [REDACTED-EMAIL] for more information."
 
 ### Example 2 — Phone Number
@@ -61,7 +61,7 @@
 ## 3. Definitions
 
 - **Deterministic Redaction**: The same input text + same rule version must always produce identical redacted output and identical metadata.
-- **Sensitive Data**: Any information that matches one of the categories explicitly listed in APX-RULE-001.
+- **Sensitive Data**: Any information that matches one of the categories explicitly listed in APXV-RULE-001.
 - **Artifact Metadata**: Structured data attached to every output artifact that records rule version, redactions performed, hashes, timestamps, and workflow used.
 - **Attestation Package**: The minimal set of data submitted to the proof system (rule hash, input hash, output artifact ID, redactions list, workflow ID).
 
@@ -77,11 +77,11 @@ When applying this knowledge:
 
 ---
 
-## 5. Test Cases for Validation (APXV1 Baseline)
+## 5. Test Cases for Validation (APXV Baseline)
 
 These cases can be used to verify that an agent correctly implements the rule + workflow:
 
-1. Input with no sensitive data → "No redactions applied per APX-RULE-001."
+1. Input with no sensitive data → "No redactions applied per APXV-RULE-001."
 2. Input with one email only.
 3. Input with overlapping patterns (email inside a sentence with a phone number).
 4. Input containing already-redacted markers.
@@ -89,6 +89,6 @@ These cases can be used to verify that an agent correctly implements the rule + 
 
 ---
 
-**End of Knowledge APX-KB-001**
+**End of Knowledge APXV-KB-001**
 
-This knowledge base, combined with rule1.md and workflow1.md, forms the complete active specification for redaction behavior in APXV1.
+This knowledge base, combined with rule1.md and workflow1.md, forms the complete active specification for redaction behavior in APXV.

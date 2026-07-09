@@ -1,13 +1,13 @@
 # Pack acceptance — AI Governance Pack
 
 **Pack:** `apxv-pack-ai-governance` v0.1.0  
-**Requires:** APXV1 v1.2.0+
+**Requires:** APXV v1.2.0+
 
 ## Install verification
 
 - [ ] `pack.yaml` version recorded
 - [ ] Governance applied via propose → approve → apply (optional for demo on default specs)
-- [ ] `python -m scripts.apx_doctor` → HEALTHY
+- [ ] `python -m scripts.apxv_doctor` → HEALTHY
 
 ## Functional demo
 

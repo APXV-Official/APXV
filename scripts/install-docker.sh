@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# APXV1 — Docker-only onboarding (no local Python or Rust required).
+# APXV — Docker-only onboarding (no local Python or Rust required).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -11,7 +11,7 @@ if [[ "${1:-}" == "--fresh" ]]; then
 fi
 
 echo "============================================================"
-echo "APXV1 Docker onboarding (v1.2.5)"
+echo "APXV Docker onboarding (v1.3.0)"
 echo "Requires: Docker + Docker Compose"
 echo "============================================================"
 
@@ -32,7 +32,7 @@ fi
 reset_apx_fresh_runtime() {
   local dirs=(
     managed/artifacts managed/audit managed/backups managed/config managed/store
-    rust/apx-circuits/keys rust/apx-zk/keys
+    rust/apxv-circuits/keys rust/apxv-zk/keys
   )
   for d in "${dirs[@]}"; do
     if [[ -e "$d" ]]; then
@@ -74,47 +74,30 @@ ensure_governance_templates
 
 if command -v ss >/dev/null 2>&1; then
   if ss -ltn 2>/dev/null | grep -q ':8741 '; then
-    echo "Port 8741 in use — stopping any existing apx-v1 container..."
+    echo "Port 8741 in use — stopping any existing apxv container..."
     "${COMPOSE[@]}" down || true
   fi
 fi
 
-seed_zk_keys_from_image() {
-  local circuits_keys="rust/apx-circuits/keys"
-  local zk_keys="rust/apx-zk/keys"
-  local circuits_empty=0 zk_empty=0
-  if [[ ! -d "$circuits_keys" ]] || [[ -z "$(ls -A "$circuits_keys" 2>/dev/null)" ]]; then
-    circuits_empty=1
-  fi
-  if [[ ! -d "$zk_keys" ]] || [[ -z "$(ls -A "$zk_keys" 2>/dev/null)" ]]; then
-    zk_empty=1
-  fi
-  if [[ "$circuits_empty" -eq 0 && "$zk_empty" -eq 0 ]]; then
-    return 0
-  fi
-
-  echo "Seeding ZK keys from image (volume mounts hide baked-in keys)..."
-  mkdir -p rust/apx-circuits rust/apx-zk
-  cid="$(docker create apx-v1:latest)"
-  docker cp "${cid}:/app/rust/apx-circuits/keys" rust/apx-circuits/
-  docker cp "${cid}:/app/rust/apx-zk/keys" rust/apx-zk/
-  docker rm "$cid" >/dev/null
-}
-
-echo "[1/3] Building image (Rust + Python + ZK keys — may take several minutes)..."
+echo "[1/4] Building image (Rust + Python — no vendor keys in image)..."
 "${COMPOSE[@]}" build
-seed_zk_keys_from_image
 
-echo "[2/3] Onboarding in container (pack demo, attest, verify)..."
-"${COMPOSE[@]}" run --rm apx-v1 python -m scripts.onboard --skip-zk
+echo "[2/4] Sovereign bootstrap (generates ZK keys on host volumes)..."
+echo "      First run may take several minutes (11-circuit trusted setup)."
+"${COMPOSE[@]}" run --rm apxv python -m scripts.apxv_bootstrap \
+  --skip-ollama --skip-voice --skip-smoke --skip-prover-build
 
-echo "[3/3] Starting API server..."
+echo "[3/4] Pack demo + attest + verify..."
+"${COMPOSE[@]}" run --rm apxv python -m scripts.onboard --skip-setup
+
+echo "[4/4] Starting API server..."
 docker rm -f apx-v1 2>/dev/null || true
+docker rm -f apxv 2>/dev/null || true
 "${COMPOSE[@]}" up -d
 
 echo "============================================================"
 echo "Docker onboarding complete."
 echo "  Health:  curl http://127.0.0.1:8741/health"
-echo "  Logs:    docker logs apx-v1"
+echo "  Logs:    docker logs apxv"
 echo "  Stop:    docker compose down"
 echo "============================================================"

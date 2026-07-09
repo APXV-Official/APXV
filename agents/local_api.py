@@ -1,5 +1,5 @@
 """
-APX v1 — Local HTTP API (Phase 4 / Step 1)
+APXV — Local HTTP API (Phase 4 / Step 1)
 
 Stdlib-only HTTP server bound to localhost.
 Air-gapped: no outbound network, no external dependencies.
@@ -11,17 +11,18 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 import json
-import os
 import threading
 import time
 import traceback
 
+from .api_v2 import ApiV2Router
 from .auth import APIKeyAuth
+from .env import get_env
 from .backup_restore import BackupRestoreError
 from .governance_approval import GovernanceApprovalError
 from .job_queue import JobQueue
 from .pipeline_service import execute_job_payload
-from .runtime import APXRuntime
+from .runtime import APXVRuntime
 
 
 DEFAULT_SERVER_CONFIG = {
@@ -39,7 +40,7 @@ def validate_localhost_bind(bind_address: str) -> str:
     """Reject non-localhost binds — APX local API is air-gap safe by design."""
     normalized = bind_address.strip().lower()
     allowed = set(LOCALHOST_BIND_ADDRESSES)
-    if os.environ.get("APX_CONTAINER_BIND") == "1":
+    if get_env("APXV_CONTAINER_BIND") == "1":
         allowed.add("0.0.0.0")
     if normalized not in allowed:
         raise ValueError(
@@ -55,7 +56,7 @@ class JobWorker:
     def __init__(
         self,
         queue: JobQueue,
-        runtime: APXRuntime,
+        runtime: APXVRuntime,
         max_retries: int = 1,
         poll_seconds: float = 1.0,
     ):
@@ -103,7 +104,7 @@ def _load_server_config(base_path: Path) -> Dict[str, Any]:
 
 
 def create_handler(
-    runtime: APXRuntime,
+    runtime: APXVRuntime,
     auth: APIKeyAuth,
     queue: JobQueue,
     server_config: Dict[str, Any],
@@ -113,7 +114,7 @@ def create_handler(
     handler_queue = queue
     handler_require_auth = server_config.get("require_auth", True)
 
-    class APXHandler(BaseHTTPRequestHandler):
+    class APXVHandler(BaseHTTPRequestHandler):
         runtime = handler_runtime
         auth = handler_auth
         queue = handler_queue
@@ -138,15 +139,27 @@ def create_handler(
         def _check_auth(self) -> bool:
             if not self.require_auth:
                 return True
-            self.auth.reload()
             key = self.auth.extract_key_from_headers(self._headers_dict())
             return self.auth.validate(key)
 
         def _send(self, status: int, payload: Dict[str, Any]) -> None:
             body = json.dumps(payload, indent=2).encode("utf-8")
             self.send_response(status)
+            self.send_header("Deprecation", "true")
+            self.send_header("Sunset", "v1.4")
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(body)))
+            origin = self.headers.get("Origin", "")
+            allowed = ("http://127.0.0.1:5173", "http://localhost:5173")
+            if origin in allowed:
+                self.send_header("Access-Control-Allow-Origin", origin)
+            else:
+                self.send_header("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+            self.send_header(
+                "Access-Control-Allow-Headers",
+                "Authorization, Content-Type, APXV-API-KEY, X-APX-API-Key, Accept",
+            )
             self.end_headers()
             self.wfile.write(body)
 
@@ -156,7 +169,29 @@ def create_handler(
         def _not_found(self) -> None:
             self._send(404, {"error": "not_found"})
 
+        def _dispatch_v2(self, method: str) -> bool:
+            return ApiV2Router(self).dispatch(method)
+
+        def do_OPTIONS(self) -> None:
+            self.send_response(204)
+            origin = self.headers.get("Origin", "")
+            allowed = ("http://127.0.0.1:5173", "http://localhost:5173")
+            if origin in allowed:
+                self.send_header("Access-Control-Allow-Origin", origin)
+            else:
+                self.send_header("Access-Control-Allow-Origin", "http://127.0.0.1:5173")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+            self.send_header(
+                "Access-Control-Allow-Headers",
+                "Authorization, Content-Type, APXV-API-KEY, X-APX-API-Key, Accept",
+            )
+            self.send_header("Access-Control-Max-Age", "86400")
+            self.end_headers()
+
         def do_GET(self) -> None:
+            if self._dispatch_v2("GET"):
+                return
+
             path = self.path.split("?", 1)[0]
 
             if path == "/health":
@@ -166,6 +201,7 @@ def create_handler(
                     {
                         "status": "healthy" if integrity["healthy"] else "degraded",
                         "air_gapped": True,
+                        "sovereign_setup": integrity.get("sovereign_setup", False),
                         "integrity": integrity,
                     },
                 )
@@ -237,6 +273,9 @@ def create_handler(
             self._not_found()
 
         def do_POST(self) -> None:
+            if self._dispatch_v2("POST"):
+                return
+
             if not self._check_auth():
                 self._unauthorized()
                 return
@@ -336,24 +375,25 @@ def create_handler(
             except Exception as exc:
                 self._send(500, {"error": "pipeline_failed", "message": str(exc)})
 
-    return APXHandler
+        def do_DELETE(self) -> None:
+            if self._dispatch_v2("DELETE"):
+                return
+            self._not_found()
+
+    return APXVHandler
 
 
-class APXLocalServer:
+class APXVLocalServer:
     """Local governed API server."""
 
     def __init__(self, base_path: Optional[Path] = None):
         self.base_path = Path(base_path) if base_path else Path(__file__).parent.parent
-        self.runtime = APXRuntime(base_path=self.base_path)
+        self.runtime = APXVRuntime(base_path=self.base_path)
         self.config = _load_server_config(self.base_path)
 
         config_dir = self.base_path / "managed" / "config"
         self.auth = APIKeyAuth(config_dir / "api_keys.json")
         self.generated_key = self.auth.ensure_default_key()
-        if self.generated_key:
-            APIKeyAuth.write_key_hint(
-                self.base_path, "default-operator", self.generated_key
-            )
 
         jobs_db = self.base_path / "managed" / "store" / "jobs.db"
         self.queue = JobQueue(jobs_db)
@@ -362,6 +402,9 @@ class APXLocalServer:
         bind = validate_localhost_bind(self.config.get("bind_address", "127.0.0.1"))
         port = int(self.config.get("port", 8741))
         self.httpd = ThreadingHTTPServer((bind, port), handler)
+        if port == 0:
+            _, assigned = self.httpd.server_address
+            self.config["port"] = assigned
 
         self.worker = JobWorker(
             queue=self.queue,
@@ -386,3 +429,7 @@ class APXLocalServer:
         finally:
             self.worker.stop()
             self.httpd.server_close()
+
+
+# v1.3.x compat — removed in v1.4
+APXLocalServer = APXVLocalServer

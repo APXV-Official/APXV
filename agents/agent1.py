@@ -1,20 +1,20 @@
 """
-APX v1 — Agent 1: RuleGovernedRedactor
+APXV — Agent 1: RuleGovernedRedactor
 
-This is the first of the three small agents in the APX v1 minimal implementation.
+This is the first of the three small agents in the APXV minimal implementation.
 
 Purpose:
 - Demonstrate an agent that actively reads its behavioral rules, workflow, and knowledge
   from living markdown files at runtime (the core APX managed agents concept).
-- Strictly follow APX-WF-001 (Rule-Governed Text Processing & Attestation).
-- Apply redactions exactly as defined in APX-RULE-001.
-- Use APX-KB-001 for examples and edge case guidance.
+- Strictly follow APXV-WF-001 (Rule-Governed Text Processing & Attestation).
+- Apply redactions exactly as defined in APXV-RULE-001.
+- Use APXV-KB-001 for examples and edge case guidance.
 - Produce a structured, auditable output ready for artifact creation and attestation.
 
-This agent is intentionally simple and self-contained for the tiny APX v1 scope.
+This agent is intentionally simple and self-contained for the tiny APXV scope.
 It uses the MinimalArtifactProvider for all governed markdown access.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from pathlib import Path
@@ -40,7 +40,7 @@ class RuleGovernedRedactor:
     """
 
     def __init__(self, base_path: Path = None, runtime: "APXRuntime" = None):
-        self.agent_id = "APX-AGENT-001"
+        self.agent_id = "APXV-AGENT-001"
         self.agent_name = "RuleGovernedRedactor"
         ctx = init_agent_context(
             agent_id=self.agent_id,
@@ -85,34 +85,34 @@ class RuleGovernedRedactor:
         # Store raw + basic parsed metadata
         self.rule_set = {
             "raw": rule_raw,
-            "id": "APX-RULE-001",
+            "id": "APXV-RULE-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(rule_raw.encode()).hexdigest(),
         }
 
         self.workflow = {
             "raw": workflow_raw,
-            "id": "APX-WF-001",
+            "id": "APXV-WF-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(workflow_raw.encode()).hexdigest(),
         }
 
         self.knowledge = {
             "raw": knowledge_raw,
-            "id": "APX-KB-001",
+            "id": "APXV-KB-001",
             "version": "1.0.0",
             "file_hash": hashlib.sha256(knowledge_raw.encode()).hexdigest(),
         }
 
     def _apply_redactions(self, text: str) -> Dict[str, Any]:
-        """Apply redactions strictly according to APX-RULE-001."""
+        """Apply redactions strictly according to APXV-RULE-001."""
         return self.redaction_engine.apply(text)
 
     def process_text(self, input_text: str) -> Dict[str, Any]:
         """
         Main entry point for the agent.
 
-        Follows APX-WF-001 as closely as possible within the current scope.
+        Follows APXV-WF-001 as closely as possible within the current scope.
         """
         # Step 1: Load active specifications (must re-read every time)
         self.load_specifications()
@@ -150,7 +150,7 @@ class RuleGovernedRedactor:
 
         # Step 5 & 6 (simulated for now):
         # In a fuller implementation these would write an artifact and request attestation.
-        # For APX v1 tiny scope we return everything needed for those later steps.
+        # For APXV tiny scope we return everything needed for those later steps.
 
         return output
 

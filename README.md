@@ -2,24 +2,23 @@
 
 [![CI](https://github.com/APXV-Official/APXV/actions/workflows/ci.yml/badge.svg)](https://github.com/APXV-Official/APXV/actions/workflows/ci.yml)
 
-**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV1**, the first open-source implementation.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV**, the first open-source implementation.
 
-> **Current release:** [v1.2.5](https://github.com/APXV-Official/APXV/releases/tag/v1.2.5) — final v1.2.x consolidation (install polish, demo hardening, dev warnings). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
+> **Current release:** [v1.3.0](https://github.com/APXV-Official/APXV/releases/tag/v1.3.0) — sovereign local trust, Pack Studio, operator UI, API v2. [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
 
-Clone the repo, run one command, and you get a working instance: setup, health checks, the reference pack pipeline, a full attestation, and independent ZK verification. Everything stays on your machine.
+Install APXV on your machine. Your instance generates **your** proving keys, runs governed pipelines, and produces proofs you can verify locally. No vendor keys in Docker images; no cloud trust boundary.
 
-## One command
+## Install paths
 
-Pick the path that matches your machine:
-
-| You have | Command |
-|----------|---------|
-| **Python 3.9+ and Rust** | `.\scripts\install.ps1` (Windows) or `./scripts/install.sh` (macOS/Linux) |
-| **Docker only** (no local Python/Rust) | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` |
+| Path | Who | Action |
+|------|-----|--------|
+| **Desktop** | Individual operators | [Download MSI / Linux installer](docs/INSTALL-USER.md) from [Releases](https://github.com/APXV-Official/APXV/releases) |
+| **Docker** | Teams, no local Rust | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` |
+| **Native** | Contributors | `.\scripts\install-full.ps1` or `./scripts/install-full.sh` |
 
 Polluted from prior experiments? Add `-Fresh` (PowerShell) or `--fresh` (shell).
 
-**What it runs:** `setup` → doctor → integrity → **Reference Redaction Pack** → `run_apx --attest` → `verify_attestation --real-zk`
+**What it runs:** `apxv_bootstrap` (sovereign ZK) → doctor → integrity → **Reference Redaction Pack** → `run_apxv --attest` → `verify_attestation --real-zk`
 
 **You should see:**
 
@@ -28,13 +27,13 @@ Pack demo complete: final_status=ATTESTED, total_redactions=4
 ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]
 ```
 
-First native install may take a few minutes (Rust compile). Docker build is slower once, then cached.
+First native install with sovereign bootstrap typically takes **20–60 minutes** (Rust compile plus 11-circuit ZK setup). Docker build is slower once, then cached.
 
 Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
 
 **Linux / WSL:** use `python3` or activate `.venv/bin/activate` if `python` is not on PATH.
 
-**API key:** printed once at onboard, saved to `managed/config/OPERATOR-KEY-default-operator.txt`, or create with `python -m scripts.apx_ctl api-key create my-app --save-hint`.
+**API key:** printed once at onboard, saved to `managed/config/OPERATOR-KEY-default-operator.txt`, or create with `python -m scripts.apxv_ctl api-key create my-app --save-hint`.
 
 Details: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
@@ -44,21 +43,37 @@ Details: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
 | Platform | Command |
 |----------|---------|
-| **Windows** | `.\scripts\apx_demo.ps1` |
-| **macOS / Linux / WSL** | `./scripts/apx_demo.sh` |
+| **Windows** | `.\scripts\apxv_demo.ps1` |
+| **macOS / Linux / WSL** | `./scripts/apxv_demo.sh` |
 
 Pick a pack (v1.2 adds document batch + AI governance):
 
 ```bash
-./scripts/apx_demo.sh --pack reference   # default — same as onboarding
-./scripts/apx_demo.sh --pack document    # batch .txt/.json, compliance policy 2
-./scripts/apx_demo.sh --pack ai          # LLMReasoner review, compliance policy 4
-./scripts/apx_demo.sh --pack all         # all three pack demos, then attest + verify
+./scripts/apxv_demo.sh --pack reference   # default — same as onboarding
+./scripts/apxv_demo.sh --pack document    # batch .txt/.json, compliance policy 2
+./scripts/apxv_demo.sh --pack ai          # LLMReasoner review, compliance policy 4
+./scripts/apxv_demo.sh --pack all         # all three pack demos, then attest + verify
 ```
 
-Equivalent: `python -m scripts.apx_demo --pack document`
+Equivalent: `python -m scripts.apxv_demo --pack document`
 
 On success you get `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]` plus the **artifact path** under `managed/artifacts/`.
+
+## Operator UI (v1.3+)
+
+With sovereign bootstrap done and the API running:
+
+```bash
+# Terminal 1 — runtime
+python -m scripts.apxv_serve
+
+# Terminal 2 — UI (from ui/ in the full monorepo checkout)
+cd ui && pnpm install && pnpm dev
+```
+
+Open http://localhost:5173 → paste operator API key → **Dashboard**, **Agent packs**, **Pipeline**, **Jobs**, **Verify**.
+
+Docs: [ui/docs/OPERATOR-GUIDE.md](ui/docs/OPERATOR-GUIDE.md) · Pack index: [docs/PACK-CATALOG.md](docs/PACK-CATALOG.md) · Tutorial: [docs/BUILD-YOUR-FIRST-PACK.md](docs/BUILD-YOUR-FIRST-PACK.md)
 
 **Fresh machine, Docker only** (~5 minutes after the first image build):
 
@@ -71,7 +86,7 @@ No local Python or Rust required. See [docs/DOCKER.md](docs/DOCKER.md).
 
 ## The foundation
 
-APXV1 is a **runtime you build on** — not a finished end-user product. The core repo gives you:
+APXV is a **runtime you build on** — not a finished end-user product. The core repo gives you:
 
 | Capability | What it means |
 |------------|---------------|
@@ -89,7 +104,7 @@ The **3-agent reference pipeline** (redactor → orchestrator → attestation co
 
 ## Agent packs — extend the foundation
 
-A **pack** is a vertical bundle on top of APXV1: governance specs, install steps, a runnable acceptance path, capability notes, and an acceptance checklist. You install only what you need; multiple packs can share one runtime.
+A **pack** is a vertical bundle on top of APXV: governance specs, install steps, a runnable acceptance path, capability notes, and an acceptance checklist. You install only what you need; multiple packs can share one runtime.
 
 **Packs are not the platform.** The platform is the runtime (store, audit, capabilities, ZK, API). A pack is how you turn that runtime into something specific — e.g. governed redaction.
 
@@ -103,12 +118,12 @@ A **pack** is a vertical bundle on top of APXV1: governance specs, install steps
 | [AI governance template](governance-libraries/ai-governance-template/) | **Template** | Starter markdown only — copy into `managed/` and customize. Prefer the AI Governance Pack for a full install path. |
 | [governance-libraries/](governance-libraries/) | **Index** | Packs vs templates — read before assuming something is a full pack |
 
-The Reference Redaction Pack agents ship in **APXV1 core** (`agents/agent1.py` … `agent3.py`). The pack provides the **governance bundle** that binds those agents to a real vertical — not duplicate agent code.
+The Reference Redaction Pack agents ship in **APXV core** (`agents/agent1.py` … `agent3.py`). The pack provides the **governance bundle** that binds those agents to a real vertical — not duplicate agent code.
 
 ### How packs fit in
 
 ```
-APXV1 core (this repo)          Agent pack (e.g. reference redaction)
+APXV core (this repo)          Agent pack (e.g. reference redaction)
 ─────────────────────────       ─────────────────────────────────────
 Runtime, audit, store, ZK  +    Rules / workflows / knowledge
 3-agent pipeline pattern   +    Install + acceptance + capability notes
@@ -127,7 +142,7 @@ Capability framework       +    Vertical binding for that use case
 | Local LLM (Ollama) | [examples/llm-ollama/](examples/llm-ollama/) |
 | New vertical / community pack | BUILDING.md + pack layout in [governance-libraries/README.md](governance-libraries/README.md) |
 
-**Direction:** [ROADMAP.md](ROADMAP.md) — pack catalog through v1.3, then a local control plane UI.
+**Direction:** [ROADMAP.md](ROADMAP.md) — v1.3 ships Pack Studio and the operator console; v1.4 adds composition depth.
 
 ## What it does not do
 
@@ -140,24 +155,22 @@ See [SECURITY.md](SECURITY.md) for the full threat model.
 
 ## Verify without re-running
 
-**Verifier bundle (VKs only):** [GitHub Releases](https://github.com/APXV-Official/APXV/releases) (`apxv1-verifier-bundle` — VKs unchanged since v1.1.0), or export your own after `setup_first_run`:
+Export **your** verification keys after sovereign bootstrap:
 
 ```bash
-python -m scripts.export_verifier_bundle --out dist/apxv1-verifier-bundle
+python -m scripts.export_verifier_bundle --out dist/apxv-verifier-bundle
 ```
 
 | You want to… | Trust |
 |--------------|-------|
-| Run APXV1 yourself (`setup_first_run`, your keys) | **Yourself** |
-| Verify artifacts from a published release | **Publisher's setup** for those VKs (proof math is self-checking; setup honesty is separate) |
+| Run APXV yourself (`apxv_bootstrap`, your keys) | **Your deployment** |
+| Verify artifacts from another operator | **Their** exported verifier bundle (proof math is self-checking; setup honesty is separate) |
 
-See [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
-
-Reference Groth16 `.pk`/`.vk` files ship in the repository so install → attest works out of the box. For your own trust boundary, run `setup_first_run` and protect your proving keys — see [SECURITY.md](SECURITY.md) and [docs/cryptography/SETUP.md](docs/cryptography/SETUP.md).
+Circuit semantics unchanged since v1.1.0 — each operator still runs their own ceremony. See [docs/SOVEREIGN-SETUP.md](docs/SOVEREIGN-SETUP.md) and [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
 
 ## Status
 
-**v1.2.5 (current)** — final v1.2.x consolidation: Windows Docker second-install fix (F-018), document pack demo fixture isolation, `APX_DEV_WARNINGS` for BYO backends, `verify_attestation` CLI hygiene, Linux `python3` doc pass. Builds on v1.2.2 (audit diagnostics, install parity), v1.2.1, and v1.2.0. Prior releases: [CHANGELOG.md](CHANGELOG.md).
+**v1.3.0 (current release)** — sovereign local trust, platform rename (`apxv`), API v2, Pack Studio, desktop app (Windows + Linux), operator UI, agent registry. Migration: [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md). Prior line: **v1.2.5**. Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 
@@ -168,7 +181,7 @@ flowchart TB
     Approval[propose → approve → apply]
   end
 
-  subgraph runtime [APXV1 Runtime]
+  subgraph runtime [APXV Runtime]
     API[Local API :8741]
     Cap[Signed capabilities]
     Redact[RedactionEngine v3]
@@ -178,8 +191,8 @@ flowchart TB
   end
 
   subgraph crypto [Attestation]
-    ZKA[Governance ZK — apx-circuits]
-    ZKB[Entity ZK — apx-zk]
+    ZKA[Governance ZK — apxv-circuits]
+    ZKB[Entity ZK — apxv-zk]
     Verify[Independent verify]
   end
 
@@ -210,7 +223,10 @@ See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for repository layout and compone
 
 | Doc | Purpose |
 |-----|---------|
+| [docs/SOVEREIGN-SETUP.md](docs/SOVEREIGN-SETUP.md) | Local trust model, backup, verify keys |
+| [docs/INSTALL-USER.md](docs/INSTALL-USER.md) | Desktop MSI / Linux installers |
 | [docs/QUICKSTART.md](docs/QUICKSTART.md) | Install, troubleshoot, re-run onboarding |
+| [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md) | Upgrade from v1.2.x + sovereign changes |
 | [docs/BUILDING.md](docs/BUILDING.md) | Custom agents, API, LLMs, deployment |
 | [governance-libraries/](governance-libraries/) | Official packs and templates |
 | [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) | Repository layout and architecture |
@@ -232,16 +248,16 @@ curl http://127.0.0.1:8741/health
 ## Backup
 
 ```bash
-python -m scripts.apx_ctl backup-create
+python -m scripts.apxv_ctl backup-create
 ```
 
-Back up `managed/`, `rust/apx-circuits/keys/`, and `rust/apx-zk/keys/` regularly.
+Back up `managed/`, `rust/apxv-circuits/keys/`, and `rust/apxv-zk/keys/` regularly.
 
 ## Support
 
-APXV1 is open source (Apache 2.0).
+APXV is open source (Apache 2.0).
 
-- **Bugs and how-to:** [GitHub Issues](https://github.com/APXV-Official/APXV/issues) — include `python -m scripts.apx_doctor` output
+- **Bugs and how-to:** [GitHub Issues](https://github.com/APXV-Official/APXV/issues) — include `python -m scripts.apxv_doctor` output
 - **Security:** [SECURITY.md](SECURITY.md) — do not post vulnerabilities in public issues
 - **Contact:** [@APXVdev](https://github.com/APXVdev) · [APXVdev@protonmail.com](mailto:APXVdev@protonmail.com)
 
@@ -249,9 +265,9 @@ Community support is best-effort. Start with [docs/QUICKSTART.md](docs/QUICKSTAR
 
 ## Attribution
 
-**APXV** is the platform; **APXV1** is the implementation line shipped from this repository. Neither is a registered trademark. If you build on APXV1, we appreciate (but do not require) a credit such as:
+**APXV** is not a registered trademark. If you build on APXV, we appreciate (but do not require) a credit such as:
 
-**Built with [APXV / APXV1](https://github.com/APXV-Official/APXV)** — *Attested Proof Execution Verified*
+**Built with [APXV](https://github.com/APXV-Official/APXV)** — *Attested Proof Execution Verified*
 
 Please do not imply your project is an official APXV product unless you have a separate agreement with the maintainer.
 

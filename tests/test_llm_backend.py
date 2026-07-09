@@ -46,6 +46,6 @@ def test_llm_reasoner_with_simulated_backend(tmp_path):
         backend=SimulatedLLMBackend(),
     )
     output = agent.execute({"prompt": "review this for release"})
-    assert output.agent_id == "APX-AGENT-LLM-001"
+    assert output.agent_id == "APXV-AGENT-LLM-001"
     assert output.decision in ("APPROVED", "REJECTED", "REVIEW_REQUIRED")
     assert output.reasoning_summary

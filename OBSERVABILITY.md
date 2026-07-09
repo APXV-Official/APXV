@@ -1,8 +1,8 @@
-# APXV1 — Observability Guide (BYO / DIY)
+# APXV — Observability Guide (BYO / DIY)
 
-APXV1 is designed to be **privacy-respecting and minimal by default**. It does **not** include built-in metrics collection or external telemetry.
+APXV is designed to be **privacy-respecting and minimal by default**. It does **not** include built-in metrics collection or external telemetry.
 
-However, APXV1 provides structured JSON logs that make it easy for users to integrate their own observability stack if desired.
+However, APXV provides structured JSON logs that make it easy for users to integrate their own observability stack if desired.
 
 ---
 
@@ -17,7 +17,7 @@ Example log entry:
   "timestamp": "2026-06-10T12:34:56.789Z",
   "event_type": "llm_reasoner_executed",
   "data": {
-    "agent_id": "APX-AGENT-LLM-001",
+    "agent_id": "APXV-AGENT-LLM-001",
     "decision": "APPROVED",
     "confidence": 0.85,
     "cost_usd": 0.003,
@@ -34,7 +34,7 @@ These logs are written to `managed/audit/*.log`.
 
 ## 2. Integrating with Common Observability Tools
 
-### Loki + Grafana (Recommended for APXV1)
+### Loki + Grafana (Recommended for APXV)
 
 1. Point Loki to the `managed/audit/` directory (or forward the logs via Promtail).
 2. Use a simple Promtail scrape config to parse JSON lines.
@@ -63,7 +63,7 @@ These logs are written to `managed/audit/*.log`.
 
 ## 3. Optional Helper Module (DIY)
 
-For users who want a simpler starting point, APXV1 includes an optional helper:
+For users who want a simpler starting point, APXV includes an optional helper:
 
 ```python
 from agents.observability import get_log_metrics, export_to_prometheus
@@ -85,10 +85,10 @@ This module is **completely optional** and not required for normal operation.
 
 ## 5. Recommendation
 
-For most users, the structured JSON logs + an external log aggregation tool (Loki, ELK, etc.) is sufficient and keeps APXV1 lightweight.
+For most users, the structured JSON logs + an external log aggregation tool (Loki, ELK, etc.) is sufficient and keeps APXV lightweight.
 
 Only enable or build additional metrics if you have a specific operational need.
 
 ---
 
-*This approach keeps APXV1 minimal while still supporting advanced observability for those who need it.*
+*This approach keeps APXV minimal while still supporting advanced observability for those who need it.*

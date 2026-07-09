@@ -44,7 +44,7 @@ def test_apx_ctl_integrity_chain_break_hint(tmp_path: Path):
     lines[0] = json.dumps(entry, sort_keys=True)
     log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    result = _run_cli("scripts.apx_ctl", "integrity", f"--base-path={tmp_path}")
+    result = _run_cli("scripts.apxv_ctl", "integrity", f"--base-path={tmp_path}")
 
     assert result.returncode == 1
     assert "FAILED" in result.stdout
@@ -61,7 +61,7 @@ def test_apx_ctl_integrity_corrupt_lines_hint(tmp_path: Path):
     with log_path.open("a", encoding="utf-8") as f:
         f.write("{bad-json\n")
 
-    result = _run_cli("scripts.apx_ctl", "integrity", f"--base-path={tmp_path}")
+    result = _run_cli("scripts.apxv_ctl", "integrity", f"--base-path={tmp_path}")
 
     assert result.returncode == 1
     assert "corrupt_lines" in result.stdout
@@ -76,7 +76,7 @@ def test_apx_doctor_corrupt_lines_hint(tmp_path: Path):
     with log_path.open("a", encoding="utf-8") as f:
         f.write("{bad-json\n")
 
-    result = _run_cli("scripts.apx_doctor", f"--base-path={tmp_path}")
+    result = _run_cli("scripts.apxv_doctor", f"--base-path={tmp_path}")
 
     assert result.returncode == 1
     assert "NEEDS ATTENTION" in result.stdout
@@ -96,7 +96,7 @@ def test_apx_doctor_chain_break_hint(tmp_path: Path):
     lines[0] = json.dumps(entry, sort_keys=True)
     log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-    result = _run_cli("scripts.apx_doctor", f"--base-path={tmp_path}")
+    result = _run_cli("scripts.apxv_doctor", f"--base-path={tmp_path}")
 
     assert result.returncode == 1
     assert "NEEDS ATTENTION" in result.stdout

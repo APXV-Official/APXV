@@ -1,6 +1,6 @@
-# APXV1 — Knowledge Base DOC: Batch Documents & Compliance Policies
+# APXV — Knowledge Base DOC: Batch Documents & Compliance Policies
 
-**Knowledge ID:** APX-KB-DOC-001  
+**Knowledge ID:** APXV-KB-DOC-001  
 **Version:** 0.1.0  
 **Effective Date:** 2026-06-28
 

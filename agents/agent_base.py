@@ -1,5 +1,5 @@
 """
-APX v1 — Shared agent runtime wiring (Phase 2)
+APXV — Shared agent runtime wiring (Phase 2)
 """
 
 from __future__ import annotations
@@ -16,9 +16,9 @@ if TYPE_CHECKING:
 
 
 DEFAULT_AGENT_CAPABILITIES = {
-    "APX-AGENT-001": ["read_specification", "write_artifact", "execute_agent"],
-    "APX-AGENT-002": ["read_specification", "write_artifact", "execute_agent"],
-    "APX-AGENT-003": ["read_specification", "write_artifact", "execute_agent", "verify_attestation"],
+    "APXV-AGENT-001": ["read_specification", "write_artifact", "execute_agent"],
+    "APXV-AGENT-002": ["read_specification", "write_artifact", "execute_agent"],
+    "APXV-AGENT-003": ["read_specification", "write_artifact", "execute_agent", "verify_attestation"],
 }
 
 

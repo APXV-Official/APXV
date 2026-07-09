@@ -1,5 +1,5 @@
 """
-APX v1 — Capability-Based Access Control (Phase 2 + Step 2)
+APXV — Capability-Based Access Control (Phase 2 + Step 2)
 
 Capabilities define what an agent is allowed to do. Grants are loaded from a
 signed, versioned policy document. Unsigned or tampered policies are rejected.
@@ -13,6 +13,7 @@ import json
 
 from .audit_logger import AuditLogger
 from .capability_policy import CapabilityPolicyError, CapabilityPolicyManager
+from .id_compat import agent_id_variants
 
 
 CAPABILITIES = {
@@ -179,7 +180,10 @@ class CapabilityChecker:
             )
             return False
 
-        has_cap = capability in self._agent_capabilities.get(agent_id, set())
+        caps: Set[str] = set()
+        for variant in agent_id_variants(agent_id):
+            caps.update(self._agent_capabilities.get(variant, set()))
+        has_cap = capability in caps
         self.audit_logger.log_event(
             event_type="capability_check",
             data={
@@ -201,7 +205,10 @@ class CapabilityChecker:
             )
 
     def get_agent_capabilities(self, agent_id: str) -> Set[str]:
-        return self._agent_capabilities.get(agent_id, set()).copy()
+        caps: Set[str] = set()
+        for variant in agent_id_variants(agent_id):
+            caps.update(self._agent_capabilities.get(variant, set()))
+        return caps.copy()
 
     def get_status(self) -> Dict[str, Any]:
         policy_status = self.policy_manager.get_status()

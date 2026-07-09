@@ -1,8 +1,8 @@
 """
-APX v1 — Entity ZK Circuit Setup (Phase 3)
+APXV — Entity ZK Circuit Setup (Phase 3)
 
-Runs one-time honest trusted setup for all 8 entity Groth16 circuits in apx-zk.
-Keys persist under rust/apx-zk/keys/ with a separate entity-manifest.json.
+Runs one-time honest trusted setup for all 8 entity Groth16 circuits in apxv-zk.
+Keys persist under rust/apxv-zk/keys/ with a separate entity-manifest.json.
 """
 
 from pathlib import Path
@@ -21,7 +21,7 @@ from .rust_bins import build_apx_zk_command
 def ensure_entity_zk_setup(base_path: Path | None = None, force: bool = False) -> dict:
     base = base_path or Path(__file__).parent.parent
     rust_dir = base / "rust"
-    crate_dir = rust_dir / "apx-zk"
+    crate_dir = rust_dir / "apxv-zk"
     manifest = rust_dir / "Cargo.toml"
     keys_dir = crate_dir / "keys"
 

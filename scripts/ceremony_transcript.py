@@ -1,5 +1,5 @@
 """
-APXV1 — ZK ceremony transcript (Tier A/B transparency).
+APXV — ZK ceremony transcript (Tier A/B transparency).
 
 Aggregates governance + entity key manifests into a signed, verifiable document.
 """
@@ -152,7 +152,7 @@ def write_transcript(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="APXV1 ZK ceremony transcript")
+    parser = argparse.ArgumentParser(description="APXV ZK ceremony transcript")
     parser.add_argument("--base-path", type=Path, default=ROOT)
     parser.add_argument("--write", action="store_true", help="Generate transcript from current manifests")
     parser.add_argument("--verify", action="store_true", help="Verify transcript against on-disk manifests")

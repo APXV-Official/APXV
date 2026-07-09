@@ -1,5 +1,5 @@
 """
-APX v1 — Local API Key Authentication (Phase 4 / Step 1)
+APXV — Local API Key Authentication (Phase 4 / Step 1)
 
 Air-gapped operator authentication using hashed keys in local config.
 No external identity provider required.
@@ -34,10 +34,6 @@ class APIKeyAuth:
         data = json.loads(self.config_path.read_text(encoding="utf-8"))
         self._keys = data.get("keys", [])
 
-    def reload(self) -> None:
-        """Reload key store from disk (e.g. after apx_ctl api-key create)."""
-        self._load()
-
     def list_keys(self) -> List[Dict[str, Any]]:
         """Return key metadata (never includes raw secrets)."""
         return [
@@ -49,6 +45,25 @@ class APIKeyAuth:
             }
             for entry in self._keys
         ]
+
+    def reload(self) -> None:
+        """Reload key store from disk (e.g. after external updates)."""
+        self._load()
+
+    def revoke_key(self, key_id: str) -> None:
+        """Remove an API key by id. Raises if id missing or last key."""
+        if len(self._keys) <= 1:
+            raise ValueError("Cannot revoke the last API key")
+        if not any(entry.get("id") == key_id for entry in self._keys):
+            raise ValueError(f"API key id not found: {key_id}")
+        remaining = [entry for entry in self._keys if entry.get("id") != key_id]
+        payload = {
+            "version": "1.0.0",
+            "deployment": "local-airgapped",
+            "keys": remaining,
+        }
+        self.config_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        self._keys = remaining
 
     def create_key(
         self,
@@ -91,7 +106,8 @@ class APIKeyAuth:
                     f"API Key: {raw_key}",
                     "",
                     "Usage:",
-                    f'  export APX_API_KEY="{raw_key}"',
+                    f'  export APXV_API_KEY="{raw_key}"',
+                    "  (legacy: APX_API_KEY also accepted)",
                     "  Authorization: Bearer <key>",
                 ]
             ),
@@ -128,11 +144,25 @@ class APIKeyAuth:
     def validate(self, raw_key: Optional[str]) -> bool:
         if not raw_key:
             return False
+        self.reload()
         key_hash = self.hash_key(raw_key)
         return any(entry.get("key_hash") == key_hash for entry in self._keys)
 
+    @staticmethod
+    def _header_value(headers: Dict[str, str], name: str) -> Optional[str]:
+        target = name.lower()
+        for key, value in headers.items():
+            if key.lower() == target and value:
+                return value.strip()
+        return None
+
     def extract_key_from_headers(self, headers: Dict[str, str]) -> Optional[str]:
-        auth = headers.get("Authorization", "")
+        auth = self._header_value(headers, "Authorization") or ""
         if auth.lower().startswith("bearer "):
             return auth[7:].strip()
-        return headers.get("X-APX-API-Key") or headers.get("x-apx-api-key")
+        # Canonical header (APXV branding); legacy alias kept for compatibility.
+        for name in ("APXV-API-KEY", "X-APX-API-Key"):
+            value = self._header_value(headers, name)
+            if value:
+                return value
+        return None

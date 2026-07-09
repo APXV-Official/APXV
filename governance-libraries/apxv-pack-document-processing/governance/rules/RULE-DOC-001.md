@@ -1,16 +1,16 @@
-# APXV1 — Rule Set DOC: Batch Document Redaction
+# APXV — Rule Set DOC: Batch Document Redaction
 
-**Rule ID:** APX-RULE-DOC-001  
+**Rule ID:** APXV-RULE-DOC-001  
 **Version:** 0.1.0  
 **Effective Date:** 2026-06-28  
-**Purpose:** Extend APX-RULE-001 redaction categories to batch `.txt` and `.json` document folders.
+**Purpose:** Extend APXV-RULE-001 redaction categories to batch `.txt` and `.json` document folders.
 
 ---
 
 ## 1. Scope
 
 - Input: a directory of `.txt` plain-text files and `.json` files with a `content`, `text`, `body`, or `message` field.
-- Output: per-file redaction using the same deterministic categories as APX-RULE-001 (email, phone, SSN, card).
+- Output: per-file redaction using the same deterministic categories as APXV-RULE-001 (email, phone, SSN, card).
 - Not in scope: PDF, DOCX, images, or enterprise DLP.
 
 ## 2. Batch requirements
@@ -21,4 +21,4 @@
 
 ## 3. Redaction behavior
 
-Inherit all behavior from APX-RULE-001 (Controlled Redaction). Each file is redacted independently before manifest aggregation.
+Inherit all behavior from APXV-RULE-001 (Controlled Redaction). Each file is redacted independently before manifest aggregation.

@@ -1,5 +1,5 @@
 """
-APX v1 — Local Governed Runtime (Phase 2)
+APXV — Local Governed Runtime (Phase 2)
 
 Unified runtime for air-gapped, self-hosted APX deployments.
 No cloud services, no external network dependencies.
@@ -24,10 +24,11 @@ DEFAULT_RUNTIME_CONFIG = {
     "deployment": "local-airgapped",
     "store_backend": "sqlite+cas",
     "require_network": False,
+    "profile": "production",
 }
 
 
-class APXRuntime:
+class APXVRuntime:
     """
     Production governed runtime context.
 
@@ -39,6 +40,12 @@ class APXRuntime:
     """
 
     def __init__(self, base_path: Optional[Path] = None):
+        if base_path is None:
+            from .env import get_env
+
+            env_base = get_env("APXV_BASE_PATH")
+            if env_base:
+                base_path = Path(env_base)
         self.base_path = Path(base_path) if base_path else Path(__file__).parent.parent
         self.config_path = self.base_path / "managed" / "config"
         self.config_path.mkdir(parents=True, exist_ok=True)
@@ -123,12 +130,22 @@ class APXRuntime:
         store_chain = self.store.verify_artifact_chain()
         policy_trusted = self.capability_checker.is_policy_trusted()
         governance_verification = self.governance.approval.verify_active_specs()
+
+        from scripts.bootstrap.sovereign_check import verify_sovereign_setup
+
+        sovereign = verify_sovereign_setup(self.base_path)
         healthy = (
             store_chain["valid"]
             and all(audit_results.values())
             and policy_trusted
             and governance_verification["valid"]
+            and sovereign["sovereign_ok"]
         )
+        if not sovereign["sovereign_ok"] and sovereign.get("issues"):
+            for issue in sovereign["issues"]:
+                hint = f"Sovereign setup: {issue} — run: python -m scripts.apxv_bootstrap"
+                if hint not in recovery_hints:
+                    recovery_hints.append(hint)
         return {
             "store_chain_valid": store_chain["valid"],
             "store_issues": store_chain.get("issues", []),
@@ -141,8 +158,53 @@ class APXRuntime:
             "capability_policy_error": self.capability_checker.get_status().get("policy_error"),
             "governance_approvals_valid": governance_verification["valid"],
             "governance_approval_issues": governance_verification.get("issues", []),
+            "sovereign_setup": sovereign["sovereign_setup"],
+            "sovereign_ok": sovereign["sovereign_ok"],
+            "sovereign_status": sovereign["status"],
+            "sovereign_issues": sovereign.get("issues", []),
             "healthy": healthy,
         }
+
+    def repair_audit_logs(self) -> Dict[str, Any]:
+        """Rebuild hash chains for all managed audit logs."""
+        audit_dir = self.base_path / "managed" / "audit"
+        results: Dict[str, Any] = {}
+        if not audit_dir.is_dir():
+            return {"logs": results, "all_valid": True}
+
+        for path in sorted(audit_dir.glob("*.log")):
+            logger = AuditLogger(log_path=path)
+            before = logger.verify_chain()
+            if before:
+                results[path.name] = {
+                    "repaired": False,
+                    "chain_valid": True,
+                    "entries": logger.get_status()["entry_count"],
+                }
+                continue
+            repair = logger.repair_chain()
+            results[path.name] = repair
+
+        all_valid = all(entry.get("chain_valid", False) for entry in results.values())
+        return {"logs": results, "all_valid": all_valid}
+
+    def list_audit_logs(self) -> List[Dict[str, Any]]:
+        audit_dir = self.base_path / "managed" / "audit"
+        results: List[Dict[str, Any]] = []
+        if not audit_dir.is_dir():
+            return results
+        for path in sorted(audit_dir.glob("*.log")):
+            logger = AuditLogger(log_path=path)
+            status = logger.get_status()
+            results.append(
+                {
+                    "name": path.name,
+                    "chain_valid": status["chain_valid"],
+                    "entry_count": status["entry_count"],
+                    "path": str(path.relative_to(self.base_path)).replace("\\", "/"),
+                }
+            )
+        return results
 
     def get_status(self) -> Dict[str, Any]:
         integrity = self.verify_integrity()
@@ -156,3 +218,7 @@ class APXRuntime:
             "backups": self.backup_manager.list_backups()[:5],
             "integrity": integrity,
         }
+
+
+# v1.3.x compat alias — removed in v1.4
+APXRuntime = APXVRuntime

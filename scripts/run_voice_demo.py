@@ -1,4 +1,4 @@
-"""APXV1 voice privacy demo — STT → redact → optional voice-redaction ZK prove."""
+"""APXV voice privacy demo — STT → redact → optional voice-redaction ZK prove."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from agents.voice import VoicePrivacyPipeline
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="APXV1 voice privacy demo")
+    parser = argparse.ArgumentParser(description="APXV voice privacy demo")
     parser.add_argument("--base-path", type=Path, default=ROOT)
     parser.add_argument("--voice-file", type=Path, help="WAV audio input")
     parser.add_argument("--transcript", type=str, help="Skip STT; use this transcript")
@@ -40,7 +40,7 @@ def main() -> int:
         result = pipeline.process_audio(audio, synthesize_redacted=args.synthesize)
 
     print("=" * 60)
-    print("APXV1 Voice Privacy Demo")
+    print("APXV Voice Privacy Demo")
     print("=" * 60)
     print(f"Voice mode: {result.voice_mode}")
     print(f"STT: {result.stt_provider}")

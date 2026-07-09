@@ -1,8 +1,8 @@
 """
-APX v1 — Entity ZK Key Manifest (Phase 3)
+APXV — Entity ZK Key Manifest (Phase 3)
 
-Tracks versioned verification keys for the 8 entity Groth16 circuits in apx-zk.
-Separate from governance circuit manifest (apx-circuits).
+Tracks versioned verification keys for the 8 entity Groth16 circuits in apxv-zk.
+Separate from governance circuit manifest (apxv-circuits).
 """
 
 from __future__ import annotations
@@ -33,7 +33,7 @@ def _sha256_file(path: Path) -> str:
 
 def entity_keys_dir(base_path: Optional[Path] = None) -> Path:
     base = base_path or Path(__file__).parent.parent
-    return base / "rust" / "apx-zk" / "keys"
+    return base / "rust" / "apxv-zk" / "keys"
 
 
 def manifest_path(base_path: Optional[Path] = None) -> Path:

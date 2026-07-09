@@ -15,7 +15,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from agents.auth import APIKeyAuth
-from agents.local_api import APXLocalServer
+from agents.local_api import APXVLocalServer
 
 from tests.helpers import seed_test_instance
 
@@ -31,6 +31,12 @@ def _api_request(url: str, method: str = "GET", data: dict | None = None, header
         return resp.status, json.loads(resp.read().decode("utf-8"))
 
 
+@pytest.fixture(autouse=True)
+def ci_install_profile(monkeypatch):
+    """Pytest runs in ci profile — simulated LLM/voice allowed (V1.3-PRODUCT-SPEC §2.3)."""
+    monkeypatch.setenv("APXV_PROFILE", "ci")
+
+
 @pytest.fixture
 def api_server(tmp_path):
     api_key = seed_test_instance(tmp_path)
@@ -38,7 +44,7 @@ def api_server(tmp_path):
     server_config = json.loads(server_config_path.read_text(encoding="utf-8"))
     server_config["port"] = 0
     server_config_path.write_text(json.dumps(server_config, indent=2), encoding="utf-8")
-    server = APXLocalServer(base_path=tmp_path)
+    server = APXVLocalServer(base_path=tmp_path)
     if not api_key:
         auth = APIKeyAuth(tmp_path / "managed" / "config" / "api_keys.json")
         api_key = auth.create_key("pytest-operator", description="API test fixture key")

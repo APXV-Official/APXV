@@ -1,4 +1,4 @@
-# APXV1 — Cryptographic Assumptions
+# APXV — Cryptographic Assumptions
 
 **Circuit version:** 1.1.0  
 **Ceremony:** Tier A/B (manifest transcript + verifier bundle; Ed25519 signature when signing keys exist)
@@ -83,7 +83,7 @@ Tier A commits VK hashes in manifests and an optional ceremony transcript. Tier 
 
 **Assumptions:**
 - The setup party was honest and discarded setup entropy
-- Persisted keys in `rust/apx-circuits/keys/` and `rust/apx-zk/keys/` are not tampered with after creation
+- Persisted keys in `rust/apxv-circuits/keys/` and `rust/apxv-zk/keys/` are not tampered with after creation
 - Manifests accurately record VK hashes for the active circuit version
 - Verifiers use the VK matching the proof bundle's `vk_hex` and manifest entry
 - Ceremony transcript `content_hash` matches on-disk manifests when a transcript is used

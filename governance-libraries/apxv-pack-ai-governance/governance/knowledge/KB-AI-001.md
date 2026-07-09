@@ -1,6 +1,6 @@
-# APXV1 — Knowledge Base AI: Agentic Governance
+# APXV — Knowledge Base AI: Agentic Governance
 
-**Knowledge ID:** APX-KB-AI-001  
+**Knowledge ID:** APXV-KB-AI-001  
 **Version:** 0.1.0  
 **Effective Date:** 2026-06-28
 

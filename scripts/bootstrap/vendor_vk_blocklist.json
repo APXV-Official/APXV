@@ -1,0 +1,18 @@
+{
+  "description": "VK hashes from pre-v1.3 Docker image baked keys (vendor trust). Doctor rejects these in PR-11.",
+  "source": "rust/apxv-circuits/keys/manifest.json + rust/apxv-zk/keys/entity-manifest.json @ v1.2.5",
+  "updated_at": "2026-07-08",
+  "vk_hashes": [
+    "46d5b00eb9183087b630d4aa707ddc14061c8e54a06bd11258713d035ede8cf8",
+    "f59033708bb8440a03441c75d60e90604ab7e6517d26f3397dfcd56a9fec32c0",
+    "b85dade4c0b2c1a79cafe09b5be59be98a795bfe3145f9456a7f91d86adbe4e7",
+    "0ec1a9c53103984d6977351fad448b51b77b036ef1e45c05b1475501a710257c",
+    "94408295806eeff45f9beb4ab3f2923007adcce31aa5deab9034c48a9fa9ec8e",
+    "a06aef10beb99447848d9afc1d1ae55029af1d5fcb38e67fd26cb6f8fe0c8216",
+    "3362c1b42ffa88c2b8e16c5e24187f6a5ca01ba6ce38054361c9d30ee4a4a88c",
+    "2902ead3dd7aebc22326f5bf7ae12c095cc1065a3a54bc4f4d8881abc93712ab",
+    "7aff04cc5fefbcbc5e55cfdc713713477910ba353744f20f91ae0345b193a9ee",
+    "08a641ae475617d09cd20576072b5cef725f516d2142f1b5324de84aafd135e2",
+    "04c0eceb791fa982224fb3ba9c760e953e8a5ea156fe7eef81dc70fe46efab10"
+  ]
+}

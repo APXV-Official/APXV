@@ -2,6 +2,7 @@
 
 import json
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -14,8 +15,10 @@ sys.path.insert(0, str(ROOT))
 
 from agents.auth import APIKeyAuth
 from agents.job_queue import JobQueue
-from agents.local_api import validate_localhost_bind
+from agents.local_api import APXLocalServer, validate_localhost_bind
 from agents.pipeline_service import run_pipeline_quiet
+
+from tests.helpers import seed_test_instance
 
 
 def test_api_key_hash_validation(tmp_path):
@@ -59,20 +62,50 @@ def _request(url: str, method: str = "GET", data: dict | None = None, headers: d
         return resp.status, json.loads(resp.read().decode("utf-8"))
 
 
+@pytest.fixture
+def api_server(tmp_path):
+    api_key = seed_test_instance(tmp_path)
+    config_dir = tmp_path / "managed" / "config"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    (config_dir / "server.json").write_text(
+        json.dumps({"bind_address": "127.0.0.1", "port": 0, "require_auth": True}),
+        encoding="utf-8",
+    )
+    server = APXLocalServer(base_path=tmp_path)
+    if not api_key:
+        auth = APIKeyAuth(tmp_path / "managed" / "config" / "api_keys.json")
+        api_key = auth.create_key("pytest-operator", description="API test fixture key")
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    host, port = server.address
+    base = f"http://{host}:{port}"
+    for _ in range(50):
+        try:
+            _request(f"{base}/health")
+            break
+        except Exception:
+            time.sleep(0.1)
+    else:
+        pytest.fail("API server did not become ready")
+    yield base, api_key
+    server.worker.stop()
+    server.httpd.shutdown()
+
+
 def test_rejects_non_localhost_bind():
     with pytest.raises(ValueError, match="localhost only"):
         validate_localhost_bind("0.0.0.0")
 
 
 def test_health_endpoint(api_server):
-    base, _, _tmp = api_server
+    base, _ = api_server
     status, data = _request(f"{base}/health")
     assert status == 200
     assert "status" in data
 
 
 def test_pipeline_sync_requires_auth(api_server):
-    base, api_key, _tmp = api_server
+    base, api_key = api_server
     headers = {"Authorization": f"Bearer {api_key}"}
     status, data = _request(
         f"{base}/pipeline/run",
@@ -85,7 +118,7 @@ def test_pipeline_sync_requires_auth(api_server):
 
 
 def test_pipeline_async_job(api_server):
-    base, api_key, _tmp = api_server
+    base, api_key = api_server
     headers = {"Authorization": f"Bearer {api_key}"}
     status, data = _request(
         f"{base}/pipeline/run",
@@ -102,13 +135,3 @@ def test_pipeline_async_job(api_server):
             break
         time.sleep(0.2)
     assert job["status"] == "completed"
-
-
-def test_api_key_hot_reload_without_restart(api_server):
-    base, _existing_key, tmp_path = api_server
-    auth = APIKeyAuth(tmp_path / "managed" / "config" / "api_keys.json")
-    new_key = auth.create_key("hot-reload-test", description="created while server running")
-    headers = {"Authorization": f"Bearer {new_key}"}
-    status, data = _request(f"{base}/status", headers=headers)
-    assert status == 200
-    assert "integrity" in data

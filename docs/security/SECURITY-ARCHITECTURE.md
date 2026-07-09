@@ -1,4 +1,4 @@
-# APXV1 — Security Architecture
+# APXV — Security Architecture
 
 **Version:** 1.1.0
 **Deployment:** Local, self-hosted, air-gapped compatible
@@ -27,11 +27,11 @@ Supplements the threat model in [SECURITY.md](../../SECURITY.md).
 ## Security Strengths
 
 - Immutable artifact storage with SQLite index + CAS blobs
-- Artifact hash chaining verified via `apx_ctl store-verify`
+- Artifact hash chaining verified via `apxv_ctl store-verify`
 - Cryptographically chained audit logs (system + per-agent)
 - Ed25519-signed capability policy on local disk
 - Governance specification change tracking in SQLite
-- Unified runtime with integrity check (`apx_ctl integrity`)
+- Unified runtime with integrity check (`apxv_ctl integrity`)
 - No network dependencies — suitable for air-gapped deployment
 - Dual-track Groth16 attestation independently verifiable via `verify_attestation --real-zk`
 - Tier A/B ceremony transcript + exportable verifier bundle (VK lineage; signature when signing keys exist)
@@ -60,7 +60,7 @@ Supplements the threat model in [SECURITY.md](../../SECURITY.md).
 - SQLite store + CAS blobs
 - Audit logs and ZK proof artifacts
 - Capability policy and signing keys
-- Rust proving keys on the deployment host (`rust/apx-circuits/keys/`, `rust/apx-zk/keys/` — reference keys ship in-repo; re-run setup for production isolation)
+- Rust proving keys on the deployment host (`rust/apxv-circuits/keys/`, `rust/apxv-zk/keys/` — reference keys ship in-repo; re-run setup for production isolation)
 - Optional E2EE keypair (`managed/config/e2ee-keypair.json`)
 
 ### Threat Actors
@@ -84,7 +84,7 @@ Supplements the threat model in [SECURITY.md](../../SECURITY.md).
 
 ## Incident Response (Air-Gapped)
 
-1. Run `python -m scripts.apx_ctl integrity`
+1. Run `python -m scripts.apxv_ctl integrity`
 2. If failed, run `store-verify` and `audit-verify` separately
 3. Preserve `managed/` directory — do not delete or modify
 4. Collect latest artifacts from `managed/store/blobs/`
@@ -103,7 +103,7 @@ See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESP
 
 ## ZK circuit scope (v1.1)
 
-Eight entity circuits exist in `apx-zk`; the default `--attest` path proves a subset (see [../cryptography/CIRCUITS.md](../cryptography/CIRCUITS.md)). `merkle-inclusion` and `compliance` are wired from v1.2.0; `normalization` and `threat` remain future modules.
+Eight entity circuits exist in `apxv-zk`; the default `--attest` path proves a subset (see [../cryptography/CIRCUITS.md](../cryptography/CIRCUITS.md)). `merkle-inclusion` and `compliance` are wired from v1.2.0; `normalization` and `threat` remain future modules.
 
 ---
 

@@ -1,4 +1,4 @@
-"""Poseidon Merkle tree builder matching apx-zk circuit semantics."""
+"""Poseidon Merkle tree builder matching apxv-zk circuit semantics."""
 
 from __future__ import annotations
 

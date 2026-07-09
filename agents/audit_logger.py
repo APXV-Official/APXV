@@ -1,5 +1,5 @@
 """
-APX v1 — Cryptographically Chained Audit Logger (Phase 2)
+APXV — Cryptographically Chained Audit Logger (Phase 2)
 
 This module provides an immutable, append-only audit log with
 cryptographic chaining. Each entry contains a hash of the previous
@@ -7,7 +7,7 @@ entry, enabling tamper detection and independent verification.
 
 This is a foundational component for Phase 2 Governed Core Hardening.
 
-All code is original work written for APX v1.
+All code is original work written for APXV.
 """
 
 from pathlib import Path
@@ -16,6 +16,21 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import threading
+from weakref import WeakValueDictionary
+
+_PATH_LOCKS: "WeakValueDictionary[str, threading.Lock]" = WeakValueDictionary()
+_PATH_LOCKS_GUARD = threading.Lock()
+
+
+def _lock_for_path(log_path: Path) -> threading.Lock:
+    """Share one lock per log file across all AuditLogger instances."""
+    key = str(log_path.resolve())
+    with _PATH_LOCKS_GUARD:
+        lock = _PATH_LOCKS.get(key)
+        if lock is None:
+            lock = threading.Lock()
+            _PATH_LOCKS[key] = lock
+        return lock
 
 
 def _utc_timestamp() -> str:
@@ -37,7 +52,7 @@ class AuditLogger:
         self.log_path = Path(log_path)
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         self.json_format = json_format
-        self._lock = threading.Lock()
+        self._lock = _lock_for_path(self.log_path)
 
         if not self.log_path.exists():
             self.log_path.write_text("", encoding="utf-8")
@@ -143,10 +158,70 @@ class AuditLogger:
 
     def get_entries(self, limit: Optional[int] = None) -> List[Dict[str, Any]]:
         """Return valid log entries (newest last). Skips corrupt lines."""
+        entries, _ = self.get_entries_page(offset=0, limit=limit)
+        return list(reversed(entries))
+
+    def get_entries_page(
+        self,
+        *,
+        offset: int = 0,
+        limit: Optional[int] = 50,
+    ) -> Tuple[List[Dict[str, Any]], int]:
+        """Return a page of entries (newest first) and total entry count."""
         entries, _ = self._parse_lines()
-        if limit:
-            return entries[-limit:]
-        return entries
+        total = len(entries)
+        reversed_entries = list(reversed(entries))
+        start = max(0, int(offset))
+        if limit is None:
+            return reversed_entries[start:], total
+        end = start + max(1, int(limit))
+        return reversed_entries[start:end], total
+
+    def repair_chain(self) -> Dict[str, Any]:
+        """Rebuild hash links for all entries (fixes concurrent-write corruption)."""
+        with self._lock:
+            entries, corrupt_count = self._parse_lines()
+            if not entries:
+                return {
+                    "repaired": True,
+                    "entries": 0,
+                    "chain_valid": True,
+                    "skipped_corrupt": corrupt_count,
+                }
+
+            preserved: List[Dict[str, Any]] = []
+            for entry in entries:
+                preserved.append(
+                    {
+                        "timestamp": entry.get("timestamp"),
+                        "event_type": entry.get("event_type"),
+                        "data": entry.get("data", {}),
+                    }
+                )
+
+            self.log_path.write_text("", encoding="utf-8")
+            previous_hash: Optional[str] = None
+            for item in preserved:
+                entry = {
+                    "timestamp": item["timestamp"],
+                    "event_type": item["event_type"],
+                    "data": item["data"],
+                    "previous_hash": previous_hash,
+                }
+                entry_json = json.dumps(entry, sort_keys=True)
+                current_hash = self._compute_hash(entry_json)
+                entry["current_hash"] = current_hash
+                with self.log_path.open("a", encoding="utf-8") as f:
+                    f.write(json.dumps(entry, sort_keys=True) + "\n")
+                previous_hash = current_hash
+
+            chain_valid = self.verify_chain()
+            return {
+                "repaired": True,
+                "entries": len(preserved),
+                "chain_valid": chain_valid,
+                "skipped_corrupt": corrupt_count,
+            }
 
     def _recovery_hint(self, corrupt_count: int, chain_valid: bool, entry_count: int) -> tuple:
         """Classify degraded logs and return (issue, hint). issue is None when healthy."""
