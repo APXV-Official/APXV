@@ -219,7 +219,7 @@ pub fn start_apxv_server(apxv_root: Option<String>) -> Result<String, String> {
 #[tauri::command]
 pub fn stop_apxv_server() -> Result<(), String> {
     let mut guard = SERVER.lock().map_err(|e| e.to_string())?;
-    if let Some(child) = guard.child.take() {
+    if let Some(mut child) = guard.child.take() {
         let pid = child.id();
         kill_process_tree(pid);
         let _ = child.wait();
