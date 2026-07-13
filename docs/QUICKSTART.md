@@ -1,6 +1,6 @@
 # APXV Quickstart (15 Minutes)
 
-**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3.0** adds sovereign local trust: every deployment generates **operator-owned** ZK keys, Pack Studio, API v2, and a local operator UI.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3** adds sovereign local trust and a desktop operator console; **v1.3.2** stabilizes connect → run → read on Windows and Linux.
 
 ## Choose your path
 

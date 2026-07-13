@@ -28,6 +28,7 @@ import { useState } from "react";
 import { PageShell } from "../components/PageShell";
 import { JobsTable } from "../components/JobsTable";
 import { formatApiError } from "../lib/api-errors";
+import { notifyPipelineQueued } from "../lib/jobs-cache";
 
 function runtimeTone(
   status?: string,
@@ -55,9 +56,14 @@ export function DashboardPage() {
       }),
     onSuccess: (result) => {
       setQuickRunError(null);
-      void queryClient.invalidateQueries({ queryKey: ["jobs"] });
       if (result.mode === "queued" && result.job_id) {
+        notifyPipelineQueued(queryClient, result.job_id, {
+          pack: "reference",
+          attest: true,
+        });
         void navigate({ to: "/jobs", search: { id: result.job_id } });
+      } else {
+        void queryClient.invalidateQueries({ queryKey: ["jobs"] });
       }
     },
     onError: (err) => setQuickRunError(formatApiError(err)),

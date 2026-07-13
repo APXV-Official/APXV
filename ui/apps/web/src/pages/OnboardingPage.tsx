@@ -29,13 +29,15 @@ import {
   TableRow,
 } from "@apxv/ui";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
 import {
   formatDoctorCheckSummary,
   integrityCheckFailed,
 } from "../lib/doctor-format";
 import { BrandLogo } from "../components/BrandLogo";
+import { OperatorKeyPanel } from "../components/OperatorKeyPanel";
+import { discoverOperatorKey } from "../lib/operator-key-discovery";
 import { invokeTauri, isTauri } from "../lib/tauri";
 import { router } from "../router";
 
@@ -58,11 +60,30 @@ export function OnboardingPage() {
     Awaited<ReturnType<typeof getSystemDoctor>>["checks"] | null
   >(null);
   const [repairMessage, setRepairMessage] = useState<string | null>(null);
+  const [operatorKey, setOperatorKey] = useState<
+    Awaited<ReturnType<typeof discoverOperatorKey>>
+  >(null);
+  const [keyLoadError, setKeyLoadError] = useState<string | null>(null);
 
   const stepIndex = STEPS.indexOf(step);
 
+  const reloadOperatorKey = useCallback(async () => {
+    setKeyLoadError(null);
+    const discovered = await discoverOperatorKey();
+    if (discovered) {
+      setOperatorKey(discovered);
+      setApiKeyInput((prev) => prev.trim() || discovered.key);
+    } else {
+      setOperatorKey(null);
+      setKeyLoadError(
+        "Start apxv_serve, then reload — or paste OPERATOR-KEY-*.txt manually.",
+      );
+    }
+  }, []);
+
   useEffect(() => {
     if (step !== "connect") return;
+    void reloadOperatorKey();
     const normalized = apiKey ? normalizeOperatorApiKey(apiKey) : null;
     if (apiKey && !normalized) {
       void resetOnboarding().then(() => {
@@ -74,7 +95,7 @@ export function OnboardingPage() {
     if (normalized) {
       setApiKeyInput(normalized);
     }
-  }, [step, apiKey, resetOnboarding]);
+  }, [step, apiKey, resetOnboarding, reloadOperatorKey]);
 
   async function handleClearKey() {
     await resetOnboarding();
@@ -258,6 +279,13 @@ export function OnboardingPage() {
 
           {step === "connect" && (
             <>
+              <OperatorKeyPanel
+                operatorKey={operatorKey}
+                loadError={keyLoadError}
+                busy={busy}
+                onUseKey={(key) => handleApiKeyChange(key)}
+                onReload={() => void reloadOperatorKey()}
+              />
               {keyRejected && (
                 <Alert variant="warning">
                   <AlertDescription>

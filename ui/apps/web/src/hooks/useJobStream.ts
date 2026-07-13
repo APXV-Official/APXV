@@ -1,5 +1,7 @@
-import { streamJobs, type Job, type JobStreamEvent } from "@apxv/api-client";
+import { streamJobs, type JobStreamEvent } from "@apxv/api-client";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import { patchJobsFromStreamEvent } from "../lib/jobs-cache";
 
 function formatStreamError(err: unknown): string {
   const message = err instanceof Error ? err.message : "Stream unavailable";
@@ -9,11 +11,14 @@ function formatStreamError(err: unknown): string {
   return message;
 }
 
+const BACKOFF_MS = [1000, 2000, 4000, 8000, 10_000];
+
 export function useJobStream(enabled = true) {
+  const queryClient = useQueryClient();
   const [events, setEvents] = useState<JobStreamEvent[]>([]);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const jobsRef = useRef<Map<string, Job>>(new Map());
+  const attemptRef = useRef(0);
 
   useEffect(() => {
     if (!enabled) return;
@@ -27,13 +32,14 @@ export function useJobStream(enabled = true) {
           setConnected(false);
           setError(null);
           for await (const event of streamJobs({
-            seconds: 60,
-            pollMs: 1000,
+            seconds: 120,
+            pollMs: 500,
             signal: controller.signal,
           })) {
             if (cancelled) break;
+            attemptRef.current = 0;
             setConnected(true);
-            jobsRef.current.set(event.job_id, event.job);
+            patchJobsFromStreamEvent(queryClient, event);
             setEvents((prev) => {
               const next = [...prev, event];
               return next.slice(-100);
@@ -46,7 +52,10 @@ export function useJobStream(enabled = true) {
           if (controller.signal.aborted || cancelled) break;
           setError(formatStreamError(err));
           setConnected(false);
-          await new Promise((r) => setTimeout(r, 3000));
+          const delay =
+            BACKOFF_MS[Math.min(attemptRef.current, BACKOFF_MS.length - 1)];
+          attemptRef.current += 1;
+          await new Promise((r) => setTimeout(r, delay));
         }
       }
     }
@@ -57,7 +66,7 @@ export function useJobStream(enabled = true) {
       controller.abort();
       setConnected(false);
     };
-  }, [enabled]);
+  }, [enabled, queryClient]);
 
-  return { events, connected, error, jobs: jobsRef.current };
+  return { events, connected, error, lastEvent: events[events.length - 1] };
 }

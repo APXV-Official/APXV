@@ -1,6 +1,6 @@
 # APXV Pack Catalog
 
-Curated index of **official** agent packs shipped with APXV, plus guidance for **community** packs (documentation links only in v1.3.0 — no remote registry).
+Curated index of **official** agent packs shipped with APXV, plus guidance for **community** packs (documentation links only in v1.3 — no remote registry). Operator console v1.3.2 adds a **Build your first pack** on-ramp (duplicate reference pack + templates).
 
 **Platform:** APXV runtime (`apxv` pip package, Docker image `apxv`)  
 **Pack spec:** Pack Spec v0.1 (`pack.yaml` in each pack directory)  

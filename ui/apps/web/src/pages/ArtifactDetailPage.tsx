@@ -20,9 +20,12 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
 import { useState } from "react";
+import { MarkdownViewer } from "../components/MarkdownViewer";
 import { PageShell } from "../components/PageShell";
 import { VerificationReportView } from "../components/VerificationReportView";
+import { buildArtifactReportMarkdown } from "../lib/artifact-report";
 import { formatApiError } from "../lib/api-errors";
+import { downloadText } from "../lib/download";
 import { truncateId } from "../lib/format-id";
 import { ZkProofVisualizer } from "../components/ZkProofVisualizer";
 import { extractArtifactZkNodes } from "../lib/zk-utils";
@@ -63,6 +66,10 @@ export function ArtifactDetailPage() {
   const redactions = data ? extractRedactions(data) : [];
   const zkNodes = data ? extractArtifactZkNodes(data) : [];
   const hasArtifact = Boolean(data);
+  const reportMarkdown =
+    hasArtifact && data
+      ? buildArtifactReportMarkdown(hash, data, summary)
+      : "";
 
   return (
     <PageShell className="mx-auto max-w-4xl space-y-10">
@@ -99,9 +106,10 @@ export function ArtifactDetailPage() {
       )}
 
       {hasArtifact && (
-        <Tabs defaultValue={summary ? "summary" : "raw"}>
+        <Tabs defaultValue={summary ? "summary" : "report"}>
           <TabsList>
             <TabsTrigger value="summary">Summary</TabsTrigger>
+            <TabsTrigger value="report">Report</TabsTrigger>
             <TabsTrigger value="redactions">
               Redactions ({redactions.length})
             </TabsTrigger>
@@ -172,6 +180,27 @@ export function ArtifactDetailPage() {
                 </p>
               )
             )}
+          </TabsContent>
+
+          <TabsContent value="report" className="space-y-4 pt-6">
+            <ActionGroup>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!reportMarkdown}
+                onClick={() =>
+                  downloadText(
+                    `apxv-artifact-${hash.slice(0, 12)}-report.md`,
+                    reportMarkdown,
+                  )
+                }
+              >
+                Download report (.md)
+              </Button>
+            </ActionGroup>
+            <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--surface-elevated))] p-6">
+              <MarkdownViewer content={reportMarkdown} />
+            </div>
           </TabsContent>
 
           <TabsContent value="redactions" className="pt-6">

@@ -1,10 +1,14 @@
-# APXV https://apxv-official.github.io/APXV/
+# APXV™ https://apxv-official.github.io/APXV/
 
 [![CI](https://github.com/APXV-Official/APXV/actions/workflows/ci.yml/badge.svg)](https://github.com/APXV-Official/APXV/actions/workflows/ci.yml)
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV**, the first open-source implementation.
 
-> **Current release:** [v1.3.1](https://github.com/APXV-Official/APXV/releases/tag/v1.3.1) — desktop connectivity fix (Windows + Linux). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/)
+> **Current release:** [v1.3.2](https://github.com/APXV-Official/APXV/releases/tag/v1.3.2) — v1.3 series stabilization (connect, run, read on Windows + Linux). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/) · [Downloads](docs/DOWNLOADS.md)
+
+## Downloads
+
+Desktop installers (Windows MSI/NSIS, Linux deb/AppImage): **[GitHub Releases — latest](https://github.com/APXV-Official/APXV/releases/latest)** · full table in [docs/DOWNLOADS.md](docs/DOWNLOADS.md) · step-by-step [INSTALL-USER.md](docs/INSTALL-USER.md).
 
 Install APXV on your machine. Your instance generates **your** proving keys, runs governed pipelines, and produces proofs you can verify locally. No vendor keys in Docker images; no cloud trust boundary.
 
@@ -12,7 +16,7 @@ Install APXV on your machine. Your instance generates **your** proving keys, run
 
 | Path | Who | Action |
 |------|-----|--------|
-| **Desktop** | Individual operators | [Download MSI / Linux installer](docs/INSTALL-USER.md) from [Releases](https://github.com/APXV-Official/APXV/releases) |
+| **Desktop** | Individual operators | [Download latest installers](https://github.com/APXV-Official/APXV/releases/latest) · [INSTALL-USER.md](docs/INSTALL-USER.md) |
 | **Docker** | Teams, no local Rust | `.\scripts\install-docker.ps1` or `./scripts/install-docker.sh` |
 | **Native** | Contributors | `.\scripts\install-full.ps1` or `./scripts/install-full.sh` |
 
@@ -170,7 +174,7 @@ Circuit semantics unchanged since v1.1.0 — each operator still runs their own 
 
 ## Status
 
-**v1.3.1 (current release)** — desktop Connect and Jobs live updates on Windows and Linux. **v1.3.0** added sovereign local trust, API v2, Pack Studio, desktop app. Migration: [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md). Full history: [CHANGELOG.md](CHANGELOG.md).
+**v1.3.2 (current release)** — operator reliability: Linux jobs, server lifecycle, onboarding/API key UX, jobs freshness, markdown artifact reports, Pack Studio on-ramp, downloads hub. **v1.3.1** fixed desktop Connect and Jobs on Windows/Linux. **v1.3.0** added sovereign local trust, API v2, Pack Studio, desktop app. Migration: [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md). Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 
@@ -224,6 +228,7 @@ See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for repository layout and compone
 | Doc | Purpose |
 |-----|---------|
 | [docs/SOVEREIGN-SETUP.md](docs/SOVEREIGN-SETUP.md) | Local trust model, backup, verify keys |
+| [docs/DOWNLOADS.md](docs/DOWNLOADS.md) | Canonical download hub (releases/latest) |
 | [docs/INSTALL-USER.md](docs/INSTALL-USER.md) | Desktop MSI / Linux installers |
 | [docs/QUICKSTART.md](docs/QUICKSTART.md) | Install, troubleshoot, re-run onboarding |
 | [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md) | Upgrade from v1.2.x + sovereign changes |
@@ -265,9 +270,9 @@ Community support is best-effort. Start with [docs/QUICKSTART.md](docs/QUICKSTAR
 
 ## Attribution
 
-**APXV** is not a registered trademark. If you build on APXV, we appreciate (but do not require) a credit such as:
+**APXV™** is a trademark of APXVdev (unregistered). If you build on APXV, we appreciate (but do not require) a credit such as:
 
-**Built with [APXV](https://github.com/APXV-Official/APXV)** — *Attested Proof Execution Verified*
+**Built with [APXV™](https://github.com/APXV-Official/APXV)** — *Attested Proof Execution Verified*
 
 Please do not imply your project is an official APXV product unless you have a separate agreement with the maintainer.
 

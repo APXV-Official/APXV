@@ -1,6 +1,6 @@
 # APXV — Operator Guide
 
-**Version:** 1.3.1 · **API:** v2 (`127.0.0.1:8741`)
+**Version:** 1.3.2 · **API:** v2 (`127.0.0.1:8741`)
 
 Local operator console for governed agent pipelines — browser UI or Tauri desktop app. Every action maps to a documented REST endpoint.
 
@@ -31,7 +31,7 @@ Open http://127.0.0.1:5173 and complete onboarding with your operator API key fr
 
 ## First launch (desktop)
 
-1. Install from [GitHub Releases](https://github.com/APXV-Official/APXV/releases).
+1. Install from [GitHub Releases (latest)](https://github.com/APXV-Official/APXV/releases/latest).
 2. Launch APXV — **bootstrap wizard** runs sovereign ZK setup (20–60 min typical).
 3. Confirm operator key on the setup screen.
 4. Dashboard — verify `sovereign_setup` badge on **System**.
@@ -59,20 +59,25 @@ Keys are stored in `managed/config/api_keys.json`. The UI saves your key locally
 | Run a governed pipeline | **Pipeline** or **Dashboard → Quick run** |
 | Monitor job progress | **Jobs** (live SSE updates) |
 | Inspect redactions + ZK proofs | **Jobs → detail** or **Artifacts → Open** |
+| Read formatted artifact report | **Artifacts → Report** tab (download `.md`) |
 | Independently verify attestation | **Verify** or artifact **Verify** tab |
 | Review audit chain | **Audit** |
 | Change rules/workflows/knowledge | **Governance** (propose → approve → apply) |
 | Doctor / integrity / backups | **System** |
 | Ollama / voice repair | **Settings → Repair integrations** |
+| Start/stop/restart API (desktop) | **Settings → Runtime process** |
 | Create or revoke API keys | **Settings** |
 
 ## Agent packs
 
-1. **Agent packs** → **Create pack** (reference or minimal template).
-2. Edit pipeline logic on disk:
+1. **Agent packs** → **Build your first pack** — **Duplicate reference pack** or **New from template** (v1.3.2 on-ramp).
+2. Or **Create pack** manually (reference or minimal template).
+3. Edit pipeline logic on disk:
    `governance-libraries/apxv-pack-<slug>/agents/custom_agents.py`
-3. Implement `run_pack_pipeline(input_text, runtime, **kwargs)`.
-4. Run via **Run pack (sample input)** or **Pipeline** with the pack selected.
+4. Implement `run_pack_pipeline(input_text, runtime, **kwargs)`.
+5. Run via **Run pack (sample input)** or **Pipeline** with the pack selected.
+
+Tutorial: [BUILD-YOUR-FIRST-PACK.md](../../docs/BUILD-YOUR-FIRST-PACK.md)
 
 Pack governance files are scaffolded under each pack's `governance/` folder. Apply changes through **Governance studio** or `python -m scripts.apxv_ctl`.
 

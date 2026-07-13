@@ -1,6 +1,5 @@
 import {
   ApiError,
-  getOperatorKeyHint,
   getSystemDoctor,
   getSystemHealth,
   isValidOperatorApiKey,
@@ -22,18 +21,23 @@ import {
 } from "@apxv/ui";
 import { useNavigate } from "@tanstack/react-router";
 import { router } from "../router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { isOnboardingComplete } from "../lib/auth-storage";
 import { useApp } from "../context/AppContext";
 import { BrandLogo } from "../components/BrandLogo";
+import { OperatorKeyPanel } from "../components/OperatorKeyPanel";
 import { integrityCheckFailed } from "../lib/doctor-format";
 import {
+  discoverOperatorKey,
+  type DiscoveredOperatorKey,
+} from "../lib/operator-key-discovery";
+import {
+  formatServerStatus,
   getApxvServerStatus,
   invokeTauri,
   isDockerDeploy,
   isTauri,
   quitApxvDesktop,
-  type OperatorKeyInfo,
   type ServerStatus,
 } from "../lib/tauri";
 
@@ -42,18 +46,53 @@ export function SetupPage() {
   const { setApiKey, completeOnboarding } = useApp();
 
   const [apiKeyInput, setApiKeyInput] = useState("");
-  const [operatorKey, setOperatorKey] = useState<OperatorKeyInfo | null>(null);
+  const [operatorKey, setOperatorKey] = useState<DiscoveredOperatorKey | null>(null);
   const [keyLoadError, setKeyLoadError] = useState<string | null>(null);
   const [serverStatus, setServerStatus] = useState<ServerStatus | null>(null);
   const [serverMessage, setServerMessage] = useState<string | null>(null);
-  const [copyMessage, setCopyMessage] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [testMessage, setTestMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [doctorWarning, setDoctorWarning] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [autoFilled, setAutoFilled] = useState(false);
+
   const isSetupPreview =
     typeof window !== "undefined" &&
     window.location.pathname === "/setup-preview";
+
+  const reloadOperatorKey = useCallback(async () => {
+    setKeyLoadError(null);
+    if (isSetupPreview) {
+      const previewKey =
+        (window as Window & { __APXV_TEST_OPERATOR_KEY__?: string })
+          .__APXV_TEST_OPERATOR_KEY__ ?? null;
+      if (previewKey) {
+        setOperatorKey({
+          key: previewKey,
+          file_path: "managed/config/OPERATOR-KEY-default-operator.txt",
+          file_content: `API Key: ${previewKey}`,
+          key_id: "default-operator",
+        });
+      }
+      return;
+    }
+
+    const discovered = await discoverOperatorKey();
+    if (discovered) {
+      setOperatorKey(discovered);
+      setApiKeyInput((prev) => {
+        if (prev.trim()) return prev;
+        setAutoFilled(true);
+        return discovered.key;
+      });
+    } else {
+      setOperatorKey(null);
+      setKeyLoadError(
+        "No OPERATOR-KEY-*.txt found under managed/config. Run bootstrap or setup_first_run.",
+      );
+    }
+  }, [isSetupPreview]);
 
   useEffect(() => {
     if (isSetupPreview || !isTauri()) return;
@@ -81,38 +120,13 @@ export function SetupPage() {
 
     async function bootstrap() {
       try {
-        if (isSetupPreview) {
-          const previewKey =
-            (window as Window & { __APXV_TEST_OPERATOR_KEY__?: string })
-              .__APXV_TEST_OPERATOR_KEY__ ?? null;
-          if (previewKey) {
-            setOperatorKey({
-              key: previewKey,
-              file_path: "managed/config/OPERATOR-KEY-default-operator.txt",
-              file_content: `API Key: ${previewKey}`,
-              key_id: "default-operator",
-            });
-          }
-        } else if (isTauri()) {
-          const [keyInfo, status] = await Promise.all([
-            invokeTauri<OperatorKeyInfo>("read_operator_key"),
-            getApxvServerStatus(),
-          ]);
+        if (isTauri()) {
+          const status = await getApxvServerStatus();
           if (cancelled) return;
-          setOperatorKey(keyInfo);
           setServerStatus(status);
-          if (status.running) {
-            setServerMessage(
-              status.pid
-                ? `API running (pid ${status.pid})`
-                : "API running",
-            );
-          }
-        } else if (isDockerDeploy()) {
-          const keyInfo = await getOperatorKeyHint();
-          if (cancelled) return;
-          setOperatorKey(keyInfo);
+          setServerMessage(formatServerStatus(status));
         }
+        await reloadOperatorKey();
       } catch (err) {
         if (!cancelled) {
           setKeyLoadError((err as Error).message);
@@ -125,17 +139,19 @@ export function SetupPage() {
           if (isTauri()) {
             const status = await getApxvServerStatus();
             setServerStatus(status);
-            setServerMessage(
-              status.running && status.pid
-                ? `API ready (pid ${status.pid})`
-                : "API ready",
-            );
+            setServerMessage(formatServerStatus(status));
           } else {
-            setServerStatus({ running: true, pid: null });
+            setServerStatus({
+              running: true,
+              pid: null,
+              port_open: true,
+              managed: false,
+            });
             setServerMessage(
               isDockerDeploy() ? "API ready (Docker)" : "API ready",
             );
           }
+          await reloadOperatorKey();
         }
       } catch (err) {
         if (!cancelled) {
@@ -148,22 +164,20 @@ export function SetupPage() {
     return () => {
       cancelled = true;
     };
-  }, [isSetupPreview]);
+  }, [isSetupPreview, reloadOperatorKey]);
 
   function handleApiKeyChange(value: string) {
     setApiKeyInput(value);
+    setAutoFilled(false);
     setError(null);
+    setTestMessage(null);
   }
 
-  async function handleCopyKey() {
-    if (!operatorKey) return;
-    setCopyMessage(null);
-    try {
-      await navigator.clipboard.writeText(operatorKey.key);
-      setCopyMessage("Copied to clipboard");
-    } catch {
-      setCopyMessage("Copy failed — select the key and copy manually");
-    }
+  function handleUseDiscoveredKey(key: string) {
+    setApiKeyInput(key);
+    setAutoFilled(true);
+    setError(null);
+    setTestMessage(null);
   }
 
   async function handleSaveKey() {
@@ -196,10 +210,31 @@ export function SetupPage() {
     }
   }
 
+  async function handleTestConnection() {
+    setBusy(true);
+    setError(null);
+    setTestMessage(null);
+    try {
+      await waitForHealth(15_000);
+      await setApiKey(apiKeyInput);
+      await testApiConnection();
+      setTestMessage("Connection OK — API accepted your operator key.");
+    } catch (err) {
+      const message =
+        err instanceof ApiError
+          ? `${err.message} (${err.status})`
+          : (err as Error).message;
+      setError(message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleConnect() {
     setBusy(true);
     setError(null);
     setDoctorWarning(null);
+    setTestMessage(null);
     try {
       await waitForHealth(15_000);
       await setApiKey(apiKeyInput);
@@ -236,10 +271,13 @@ export function SetupPage() {
   }
 
   const normalized = normalizeOperatorApiKey(apiKeyInput) ?? "";
-  const canConnect =
-    !busy &&
-    apiKeyInput.trim().length > 0 &&
-    isValidOperatorApiKey(normalized);
+  const keyValid = isValidOperatorApiKey(normalized);
+  const canTest = !busy && apiKeyInput.trim().length > 0 && keyValid;
+  const canConnect = canTest;
+  const connectLabel =
+    autoFilled && operatorKey
+      ? "Connect with discovered key"
+      : "Connect";
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[hsl(var(--background))] p-8">
@@ -252,15 +290,15 @@ export function SetupPage() {
 
       <Panel className="w-full max-w-xl shadow-2xl shadow-black/20">
         <PanelHeader
-          title="Setup"
-          description="Connect to your local runtime with your operator API key."
+          title="Connect"
+          description="Your operator key was created during bootstrap — we load it automatically when possible."
         />
         <PanelBody className="space-y-5 pt-0">
           <div className="rounded-lg bg-[hsl(var(--surface-elevated))] px-4 py-4">
             <div className="mb-2 flex items-center justify-between gap-3">
               <p className="text-base font-medium">Runtime API</p>
-              <Badge variant={serverStatus?.running ? "success" : "secondary"}>
-                {serverStatus?.running ? "running" : "starting"}
+              <Badge variant={serverStatus?.port_open ? "success" : "secondary"}>
+                {serverStatus?.port_open ? "ready" : "starting"}
               </Badge>
             </div>
             <p className="text-sm text-[hsl(var(--muted-foreground))]">
@@ -271,62 +309,19 @@ export function SetupPage() {
             </p>
           </div>
 
-          <div className="space-y-3 rounded-lg border border-[hsl(var(--divider-subtle))] px-4 py-4">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-base font-medium">Your operator key</p>
-              <ActionGroup>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="h-auto px-0 py-0 text-xs"
-                  onClick={() => void handleCopyKey()}
-                  disabled={!operatorKey || busy}
-                >
-                  Copy
-                </Button>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="h-auto px-0 py-0 text-xs"
-                  onClick={() => void handleSaveKey()}
-                  disabled={!operatorKey || busy}
-                >
-                  Save to file
-                </Button>
-              </ActionGroup>
-            </div>
-
-            {operatorKey ? (
-              <>
-                <code className="block break-all rounded-md bg-[hsl(var(--surface-elevated))] px-3 py-2 font-mono text-sm">
-                  {operatorKey.key}
-                </code>
-                <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                  From{" "}
-                  <span className="font-mono">{operatorKey.file_path}</span>
-                </p>
-              </>
-            ) : (
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                {keyLoadError ??
-                  "Loading operator key from managed/config/OPERATOR-KEY-*.txt…"}
-              </p>
-            )}
-
-            {copyMessage && (
-              <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                {copyMessage}
-              </p>
-            )}
-            {saveMessage && (
-              <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                {saveMessage}
-              </p>
-            )}
-          </div>
+          <OperatorKeyPanel
+            operatorKey={operatorKey}
+            loadError={keyLoadError}
+            busy={busy}
+            onUseKey={handleUseDiscoveredKey}
+            onSaveKey={() => void handleSaveKey()}
+            saveMessage={saveMessage}
+            showSave
+            onReload={() => void reloadOperatorKey()}
+          />
 
           <div className="space-y-2">
-            <Label htmlFor="api-key">Paste operator key</Label>
+            <Label htmlFor="api-key">Operator API key</Label>
             <Input
               id="api-key"
               name="apxv-operator-api-key"
@@ -345,25 +340,33 @@ export function SetupPage() {
                   handleApiKeyChange(normalizedPaste);
                 }
               }}
-              placeholder="Paste key from OPERATOR-KEY-*.txt"
+              placeholder="Auto-filled from OPERATOR-KEY-*.txt when available"
               autoComplete="one-time-code"
               data-1p-ignore
               data-lpignore="true"
               data-form-type="other"
             />
             <p className="text-xs text-[hsl(var(--muted-foreground))]">
-              Paste once so you can save it. Next launch goes straight to the
-              dashboard.
+              {autoFilled
+                ? "Key loaded from your runtime. Test connection, then Connect to enter the dashboard."
+                : "Paste the API Key line if auto-discovery did not run yet."}
             </p>
           </div>
 
           <ActionGroup>
+            <Button
+              variant="secondary"
+              onClick={() => void handleTestConnection()}
+              disabled={!canTest}
+            >
+              {busy ? "Testing…" : "Test connection"}
+            </Button>
             <Button onClick={() => void handleConnect()} disabled={!canConnect}>
-              {busy ? "Connecting…" : "Connect"}
+              {busy ? "Connecting…" : connectLabel}
             </Button>
             {isTauri() && (
               <Button
-                variant="secondary"
+                variant="link"
                 disabled={busy}
                 onClick={() => void quitApxvDesktop()}
               >
@@ -372,11 +375,16 @@ export function SetupPage() {
             )}
           </ActionGroup>
 
+          {testMessage && (
+            <Alert variant="success">
+              <AlertDescription>{testMessage}</AlertDescription>
+            </Alert>
+          )}
+
           {isTauri() && (
             <p className="text-xs text-[hsl(var(--muted-foreground))]">
-              Closing the window keeps APXV running in the background. Use{" "}
-              <strong>Quit APXV</strong> here, or right-click the APXV icon in
-              the Windows notification area (system tray).
+              Closing the window keeps APXV in the tray. Use Quit APXV or the tray
+              menu to stop the API and exit.
             </p>
           )}
 

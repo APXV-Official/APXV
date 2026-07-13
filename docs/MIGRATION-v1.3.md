@@ -70,7 +70,7 @@ docker compose down
 
 Container name is now **`apxv`** (was `apx-v1`). Keys generate on host volumes on first start.
 
-**Desktop:** download v1.3.0 MSI or Linux installer — [INSTALL-USER.md](INSTALL-USER.md).
+**Desktop:** download the latest MSI or Linux installer — [INSTALL-USER.md](INSTALL-USER.md) · [releases/latest](https://github.com/APXV-Official/APXV/releases/latest).
 
 ### 3. Environment variables
 

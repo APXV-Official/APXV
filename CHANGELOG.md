@@ -4,7 +4,27 @@ All notable changes to APXV are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.2] - 2026-07-13
+
+v1.3 series stabilization — operators on Windows and Linux can connect, run jobs, and read markdown artifact reports without fighting the API key, server lifecycle, or raw JSON.
+
+### Fixed
+
+- **Linux desktop jobs** — `runPipeline` and `createUpload` use `resolveFetch()` (Tauri HTTP plugin) instead of browser `fetch`, fixing immediate "job failed" on pipeline submit.
+- **Server lifecycle** — desktop `server.rs` kills process trees on stop/quit (Windows `taskkill /T`, Linux process groups + `fuser`), waits for `:8741` to release, exposes managed vs external listener status, adds **Restart server** in Settings.
+- **Onboarding / API key** — auto-discover `OPERATOR-KEY-*.txt` (desktop filesystem or `/api/v2/system/operator-key-hint`), auto-fill Connect step, copy/reload actions, inline **Test connection** on Setup.
+- **Jobs UI freshness** — SSE events patch react-query cache directly (no refetch lag), optimistic queued row on pipeline submit, faster stream poll + reconnect backoff, 2s polling fallback when live stream unavailable.
+- **Artifact reports** — new **Report** tab renders a markdown summary; optional **Download report (.md)** for the full artifact report.
+
+### Added
+
+- **Pack Studio on-ramp** — “Build your first pack” panel with one-click **Duplicate reference pack**, create-from-template shortcuts (reference / minimal), tutorial and catalog links; reference pack detail warns against editing the official pack.
+- **APXV™ trademark notices** — README, NOTICE, desktop window title, operator console branding, website hero/footer.
+- **Downloads hub** — [docs/DOWNLOADS.md](docs/DOWNLOADS.md), README Downloads section, website **Download** section — all pointing to [releases/latest](https://github.com/APXV-Official/APXV/releases/latest).
+
+### Changed
+
+- **Operator console polish** — clearer Connect banner (Settings + retry actions), actionable API errors, Jobs empty state **Run a pipeline** CTA, structured server status in Settings, bootstrap step progress, About APXV™ in Settings.
 
 ## [1.3.1] - 2026-07-09
 
@@ -334,6 +354,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.3.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.2
 [1.3.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.1
 [1.3.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.0
 [1.2.5]: https://github.com/APXV-Official/APXV/releases/tag/v1.2.5

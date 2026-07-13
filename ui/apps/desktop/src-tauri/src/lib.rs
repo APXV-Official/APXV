@@ -8,8 +8,8 @@ mod tray;
 use bootstrap::{get_bootstrap_status, run_bootstrap, sovereign_ready};
 use operator_key::{read_operator_key, save_operator_key_file};
 use server::{
-    get_apx_server_status, get_apxv_server_status, get_default_apxv_root, start_apx_server,
-    start_apxv_server, stop_apx_server, stop_apxv_server,
+    get_apx_server_status, get_apxv_server_status, get_default_apxv_root, restart_apxv_server,
+    start_apx_server, start_apxv_server, stop_apx_server, stop_apxv_server,
 };
 
 #[tauri::command]
@@ -69,6 +69,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             start_apxv_server,
             stop_apxv_server,
+            restart_apxv_server,
             get_apxv_server_status,
             start_apx_server,
             stop_apx_server,

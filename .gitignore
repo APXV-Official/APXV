@@ -46,6 +46,7 @@ managed/config/capability_policy_history/
 managed/governance/
 managed/managed/
 managed/config/install.json
+managed/config/active_pack.json
 
 # UI monorepo build artifacts
 ui/node_modules/

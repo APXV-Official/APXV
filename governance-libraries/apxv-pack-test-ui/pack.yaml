@@ -4,7 +4,7 @@ name: Test UI Pack
 version: 0.1.0
 requires_apxv1: ">=1.2.0"
 description: >-
-  Created by test
+  Pytest fixture pack for unofficial activation flows (not operator-facing).
 
 agents:
   - id: APXV-AGENT-CUSTOM-001

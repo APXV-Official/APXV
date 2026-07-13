@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="APXV v1.3.0 — sovereign local trust, governed agents, Pack Studio, desktop app, Groth16 proofs, API v2. Open source. No telemetry.">
+  <meta name="description" content="APXV™ — sovereign local trust, governed agents, Pack Studio, desktop app, Groth16 proofs, API v2. Open source. No telemetry.">
   <meta name="theme-color" content="#06080c">
-  <meta property="og:title" content="APXV — Governed Local Agents">
-  <meta property="og:description" content="APXV — air-gapped governed agents with Groth16 proofs. v1.3.0: runtime, Pack Studio, local operator console, and three official agent packs on your infrastructure.">
+  <meta property="og:title" content="APXV™ — Governed Local Agents">
+  <meta property="og:description" content="APXV™ — air-gapped governed agents with Groth16 proofs. v1.3.2 stabilizes the desktop operator console on Windows and Linux: connect, run jobs, read markdown artifact reports.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://apxv-official.github.io/APXV/">
-  <title>APXV — Attested Proof Execution Verified</title>
+  <title>APXV™ — Attested Proof Execution Verified</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,8 +21,9 @@
 
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="logo" href="#top" aria-label="APXV home">APXV</a>
+      <a class="logo" href="#top" aria-label="APXV home">APXV™</a>
       <nav class="nav" aria-label="Primary">
+        <a href="#download" data-nav>Download</a>
         <a href="#about" data-nav>About</a>
         <a href="#platform" data-nav>Platform</a>
         <a href="#packs" data-nav>Packs</a>
@@ -39,14 +40,14 @@
     <section id="top" class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy reveal">
-          <p class="eyebrow">Apache 2.0 · Local · No telemetry · <a href="https://github.com/APXV-Official/APXV/releases" rel="noopener noreferrer">v1.3.0</a> · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Open source</a></p>
+          <p class="eyebrow">Apache 2.0 · Local · No telemetry · <a href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">Latest release</a> · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Open source</a></p>
           <h1>Governed local agents with cryptographic attestation</h1>
           <p class="lead">
-            <strong>APXV</strong> is an air-gapped governed agent platform on your infrastructure.
+            <strong>APXV™</strong> is an air-gapped governed agent platform on your infrastructure.
             Every deployment runs <strong>sovereign bootstrap</strong> — your proving keys, your governance, proofs you verify locally. v1.3 adds a <strong>desktop app</strong>, <strong>Pack Studio</strong>, and operator UI over API v2.
           </p>
           <div class="cta-row">
-            <a class="btn btn-primary" href="https://github.com/APXV-Official/APXV/releases/tag/v1.3.0" rel="noopener noreferrer">Download v1.3.0</a>
+            <a class="btn btn-primary" href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">Download latest</a>
             <a class="btn btn-secondary" href="https://github.com/APXV-Official/APXV/blob/main/docs/INSTALL-USER.md" rel="noopener noreferrer">Install guide</a>
             <a class="btn btn-secondary" href="https://github.com/APXV-Official/APXV/blob/main/docs/DOCKER.md" rel="noopener noreferrer">Docker for teams</a>
             <a class="btn btn-ghost" href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Source</a>
@@ -61,7 +62,7 @@
           <div class="install-card">
             <p class="install-card-label">One command</p>
             <pre class="install-snippet"><code># Desktop — Windows MSI / Linux deb|AppImage
-github.com/.../releases/tag/v1.3.0
+github.com/.../releases/latest
 
 # Teams — Docker (sovereign keys on your volumes)
 ./scripts/install-docker.sh
@@ -98,11 +99,26 @@ github.com/.../releases/tag/v1.3.0
       </div>
     </div>
 
+    <section id="download" class="section section-alt">
+      <div class="wrap reveal">
+        <div class="section-head">
+          <h2>Download</h2>
+          <p>One place for desktop installers — Windows MSI/NSIS and Linux deb/AppImage from <a href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">GitHub Releases (latest)</a>. Teams can use <a href="https://github.com/APXV-Official/APXV/blob/main/docs/DOCKER.md" rel="noopener noreferrer">Docker</a> instead.</p>
+        </div>
+        <ul class="service-list" role="list">
+          <li><strong>Windows</strong> — MSI or NSIS setup (.exe)</li>
+          <li><strong>Linux amd64</strong> — .deb (Debian/Ubuntu) or AppImage (portable)</li>
+          <li><strong>Install guide</strong> — <a href="https://github.com/APXV-Official/APXV/blob/main/docs/INSTALL-USER.md" rel="noopener noreferrer">INSTALL-USER.md</a> · <a href="https://github.com/APXV-Official/APXV/blob/main/docs/DOWNLOADS.md" rel="noopener noreferrer">DOWNLOADS.md</a></li>
+        </ul>
+        <p class="scope-foot"><a class="btn btn-primary" href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">Get latest release</a></p>
+      </div>
+    </section>
+
     <section id="about" class="section">
       <div class="wrap narrow reveal">
-        <h2>About APXV</h2>
+        <h2>About APXV™</h2>
         <p class="prose">
-          <strong>APXV</strong> (Attested Proof Execution Verified) is an air-gapped governed agent platform:
+          <strong>APXV™</strong> (Attested Proof Execution Verified) is an air-gapped governed agent platform:
           markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs.
           The open-source runtime is a <strong>foundation to build on</strong>, not a finished vertical product.
         </p>
@@ -275,7 +291,24 @@ flowchart TB
         </div>
         <div class="roadmap-phases">
           <article class="roadmap-phase">
-            <h3>Shipped — v1.3.0 (current)</h3>
+            <h3>Shipped — v1.3.2 (current)</h3>
+            <ul>
+              <li><strong>v1.3 stabilization</strong> — connect, run, read on Windows + Linux</li>
+              <li>Linux jobs + server lifecycle; onboarding API key discovery</li>
+              <li>Jobs live updates; markdown artifact <strong>Report</strong> tab</li>
+              <li>Pack Studio on-ramp — duplicate reference pack, templates</li>
+              <li>APXV™ notices · <a href="https://github.com/APXV-Official/APXV/blob/main/docs/DOWNLOADS.md" rel="noopener noreferrer">Downloads hub</a></li>
+            </ul>
+          </article>
+          <article class="roadmap-phase">
+            <h3>Shipped — v1.3.1</h3>
+            <ul>
+              <li>Desktop Connect + Jobs SSE on Windows and Linux</li>
+              <li>Tauri HTTP for API calls; tray quit kills duplicate servers</li>
+            </ul>
+          </article>
+          <article class="roadmap-phase">
+            <h3>Shipped — v1.3.0</h3>
             <ul>
               <li><strong>Sovereign local trust</strong> — <code>apxv_bootstrap</code>, operator-owned keys, <code>install.json</code> provenance</li>
               <li><strong>Desktop app</strong> — Windows MSI/NSIS + Linux deb/AppImage (macOS DMG follow-up)</li>
@@ -376,7 +409,7 @@ flowchart TB
       <div class="wrap reveal">
         <div class="section-head">
           <h2>Documentation</h2>
-          <p>Operators: <a href="https://github.com/APXV-Official/APXV/releases/tag/v1.3.0" rel="noopener noreferrer">download desktop</a> or <a href="https://github.com/APXV-Official/APXV/blob/main/docs/DOCKER.md" rel="noopener noreferrer">Docker for teams</a>. Developers: <code>install-full</code> (native) with Python 3.9+ and Rust. First sovereign bootstrap takes 20–60 minutes — documented honestly.</p>
+          <p>Operators: <a href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">download desktop</a> or <a href="https://github.com/APXV-Official/APXV/blob/main/docs/DOCKER.md" rel="noopener noreferrer">Docker for teams</a>. Developers: <code>install-full</code> (native) with Python 3.9+ and Rust. First sovereign bootstrap takes 20–60 minutes — documented honestly.</p>
         </div>
         <div class="doc-links">
           <a href="https://github.com/APXV-Official/APXV/blob/main/docs/SOVEREIGN-SETUP.md" rel="noopener noreferrer">Sovereign setup</a>
@@ -384,7 +417,9 @@ flowchart TB
           <a href="https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md" rel="noopener noreferrer">Quickstart</a>
           <a href="https://github.com/APXV-Official/APXV/blob/main/README.md" rel="noopener noreferrer">README</a>
           <a href="https://github.com/APXV-Official/APXV/blob/main/ROADMAP.md" rel="noopener noreferrer">Roadmap</a>
-          <a href="https://github.com/APXV-Official/APXV/releases" rel="noopener noreferrer">Releases</a>
+          <a href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">Downloads</a>
+          <a href="https://github.com/APXV-Official/APXV/blob/main/docs/DOWNLOADS.md" rel="noopener noreferrer">DOWNLOADS.md</a>
+          <a href="https://github.com/APXV-Official/APXV/releases" rel="noopener noreferrer">All releases</a>
           <a href="https://github.com/APXV-Official/APXV/tree/main/governance-libraries/apxv-pack-reference-redaction" rel="noopener noreferrer">Redaction pack</a>
           <a href="https://github.com/APXV-Official/APXV/blob/main/docs/cryptography/CIRCUITS.md" rel="noopener noreferrer">Circuit inventory</a>
           <a href="https://github.com/APXV-Official/APXV/blob/main/docs/cryptography/CEREMONY.md" rel="noopener noreferrer">Ceremony</a>
@@ -436,7 +471,7 @@ flowchart TB
 
   <footer class="site-footer">
     <div class="wrap footer-inner">
-      <p>© 2026 <a href="https://github.com/APXVdev" rel="noopener noreferrer">APXVdev</a> · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">APXV-Official/APXV</a> · <a href="https://github.com/APXV-Official/APXV/blob/main/LICENSE" rel="noopener noreferrer">Apache 2.0</a></p>
+      <p>© 2026 <a href="https://github.com/APXVdev" rel="noopener noreferrer">APXVdev</a> · APXV™ · <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">APXV-Official/APXV</a> · <a href="https://github.com/APXV-Official/APXV/blob/main/LICENSE" rel="noopener noreferrer">Apache 2.0</a></p>
       <nav class="footer-nav" aria-label="Footer">
         <a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">Repository</a>
         <a href="https://github.com/APXV-Official/APXV/releases" rel="noopener noreferrer">Releases</a>

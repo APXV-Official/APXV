@@ -1,6 +1,6 @@
 # Air-Gapped Installation Guide
 
-APXV is designed to run fully offline after initial download. v1.3.0 requires **sovereign bootstrap** on the offline machine — your proving keys are generated locally, never copied from an online image.
+APXV is designed to run fully offline after initial download. APXV v1.3+ requires **sovereign bootstrap** on the offline machine — your proving keys are generated locally, never copied from an online image.
 
 ## 1. Download (Online Machine)
 

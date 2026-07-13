@@ -28,6 +28,8 @@ export function getDefaultBaseUrl(): string {
 export interface ServerStatus {
   running: boolean;
   pid: number | null;
+  port_open: boolean;
+  managed: boolean;
 }
 
 export interface OperatorKeyInfo {
@@ -69,6 +71,21 @@ export async function getDefaultApxvRoot(): Promise<string> {
 
 export async function getApxvServerStatus(): Promise<ServerStatus> {
   return invokeTauri<ServerStatus>("get_apxv_server_status");
+}
+
+export function formatServerStatus(status: ServerStatus): string {
+  if (!status.port_open) {
+    return "Stopped — port :8741 free";
+  }
+  const pid = status.pid ?? "unknown";
+  if (status.managed) {
+    return `Running (managed by desktop, pid ${pid})`;
+  }
+  return `Running (external listener on :8741, pid ${pid})`;
+}
+
+export async function restartApxvServer(): Promise<string> {
+  return invokeTauri<string>("restart_apxv_server");
 }
 
 export async function ensureApxvServerStarted(): Promise<string> {

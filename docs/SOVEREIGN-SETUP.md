@@ -1,6 +1,6 @@
 # Sovereign setup — local trust model
 
-**APXV v1.3.0** requires every operator deployment to run its own **trusted setup** on local storage. Your instance generates unique proving keys; attestations are verifiable with **your** verification keys — not keys from the repo, Docker image, or vendor.
+**APXV v1.3+** requires every operator deployment to run its own **trusted setup** on local storage. Your instance generates unique proving keys; attestations are verifiable with **your** verification keys — not keys from the repo, Docker image, or vendor.
 
 ## What sovereign means
 

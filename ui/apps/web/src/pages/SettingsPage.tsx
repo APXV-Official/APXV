@@ -8,7 +8,7 @@ import {
   repairIntegrations,
   revokeApiKey,
 } from "@apxv/api-client";
-import { DEFAULT_APXV_ROOT } from "@apxv/types";
+import { APXV_UI_VERSION, DEFAULT_APXV_ROOT } from "@apxv/types";
 import {
   ActionGroup,
   Alert,
@@ -36,12 +36,18 @@ import { QueryState } from "../components/QueryState";
 import { formatApiError } from "../lib/api-errors";
 import { downloadJson } from "../lib/download";
 import { getDefaultBaseUrl } from "../lib/tauri";
-import { invokeTauri, isTauri, quitApxvDesktop } from "../lib/tauri";
+import {
+  formatServerStatus,
+  invokeTauri,
+  isTauri,
+  quitApxvDesktop,
+  type ServerStatus,
+} from "../lib/tauri";
 
 export function SettingsPage() {
   const navigate = useNavigate();
   const { apiKey, resetOnboarding } = useApp();
-  const [serverStatus, setServerStatus] = useState<string | null>(null);
+  const [serverStatus, setServerStatus] = useState<ServerStatus | null>(null);
   const [busy, setBusy] = useState(false);
   const [newKeyId, setNewKeyId] = useState("");
   const [newKeyDesc, setNewKeyDesc] = useState("");
@@ -51,6 +57,7 @@ export function SettingsPage() {
   const [keyError, setKeyError] = useState<string | null>(null);
   const [repairMessage, setRepairMessage] = useState<string | null>(null);
   const [repairError, setRepairError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const keysQuery = useQuery({
     queryKey: ["keys"],
@@ -112,17 +119,13 @@ export function SettingsPage() {
   async function refreshServerStatus() {
     if (!isTauri()) return;
     setBusy(true);
+    setServerError(null);
     try {
-      const status = await invokeTauri<{ running: boolean; pid: number | null }>(
-        "get_apxv_server_status",
-      );
-      setServerStatus(
-        status.running
-          ? `Running (pid ${status.pid ?? "unknown"})`
-          : "Stopped",
-      );
+      const status = await invokeTauri<ServerStatus>("get_apxv_server_status");
+      setServerStatus(status);
     } catch (err) {
-      setServerStatus((err as Error).message);
+      setServerStatus(null);
+      setServerError(formatApiError(err));
     } finally {
       setBusy(false);
     }
@@ -369,8 +372,36 @@ export function SettingsPage() {
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
             Start and stop the APXV API from the desktop shell.
           </p>
+          {serverError && (
+            <Alert variant="destructive">
+              <AlertDescription>{serverError}</AlertDescription>
+            </Alert>
+          )}
           {serverStatus && (
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">{serverStatus}</p>
+            <div className="divide-y divide-[hsl(var(--divider-subtle))] text-sm">
+              <div className="flex items-center justify-between py-3">
+                <span className="text-[hsl(var(--muted-foreground))]">Port :8741</span>
+                <span className="inline-flex items-center gap-2">
+                  <StatusDot tone={serverStatus.port_open ? "success" : "muted"} />
+                  {serverStatus.port_open ? "Listening" : "Free"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-3">
+                <span className="text-[hsl(var(--muted-foreground))]">Process</span>
+                <span>
+                  {serverStatus.running
+                    ? `pid ${serverStatus.pid ?? "unknown"}`
+                    : "Not running"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-3">
+                <span className="text-[hsl(var(--muted-foreground))]">Managed by desktop</span>
+                <span>{serverStatus.managed ? "Yes" : "External listener"}</span>
+              </div>
+              <p className="py-3 text-[hsl(var(--muted-foreground))]">
+                {formatServerStatus(serverStatus)}
+              </p>
+            </div>
           )}
           <ActionGroup>
             <Button variant="link" size="sm" disabled={busy} onClick={() => void refreshServerStatus()}>
@@ -399,6 +430,18 @@ export function SettingsPage() {
               Stop server
             </Button>
             <Button
+              variant="link"
+              size="sm"
+              disabled={busy}
+              onClick={() =>
+                void invokeTauri<string>("restart_apxv_server", {
+                  apxvRoot: DEFAULT_APXV_ROOT,
+                }).then(() => refreshServerStatus())
+              }
+            >
+              Restart server
+            </Button>
+            <Button
               variant="secondary"
               size="sm"
               disabled={busy}
@@ -409,6 +452,17 @@ export function SettingsPage() {
           </ActionGroup>
         </section>
       )}
+
+      <section className="space-y-4 border-t border-[hsl(var(--divider))] pt-8">
+        <SectionHeader title="About APXV™" />
+        <p className="text-sm text-[hsl(var(--muted-foreground))]">
+          Attested Proof Execution Verified — governed local agents with Groth16
+          proofs. Operator console v{APXV_UI_VERSION}.
+        </p>
+        <p className="text-xs text-[hsl(var(--caption))]">
+          APXV™ is a trademark of APXVdev. See NOTICE in the runtime distribution.
+        </p>
+      </section>
     </PageShell>
   );
 }

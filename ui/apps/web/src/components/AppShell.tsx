@@ -195,7 +195,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <IntegrityBadge />
           <div className="space-y-1 px-1 text-center">
             <p className="text-xs text-[hsl(var(--caption))]">
-              APXV v{APXV_UI_VERSION}
+              APXV™ v{APXV_UI_VERSION}
             </p>
             <p className="text-[0.625rem] tracking-wide text-[hsl(var(--caption))]/70">
               Governed · Local · Verified

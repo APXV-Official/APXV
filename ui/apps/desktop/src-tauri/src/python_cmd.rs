@@ -41,10 +41,21 @@ pub fn spawn_python_module_server(module: &str, args: &[&str], cwd: &str) -> Res
     let mut module_args = vec!["-m", module];
     module_args.extend_from_slice(args);
 
-    Command::new(&python)
-        .args(&module_args)
-        .current_dir(cwd)
-        .spawn()
+    let mut cmd = Command::new(&python);
+    cmd.args(&module_args).current_dir(cwd);
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::CommandExt;
+        unsafe {
+            cmd.pre_exec(|| {
+                libc::setpgid(0, 0);
+                Ok(())
+            });
+        }
+    }
+
+    cmd.spawn()
         .map_err(|e| format!("Failed to start {module} with {python}: {e}"))
 }
 

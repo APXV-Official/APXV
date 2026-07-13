@@ -33,7 +33,14 @@ import {
   SelectableListBadge,
   SelectableListItem,
 } from "../components/SelectableListItem";
+import { PackStudioOnRamp } from "../components/PackStudioOnRamp";
 import { formatApiError } from "../lib/api-errors";
+import { notifyPipelineQueued } from "../lib/jobs-cache";
+import {
+  defaultQuickCloneId,
+  REFERENCE_PACK_ID,
+  type PackTemplate,
+} from "../lib/pack-studio";
 
 function packKind(pack: PackInfo): string {
   const id = pack.id.toLowerCase();
@@ -137,6 +144,27 @@ export function PacksPage() {
     onError: (err) => setActionError(formatApiError(err)),
   });
 
+  const quickCloneReferenceMutation = useMutation({
+    mutationFn: () => {
+      const packId = defaultQuickCloneId();
+      return clonePack(REFERENCE_PACK_ID, {
+        pack_id: packId,
+        name: "My Redaction Pack",
+        description: "Clone of Reference Redaction Pack — customize governance and agents",
+      });
+    },
+    onSuccess: (data) => {
+      setActionError(null);
+      setShowClone(false);
+      setSelectedId(data.pack.pack_id);
+      void queryClient.invalidateQueries({ queryKey: ["packs"] });
+      setActionMessage(
+        `Reference pack duplicated as ${data.pack.pack_id}. Set active, then edit governance.`,
+      );
+    },
+    onError: (err) => setActionError(formatApiError(err)),
+  });
+
   const cloneMutation = useMutation({
     mutationFn: (pack: PackInfo) =>
       clonePack(pack.id, {
@@ -175,11 +203,16 @@ export function PacksPage() {
         "Contact: jane@example.com, phone (555) 123-4567, SSN 123-45-6789.";
       return runPipeline(body);
     },
-    onSuccess: (result) => {
-      void queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    onSuccess: (result, pack) => {
       if (result.mode === "queued" && result.job_id) {
+        notifyPipelineQueued(queryClient, result.job_id, {
+          pack: pack.id,
+          attest: true,
+        });
         setRunMessage(`Job queued: ${result.job_id}`);
         void navigate({ to: "/jobs", search: { id: result.job_id } });
+      } else {
+        void queryClient.invalidateQueries({ queryKey: ["jobs"] });
       }
     },
     onError: (err) => setActionError(formatApiError(err)),
@@ -188,9 +221,32 @@ export function PacksPage() {
   const activePack = packs.find((p) => p.id === activeId);
   const isActivePack = Boolean(activePackId && activePack?.id === activePackId);
   const needsConfirm = Boolean(activePack && !activePack.official);
+  const hasCustomPack = packs.some((p) => !p.official);
+
+  function openCreateForm(nextTemplate: PackTemplate) {
+    setShowCreate(true);
+    setTemplate(nextTemplate);
+    setNameInput(
+      nextTemplate === "reference" ? "My Agent Pack" : "My Minimal Pack",
+    );
+    setSlugInput(nextTemplate === "reference" ? "my-agent-pack" : "my-minimal-pack");
+    setDescInput(
+      nextTemplate === "reference"
+        ? "Custom pack scaffolded from the reference redaction template"
+        : "Empty governance stubs — add rules and agents yourself",
+    );
+    setActionError(null);
+  }
 
   return (
     <PageShell wide className="space-y-10">
+      <PackStudioOnRamp
+        onDuplicateReference={() => quickCloneReferenceMutation.mutate()}
+        onCreateFromTemplate={openCreateForm}
+        duplicatePending={quickCloneReferenceMutation.isPending}
+        showGettingStarted={!hasCustomPack || showCreate}
+      />
+
       <PageToolbar>
         <ActionGroup>
           <Button variant="link" size="sm" onClick={() => setShowCreate((v) => !v)}>
@@ -317,7 +373,7 @@ export function PacksPage() {
               error={packsQuery.error}
               isEmpty={!packsQuery.isLoading && packs.length === 0}
               emptyTitle="No packs found"
-              emptyDescription="Create a pack or confirm your runtime is connected."
+              emptyDescription="Use Duplicate reference pack above, or create from a template."
             >
               <div className="divide-y divide-[hsl(var(--divider-subtle))]">
                 {packs.map((pack) => (
@@ -374,6 +430,14 @@ export function PacksPage() {
                 </pre>
               )}
 
+              {activePack.id === REFERENCE_PACK_ID && (
+                <p className="rounded-lg bg-[hsl(var(--surface-elevated))] px-4 py-3 text-sm text-[hsl(var(--muted-foreground))]">
+                  This is the official reference pack. Use{" "}
+                  <strong>Duplicate reference pack</strong> at the top to make an
+                  editable copy without changing the built-in pack.
+                </p>
+              )}
+
               {detailQuery.data?.agents && detailQuery.data.agents.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Agent chain</p>
@@ -422,16 +486,28 @@ export function PacksPage() {
                 >
                   {runMutation.isPending ? "Running…" : "Run pack (sample input)"}
                 </Button>
-                <Button
-                  variant="link"
-                  onClick={() => {
-                    setShowClone((v) => !v);
-                    setCloneName(`${activePack.name} Copy`);
-                    setCloneSlug(`${packKind(activePack)}-copy`);
-                  }}
-                >
-                  {showClone ? "Cancel clone" : "Clone pack"}
-                </Button>
+                {activePack.id === REFERENCE_PACK_ID ? (
+                  <Button
+                    variant="link"
+                    disabled={quickCloneReferenceMutation.isPending}
+                    onClick={() => quickCloneReferenceMutation.mutate()}
+                  >
+                    {quickCloneReferenceMutation.isPending
+                      ? "Duplicating…"
+                      : "Duplicate reference pack"}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      setShowClone((v) => !v);
+                      setCloneName(`${activePack.name} Copy`);
+                      setCloneSlug(`${packKind(activePack)}-copy`);
+                    }}
+                  >
+                    {showClone ? "Cancel clone" : "Clone pack"}
+                  </Button>
+                )}
                 <Button
                   variant="link"
                   onClick={() => {

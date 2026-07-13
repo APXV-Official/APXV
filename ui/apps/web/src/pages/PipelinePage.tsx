@@ -27,6 +27,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "../components/PageShell";
 import { formatApiError } from "../lib/api-errors";
+import { notifyPipelineQueued } from "../lib/jobs-cache";
 
 function packKind(pack: PackInfo): "reference" | "document" | "ai" | "custom" {
   const id = pack.id.toLowerCase();
@@ -170,12 +171,17 @@ export function PipelinePage() {
       return runPipeline(body);
     },
     onSuccess: (result) => {
-      void queryClient.invalidateQueries({ queryKey: ["jobs"] });
       void queryClient.invalidateQueries({ queryKey: ["artifacts"] });
       if (result.mode === "queued" && result.job_id) {
+        notifyPipelineQueued(queryClient, result.job_id, {
+          pack: activePack?.id,
+          attest,
+          input_text: inputText.trim() || undefined,
+        });
         setResultMessage(`Job queued: ${result.job_id}`);
         void navigate({ to: "/jobs", search: { id: result.job_id } });
       } else {
+        void queryClient.invalidateQueries({ queryKey: ["jobs"] });
         setResultMessage(result.message ?? "Pipeline complete.");
       }
     },

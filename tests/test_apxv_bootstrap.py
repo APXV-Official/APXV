@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from scripts.apxv_bootstrap import main as bootstrap_main
-from scripts.bootstrap.constants import ENTITY_CIRCUITS, GOVERNANCE_CIRCUITS
+from scripts.bootstrap.constants import BOOTSTRAP_VERSION, ENTITY_CIRCUITS, GOVERNANCE_CIRCUITS
 from scripts.bootstrap.install_json import read_install_json
 from scripts.bootstrap.orchestrator import BootstrapOptions, run_bootstrap
 from scripts.bootstrap.preflight import run_preflight
@@ -82,7 +82,7 @@ def test_bootstrap_fresh_tmp_path_writes_install_json(tmp_path: Path, monkeypatc
     install = read_install_json(tmp_path)
     assert install is not None
     assert install["sovereign_setup"] is True
-    assert install["bootstrap_version"] == "1.3.1"
+    assert install["bootstrap_version"] == BOOTSTRAP_VERSION
     assert install["profile"] == "ci"
     assert len(install["vk_hashes"]) == len(GOVERNANCE_CIRCUITS) + len(ENTITY_CIRCUITS)
     assert (tmp_path / "managed" / "config" / "capabilities.json").is_file()

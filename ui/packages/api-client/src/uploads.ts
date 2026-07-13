@@ -1,5 +1,6 @@
 import { authHeaders, getApiConfig, notifyUnauthorized } from "./configure";
 import { ApiError } from "./http";
+import { resolveFetch } from "./platform-fetch";
 
 export interface UploadFileInfo {
   filename: string;
@@ -28,7 +29,8 @@ export async function createUpload(
 
   const headers: Record<string, string> = authHeaders(config.apiKey);
 
-  const response = await fetch(`${base}/api/v2/uploads`, {
+  const fetchImpl = await resolveFetch();
+  const response = await fetchImpl(`${base}/api/v2/uploads`, {
     method: "POST",
     headers,
     body: form,

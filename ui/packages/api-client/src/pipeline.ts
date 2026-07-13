@@ -1,5 +1,6 @@
 import { authHeaders, getApiConfig, notifyUnauthorized } from "./configure";
 import { ApiError } from "./http";
+import { resolveFetch } from "./platform-fetch";
 import type {
   JobQueued,
   PipelineRunRequest as GeneratedPipelineRunRequest,
@@ -30,7 +31,8 @@ export async function runPipeline(
     ...authHeaders(config.apiKey),
   };
 
-  const response = await fetch(url, {
+  const fetchImpl = await resolveFetch();
+  const response = await fetchImpl(url, {
     method: "POST",
     headers,
     body: JSON.stringify(body),

@@ -16,7 +16,7 @@ export function BrandLogo({
   return (
     <div className={cn("min-w-0", className)}>
       <div className={cn("leading-none", textSize)}>
-        <span className="font-bold tracking-tight text-white">APXV</span>
+        <span className="font-bold tracking-tight text-white">APXV™</span>
       </div>
       {showSubtitle && !isTauri() && (
         <p className="mt-1.5 text-sm font-medium tracking-wide text-[hsl(var(--muted-foreground))]">

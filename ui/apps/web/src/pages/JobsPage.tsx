@@ -20,13 +20,17 @@ import {
   StatusDot,
 } from "@apxv/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
 import { JobDetailPanel } from "../components/JobDetailPanel";
 import { JobsTable } from "../components/JobsTable";
 import { PageShell } from "../components/PageShell";
 import { formatApiError } from "../lib/api-errors";
 import { truncateId } from "../lib/format-id";
+import {
+  invalidateJobsQueries,
+  notifyPipelineQueued,
+} from "../lib/jobs-cache";
 import { useJobStream } from "../hooks/useJobStream";
 
 export function JobsPage() {
@@ -35,19 +39,7 @@ export function JobsPage() {
   const { id: selectedId } = useSearch({ from: "/shell/jobs" });
   const [statusFilter, setStatusFilter] = useState<Job["status"] | "">("");
   const [retryError, setRetryError] = useState<string | null>(null);
-  const { connected, error: streamError, events } = useJobStream(true);
-  const lastEvent = events[events.length - 1];
-
-  useEffect(() => {
-    if (lastEvent) {
-      void queryClient.invalidateQueries({ queryKey: ["jobs"] });
-      if (selectedId === lastEvent.job_id) {
-        void queryClient.invalidateQueries({
-          queryKey: ["jobs", "detail", selectedId],
-        });
-      }
-    }
-  }, [lastEvent, queryClient, selectedId]);
+  const { connected, error: streamError } = useJobStream(true);
 
   const jobsQuery = useQuery({
     queryKey: ["jobs", statusFilter],
@@ -56,16 +48,19 @@ export function JobsPage() {
         limit: 50,
         status: statusFilter || undefined,
       }),
-    refetchInterval: connected ? false : 5000,
+    staleTime: connected ? 15_000 : 2_000,
+    refetchInterval: connected ? false : 2_000,
   });
 
   const detailQuery = useQuery({
     queryKey: ["jobs", "detail", selectedId],
     queryFn: () => getJob(selectedId!),
     enabled: Boolean(selectedId),
+    staleTime: connected ? 5_000 : 1_000,
     refetchInterval: (q) => {
+      if (connected) return false;
       const status = q.state.data?.status;
-      return status === "queued" || status === "running" ? 2000 : false;
+      return status === "queued" || status === "running" ? 1_500 : false;
     },
   });
 
@@ -88,11 +83,13 @@ export function JobsPage() {
         async: true,
       });
     },
-    onSuccess: (result) => {
+    onSuccess: (result, job) => {
       setRetryError(null);
-      void queryClient.invalidateQueries({ queryKey: ["jobs"] });
       if (result.mode === "queued" && result.job_id) {
+        notifyPipelineQueued(queryClient, result.job_id, job.payload);
         void navigate({ to: "/jobs", search: { id: result.job_id } });
+      } else {
+        invalidateJobsQueries(queryClient);
       }
     },
     onError: (err) => setRetryError(formatApiError(err)),
@@ -127,7 +124,11 @@ export function JobsPage() {
             <option value="completed">Completed</option>
             <option value="failed">Failed</option>
           </Select>
-          <Button variant="link" size="sm" onClick={() => jobsQuery.refetch()}>
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => invalidateJobsQueries(queryClient)}
+          >
             Refresh
           </Button>
         </ActionGroup>
@@ -154,6 +155,11 @@ export function JobsPage() {
               isLoading={jobsQuery.isLoading}
               errorMessage={
                 jobsQuery.isError ? formatApiError(jobsQuery.error) : null
+              }
+              emptyAction={
+                <Button size="sm" asChild>
+                  <Link to="/pipeline">Run a pipeline</Link>
+                </Button>
               }
               onRetry={(job) => retryMutation.mutate(job)}
               retryingId={
@@ -183,7 +189,7 @@ export function JobsPage() {
               description="Select a job from the queue to review attestation, redactions, and artifacts."
             />
           )}
-          {selectedId && detailQuery.isLoading && (
+          {selectedId && detailQuery.isLoading && !detailQuery.data && (
             <div className="space-y-3">
               <Skeleton className="h-6 w-2/3" />
               <Skeleton className="h-24 w-full" />

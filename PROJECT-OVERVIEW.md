@@ -2,7 +2,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform.
 
-**Version:** 1.3.0 · **License:** Apache 2.0
+**Version:** 1.3.2 · **License:** Apache 2.0
 
 This guide describes the repository layout, core components, and documentation index. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
@@ -41,7 +41,7 @@ APXV is a **foundation for builders** — not a finished consumer product and no
 | Voice suite + ceremony transparency (v1.1) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
 | Official agent packs (v1.2) | Reference Redaction, Document Processing, AI Governance |
-| Current version | **v1.3.0** |
+| Current version | **v1.3.2** |
 
 The reference 3-agent pipeline (redact → orchestrate → attest), three official pack smoke tests, voice path, dual-track Groth16 verification, sovereign bootstrap, and API v2 are covered by **756 automated tests** (1 optional Vosk skip; see `python -m pytest tests/ -q`).
 

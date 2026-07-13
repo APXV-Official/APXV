@@ -161,6 +161,14 @@ export function BootstrapPage() {
             </p>
           </div>
 
+          {(running || complete) && (
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              {complete
+                ? "Bootstrap complete"
+                : `Step ${Math.min(stepIndex + 1, STEPS.length)} of ${STEPS.length}`}
+            </p>
+          )}
+
           <ol className="space-y-3">
             {STEPS.map((step, index) => {
               const done = complete || (stepIndex >= 0 && index < stepIndex);

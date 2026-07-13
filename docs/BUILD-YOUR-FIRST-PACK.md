@@ -1,6 +1,6 @@
 # Build Your First Agent Pack
 
-A hands-on path from zero to a **runnable custom pack** on APXV v1.3.0. Time: ~30 minutes after `setup_first_run` is complete.
+A hands-on path from zero to a **runnable custom pack** on APXV v1.3+. Time: ~30 minutes after sovereign bootstrap is complete. In the operator console (v1.3.2+), start from **Agent packs → Duplicate reference pack**.
 
 **You will:**
 

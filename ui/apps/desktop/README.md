@@ -30,7 +30,7 @@ pnpm dev
 
 ## Production build
 
-v1.3.1 ships **Windows MSI/NSIS** and **Linux deb/AppImage**. macOS DMG is planned for a follow-up release (build requires a Mac).
+v1.3.2 ships **Windows MSI/NSIS** and **Linux deb/AppImage**. macOS DMG is planned for a follow-up release (build requires a Mac).
 
 ### Windows
 
@@ -43,8 +43,8 @@ From the repo root:
 Outputs:
 
 - `ui\apps\desktop\src-tauri\target\release\apxv.exe`
-- `ui\apps\desktop\src-tauri\target\release\bundle\msi\APXV_1.3.1_x64_en-US.msi`
-- `ui\apps\desktop\src-tauri\target\release\bundle\nsis\APXV_1.3.1_x64-setup.exe`
+- `ui\apps\desktop\src-tauri\target\release\bundle\msi\APXV_1.3.2_x64_en-US.msi`
+- `ui\apps\desktop\src-tauri\target\release\bundle\nsis\APXV_1.3.2_x64-setup.exe`
 
 ### macOS / Linux
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-BOOTSTRAP_VERSION = "1.3.1"
+BOOTSTRAP_VERSION = "1.3.2"
 
 GOVERNANCE_CIRCUITS = ("redaction", "rule-binding", "pipeline")
 

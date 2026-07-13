@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT))
 
 from agents.runtime import APXVRuntime
 from scripts.apxv_doctor import run_doctor
-from scripts.bootstrap.constants import ENTITY_CIRCUITS, GOVERNANCE_CIRCUITS
+from scripts.bootstrap.constants import BOOTSTRAP_VERSION, ENTITY_CIRCUITS, GOVERNANCE_CIRCUITS
 from scripts.bootstrap.install_json import build_install_json, write_install_json
 from scripts.bootstrap.sovereign_check import verify_sovereign_setup
 from scripts.bootstrap.vendor_blocklist import load_vendor_vk_blocklist
@@ -137,7 +137,7 @@ def test_doctor_fails_when_install_vk_hashes_mismatch(tmp_path: Path):
     write_install_json(
         tmp_path,
         {
-            "bootstrap_version": "1.3.1",
+            "bootstrap_version": BOOTSTRAP_VERSION,
             "profile": "ci",
             "sovereign_setup": True,
             "zk_setup_at": "2026-07-08T00:00:00+00:00",
