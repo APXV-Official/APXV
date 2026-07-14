@@ -9,7 +9,7 @@ on:
       tag:
         description: Git tag to attach installers to (must exist on remote)
         required: true
-        default: v1.3.2
+        default: v1.3.3
   push:
     branches:
       - main

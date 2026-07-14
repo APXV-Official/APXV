@@ -5,7 +5,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
 
-use crate::paths::resolve_apxv_root;
+use crate::paths::{expand_apxv_root, resolve_apxv_root};
 use crate::python_cmd::spawn_python_module_server;
 
 const DEFAULT_API_PORT: u16 = 8741;
@@ -176,7 +176,9 @@ fn reconcile_child(guard: &mut ServerState) -> Result<(), String> {
 
 #[tauri::command]
 pub fn start_apxv_server(apxv_root: Option<String>) -> Result<String, String> {
-    let root = apxv_root.unwrap_or_else(resolve_apxv_root);
+    let root = apxv_root
+        .map(|r| expand_apxv_root(&r))
+        .unwrap_or_else(resolve_apxv_root);
     let mut guard = SERVER.lock().map_err(|e| e.to_string())?;
     reconcile_child(&mut guard)?;
 
@@ -184,11 +186,15 @@ pub fn start_apxv_server(apxv_root: Option<String>) -> Result<String, String> {
         if guard.child.is_some() {
             return Ok("already_running".into());
         }
-        return Ok("already_running (external listener on :8741)".into());
+        // Orphan or foreign listener (e.g. force-killed desktop) — reclaim :8741.
+        release_api_port()?;
     }
 
     if guard.child.is_some() {
-        return Ok("already_running".into());
+        reconcile_child(&mut guard)?;
+        if guard.child.is_some() {
+            return Ok("already_running".into());
+        }
     }
 
     let child = spawn_apxv_serve(&root)?;
@@ -295,5 +301,47 @@ mod tests {
     #[test]
     fn unreachable_port_is_not_open() {
         assert!(!local_api_reachable(19_874));
+    }
+
+    /// Integration gate: same start/stop/restart path Tauri Settings uses.
+    #[test]
+    fn managed_server_lifecycle_start_stop_restart() {
+        let _ = stop_apxv_server();
+        for _ in 0..50 {
+            if !local_api_reachable(DEFAULT_API_PORT) {
+                break;
+            }
+            thread::sleep(Duration::from_millis(100));
+        }
+
+        let start = start_apxv_server(None).expect("start_apxv_server");
+        assert!(
+            local_api_reachable(DEFAULT_API_PORT),
+            "port :8741 not open after start: {start}"
+        );
+
+        stop_apxv_server().expect("stop_apxv_server");
+        for _ in 0..50 {
+            if !local_api_reachable(DEFAULT_API_PORT) {
+                break;
+            }
+            thread::sleep(Duration::from_millis(100));
+        }
+        assert!(
+            !local_api_reachable(DEFAULT_API_PORT),
+            "port :8741 still open after stop"
+        );
+
+        let restart = restart_apxv_server(None).expect("restart_apxv_server");
+        assert!(
+            local_api_reachable(DEFAULT_API_PORT),
+            "port :8741 not open after restart: {restart}"
+        );
+
+        let status = get_apxv_server_status().expect("get_apxv_server_status");
+        assert!(status.port_open, "status.port_open false after restart");
+        assert!(status.managed, "server should be managed after restart");
+
+        stop_apxv_server().expect("final stop");
     }
 }

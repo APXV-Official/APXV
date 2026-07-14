@@ -8,7 +8,7 @@ import {
   repairIntegrations,
   revokeApiKey,
 } from "@apxv/api-client";
-import { APXV_UI_VERSION, DEFAULT_APXV_ROOT } from "@apxv/types";
+import { APXV_UI_VERSION } from "@apxv/types";
 import {
   ActionGroup,
   Alert,
@@ -37,10 +37,12 @@ import { formatApiError } from "../lib/api-errors";
 import { downloadJson } from "../lib/download";
 import { getDefaultBaseUrl } from "../lib/tauri";
 import {
+  ensureApxvServerStarted,
   formatServerStatus,
   invokeTauri,
   isTauri,
   quitApxvDesktop,
+  restartApxvServer,
   type ServerStatus,
 } from "../lib/tauri";
 
@@ -126,6 +128,32 @@ export function SettingsPage() {
     } catch (err) {
       setServerStatus(null);
       setServerError(formatApiError(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function runServerAction(action: () => Promise<unknown>) {
+    if (!isTauri()) return;
+    setBusy(true);
+    setServerError(null);
+    try {
+      await action();
+      const status = await invokeTauri<ServerStatus>("get_apxv_server_status");
+      setServerStatus(status);
+      if (!status.port_open) {
+        setServerError(
+          "Server command finished but port :8741 is still free. Check that Python 3 is installed and use Start server again.",
+        );
+      }
+    } catch (err) {
+      setServerError(formatApiError(err));
+      try {
+        const status = await invokeTauri<ServerStatus>("get_apxv_server_status");
+        setServerStatus(status);
+      } catch {
+        setServerStatus(null);
+      }
     } finally {
       setBusy(false);
     }
@@ -411,11 +439,7 @@ export function SettingsPage() {
               variant="link"
               size="sm"
               disabled={busy}
-              onClick={() =>
-                void invokeTauri("start_apxv_server", {
-                  apxvRoot: DEFAULT_APXV_ROOT,
-                }).then(() => refreshServerStatus())
-              }
+              onClick={() => void runServerAction(() => ensureApxvServerStarted())}
             >
               Start server
             </Button>
@@ -423,9 +447,7 @@ export function SettingsPage() {
               variant="link"
               size="sm"
               disabled={busy}
-              onClick={() =>
-                void invokeTauri("stop_apxv_server").then(() => refreshServerStatus())
-              }
+              onClick={() => void runServerAction(() => invokeTauri("stop_apxv_server"))}
             >
               Stop server
             </Button>
@@ -433,11 +455,7 @@ export function SettingsPage() {
               variant="link"
               size="sm"
               disabled={busy}
-              onClick={() =>
-                void invokeTauri<string>("restart_apxv_server", {
-                  apxvRoot: DEFAULT_APXV_ROOT,
-                }).then(() => refreshServerStatus())
-              }
+              onClick={() => void runServerAction(() => restartApxvServer())}
             >
               Restart server
             </Button>

@@ -4,6 +4,21 @@ All notable changes to APXV are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2026-07-14
+
+Hotfix completing v1.3.2 desktop server lifecycle on Windows — start, stop, restart, and quit must leave a single predictable listener on `:8741`.
+
+### Fixed
+
+- **Windows Python discovery for desktop spawn** — `resolve_python_executable()` probes `py`, `%LOCALAPPDATA%\Python\...`, and `%ProgramFiles%\Python\...` instead of falling back to a broken Store stub; bootstrap and `apxv_serve` use the same resolver.
+- **Orphan listener reclaim** — `start_apxv_server` kills foreign processes on `:8741` (e.g. after force-quit) before spawning a managed listener.
+- **Settings server controls** — Start / Stop / Restart no longer pass a literal `%LOCALAPPDATA%` path; desktop resolves the real install root (same as auto-start on launch). Surfaces errors when Tauri commands fail; warns if port `:8741` stays free after a start attempt.
+- **Windows lifecycle gate** — `scripts/pr2_server_lifecycle_verify.ps1` (parity with Linux `pr2_server_lifecycle_verify.sh`).
+
+### Changed
+
+- Version strings and publish defaults updated to **1.3.3**.
+
 ## [1.3.2] - 2026-07-13
 
 v1.3 series stabilization — operators on Windows and Linux can connect, run jobs, and read markdown artifact reports without fighting the API key, server lifecycle, or raw JSON.
@@ -354,6 +369,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.3.3]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.3
 [1.3.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.2
 [1.3.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.1
 [1.3.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.0

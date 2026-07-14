@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV**, the first open-source implementation.
 
-> **Current release:** [v1.3.2](https://github.com/APXV-Official/APXV/releases/tag/v1.3.2) — v1.3 series stabilization (connect, run, read on Windows + Linux). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/) · [Downloads](docs/DOWNLOADS.md)
+> **Current release:** [v1.3.3](https://github.com/APXV-Official/APXV/releases/tag/v1.3.3) — v1.3 lifecycle hotfix (Windows start/stop/restart on `:8741`). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/) · [Downloads](docs/DOWNLOADS.md)
 
 ## Downloads
 
@@ -174,7 +174,7 @@ Circuit semantics unchanged since v1.1.0 — each operator still runs their own 
 
 ## Status
 
-**v1.3.2 (current release)** — operator reliability: Linux jobs, server lifecycle, onboarding/API key UX, jobs freshness, markdown artifact reports, Pack Studio on-ramp, downloads hub. **v1.3.1** fixed desktop Connect and Jobs on Windows/Linux. **v1.3.0** added sovereign local trust, API v2, Pack Studio, desktop app. Migration: [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md). Full history: [CHANGELOG.md](CHANGELOG.md).
+**v1.3.3 (current release)** — completes Windows desktop server lifecycle (Python discovery, orphan port reclaim, Settings Start/Restart path fix, error surfacing). **v1.3.2** — operator reliability: Linux jobs, onboarding/API key UX, jobs freshness, markdown reports, Pack Studio on-ramp, downloads hub. **v1.3.1** fixed desktop Connect and Jobs on Windows/Linux. **v1.3.0** added sovereign local trust, API v2, Pack Studio, desktop app. Migration: [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md). Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 

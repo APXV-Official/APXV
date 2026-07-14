@@ -7,7 +7,7 @@ import {
   repairAuditLogs,
   testApiConnection,
 } from "@apxv/api-client";
-import { DEFAULT_APXV_ROOT } from "@apxv/types";
+
 import type { OnboardingStep } from "@apxv/types";
 import {
   ActionGroup,
@@ -38,7 +38,11 @@ import {
 import { BrandLogo } from "../components/BrandLogo";
 import { OperatorKeyPanel } from "../components/OperatorKeyPanel";
 import { discoverOperatorKey } from "../lib/operator-key-discovery";
-import { invokeTauri, isTauri } from "../lib/tauri";
+import {
+  ensureApxvServerStarted,
+  getDefaultApxvRoot,
+  isTauri,
+} from "../lib/tauri";
 import { router } from "../router";
 
 const STEPS: OnboardingStep[] = ["welcome", "connect", "doctor", "complete"];
@@ -56,6 +60,7 @@ export function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [serverMessage, setServerMessage] = useState<string | null>(null);
+  const [apxvRoot, setApxvRoot] = useState<string | null>(null);
   const [doctorChecks, setDoctorChecks] = useState<
     Awaited<ReturnType<typeof getSystemDoctor>>["checks"] | null
   >(null);
@@ -110,15 +115,18 @@ export function OnboardingPage() {
     setError(null);
   }
 
+  useEffect(() => {
+    if (!isTauri()) return;
+    void getDefaultApxvRoot().then(setApxvRoot);
+  }, []);
+
   async function handleStartServer() {
     if (!isTauri()) return;
     setBusy(true);
     setError(null);
     setServerMessage(null);
     try {
-      const result = await invokeTauri<string>("start_apxv_server", {
-        apxvRoot: DEFAULT_APXV_ROOT,
-      });
+      const result = await ensureApxvServerStarted();
       setServerMessage(result);
       await getSystemHealth();
     } catch (err) {
@@ -253,7 +261,7 @@ export function OnboardingPage() {
                 <div className="rounded-lg bg-[hsl(var(--surface-elevated))] px-4 py-4">
                   <p className="mb-2 text-base font-medium">Desktop: start runtime</p>
                   <p className="mb-3 text-sm text-[hsl(var(--muted-foreground))]">
-                    Launch apxv_serve from {DEFAULT_APXV_ROOT}
+                    Launch apxv_serve from {apxvRoot ?? "your local APXV folder"}
                   </p>
                   <ActionGroup>
                     <Button

@@ -1,6 +1,6 @@
 # APXV Quickstart (15 Minutes)
 
-**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3** adds sovereign local trust and a desktop operator console; **v1.3.2** stabilizes connect → run → read on Windows and Linux.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3** adds sovereign local trust and a desktop operator console; **v1.3.2** stabilizes connect → run → read on Windows and Linux; **v1.3.3** completes Windows desktop server start/stop/restart on `:8741`.
 
 ## Choose your path
 

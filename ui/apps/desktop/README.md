@@ -30,7 +30,7 @@ pnpm dev
 
 ## Production build
 
-v1.3.2 ships **Windows MSI/NSIS** and **Linux deb/AppImage**. macOS DMG is planned for a follow-up release (build requires a Mac).
+v1.3.3 ships **Windows MSI/NSIS** and **Linux deb/AppImage**. macOS DMG is planned for a follow-up release (build requires a Mac). On Windows, install **Python 3.10+** from [python.org](https://www.python.org/downloads/) so the desktop app can spawn `apxv_serve`.
 
 ### Windows
 
@@ -43,8 +43,12 @@ From the repo root:
 Outputs:
 
 - `ui\apps\desktop\src-tauri\target\release\apxv.exe`
-- `ui\apps\desktop\src-tauri\target\release\bundle\msi\APXV_1.3.2_x64_en-US.msi`
-- `ui\apps\desktop\src-tauri\target\release\bundle\nsis\APXV_1.3.2_x64-setup.exe`
+- `ui\apps\desktop\src-tauri\target\release\bundle\msi\APXV_1.3.3_x64_en-US.msi`
+- `ui\apps\desktop\src-tauri\target\release\bundle\nsis\APXV_1.3.3_x64-setup.exe`
+
+Use `pnpm exec -- tauri build` (or `.\scripts\build-desktop.ps1`) — not `cargo build --release` alone — so the UI is embedded in the release binary.
+
+**Lifecycle gates (Windows):** `.\scripts\pr2_server_lifecycle_verify.ps1` · built binary: `.\scripts\desktop-lifecycle-verify.ps1`
 
 ### macOS / Linux
 
@@ -58,7 +62,7 @@ Outputs (platform-dependent):
 - macOS: `bundle/macos/APXV.app`, `bundle/dmg/*.dmg`
 - Linux: `bundle/deb/*.deb`, `bundle/appimage/*.AppImage`
 
-**Prerequisites:** Python 3.9+, Node 20+, pnpm 9+, Rust stable. Linux builds need `webkit2gtk` and related Tauri deps per [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/).
+**Prerequisites:** Python 3.10+ on Windows for desktop server spawn (3.9+ for general runtime dev), Node 20+, pnpm 9+, Rust stable. Linux builds need `webkit2gtk` and related Tauri deps per [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/).
 
 ### App icon
 

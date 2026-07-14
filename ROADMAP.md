@@ -1,15 +1,24 @@
 # APXV Roadmap
 
-**Last updated:** 2026-07-13
+**Last updated:** 2026-07-14
 
 APXV is a local governed runtime. Verticals ship as **agent packs** on top. This is our direction — not a fixed timeline. See [CHANGELOG.md](CHANGELOG.md) for what has shipped.
 
-## Shipped (v1.3.2 — current)
+## Shipped (v1.3.3 — current)
 
-**v1.3 series stabilization** — connect, run, read on Windows and Linux. No new platform features; operator reliability and clarity.
+**v1.3 lifecycle hotfix** — Windows desktop start/stop/restart/quit reliably manages `:8741`.
+
+- **Windows Python discovery** — desktop spawn finds real interpreter (not Store stub)
+- **Orphan port reclaim** — foreign listeners cleared on start/restart
+- **Settings Start/Restart** — resolves real install root (no literal `%LOCALAPPDATA%` path from UI)
+- **Settings errors** — server control failures visible to operator
+
+## Shipped (v1.3.2)
+
+**v1.3 series stabilization** — connect, run, read on Windows and Linux.
 
 - **Linux desktop jobs** — pipeline/upload via Tauri HTTP (`resolveFetch`)
-- **Server lifecycle** — quit/restart, single listener on `:8741`, Settings server status
+- **Server lifecycle (partial)** — Linux + API path; Windows desktop completed in v1.3.3
 - **Onboarding** — operator key auto-discovery, test connection
 - **Jobs UI** — SSE cache tuning, optimistic queue, faster fallback polling
 - **Artifacts** — markdown **Report** tab + `.md` download

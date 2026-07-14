@@ -132,7 +132,8 @@ If the upgrade causes issues:
 
 - APXV uses file-based storage under `managed/`
 - Most upgrades should not require data migration
-- **v1.3.1 → v1.3.2:** patch upgrade — install latest desktop build from [releases/latest](https://github.com/APXV-Official/APXV/releases/latest). No sovereign re-bootstrap required; same `managed/` and ZK keys. Quit old desktop instances before installing (v1.3.2 improves server lifecycle on `:8741`).
+- **v1.3.2 → v1.3.3:** hotfix — install latest desktop from [releases/latest](https://github.com/APXV-Official/APXV/releases/latest). Same `managed/` and ZK keys. Use tray **Quit** before upgrading; v1.3.3 fixes Windows start/stop/restart on `:8741`.
+- **v1.3.1 → v1.3.2:** patch upgrade — no sovereign re-bootstrap required; same `managed/` and ZK keys.
 - **v1.2.5 → v1.3.0:** full rename and API v2 — see [docs/MIGRATION-v1.3.md](../docs/MIGRATION-v1.3.md)
 - If a future version introduces breaking changes to artifact or log formats, migration steps will be documented in the release notes
 

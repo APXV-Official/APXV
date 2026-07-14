@@ -90,6 +90,28 @@ fn dev_runtime_candidate() -> Option<String> {
     None
 }
 
+/// Expand `%VAR%` / `$VAR` placeholders in a UI-supplied root path.
+pub fn expand_apxv_root(path: &str) -> String {
+    let trimmed = path.trim();
+    if trimmed.is_empty() {
+        return resolve_apxv_root();
+    }
+
+    let mut expanded = trimmed.to_string();
+    for (name, value) in std::env::vars() {
+        let win_token = format!("%{name}%");
+        if expanded.contains(&win_token) {
+            expanded = expanded.replace(&win_token, &value);
+        }
+        let unix_token = format!("${name}");
+        if expanded.contains(&unix_token) {
+            expanded = expanded.replace(&unix_token, &value);
+        }
+    }
+
+    expanded
+}
+
 /// Resolve APXV instance root (managed/, keys/, runtime payload).
 pub fn resolve_apxv_root() -> String {
     if let Ok(root) = std::env::var("APXV_ROOT") {
@@ -145,6 +167,15 @@ pub fn runtime_ready(apxv_root: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn expand_apxv_root_replaces_localappdata_placeholder() {
+        let local = std::env::var("LOCALAPPDATA").unwrap_or_else(|_| "C:\\Users\\test\\AppData\\Local".into());
+        let expanded = expand_apxv_root("%LOCALAPPDATA%\\APXV");
+        assert!(expanded.contains("APXV"));
+        assert!(!expanded.contains('%'));
+        assert!(expanded.starts_with(&local) || expanded.contains("APXV"));
+    }
 
     #[test]
     fn default_root_ends_with_apxv() {
