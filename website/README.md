@@ -2,7 +2,9 @@
 
 Static site deployed to **GitHub Pages** via `.github/workflows/pages.yml`.
 
-**Current release on site:** v1.3.3 (lifecycle hotfix, download hub, APXV™ branding).
+**Current release on site:** v1.3.3 — Windows desktop server lifecycle hotfix.
+
+Download hub and APXV™ branding on the site shipped in the prior v1.3.2 release.
 
 **Live URL (after Pages is enabled):** https://apxv-official.github.io/APXV/
 

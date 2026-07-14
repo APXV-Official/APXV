@@ -55,7 +55,7 @@
           <dl class="hero-meta">
             <div><dt>Source</dt><dd><a href="https://github.com/APXV-Official/APXV" rel="noopener noreferrer">APXV-Official/APXV</a></dd></div>
             <div><dt>API</dt><dd><code>127.0.0.1:8741</code></dd></div>
-            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">756 tests</a></dd></div>
+            <div><dt>CI</dt><dd><a href="https://github.com/APXV-Official/APXV/actions/workflows/ci.yml" rel="noopener noreferrer">797 tests</a></dd></div>
           </dl>
         </div>
         <div class="hero-aside reveal">
@@ -156,7 +156,7 @@ github.com/.../releases/latest
           <li class="tile"><h3>Operator UI</h3><p>React + Tauri console — pipelines, artifacts, verify, Pack Studio.</p></li>
         </ul>
         <p class="stack-line">
-          Python 3.9+, Rust / arkworks, optional E2EE (<code>--encrypt</code>), stdlib HTTP API v1+v2, Docker, <code>ui/</code> operator console
+          Python 3.9+ runtime (Windows desktop server spawn needs 3.10+), Rust / arkworks, optional E2EE (<code>--encrypt</code>), stdlib HTTP API v1+v2, Docker, <code>ui/</code> operator console
         </p>
 
         <div class="diagram-block">
@@ -293,7 +293,7 @@ flowchart TB
           <article class="roadmap-phase">
             <h3>Shipped — v1.3.3 (current)</h3>
             <ul>
-              <li><strong>Windows server lifecycle hotfix</strong> — start/stop/restart on <code>:8741</code></li>
+              <li><strong>Windows desktop hotfix</strong> — server start/stop/restart on <code>:8741</code> (Linux lifecycle largely complete in v1.3.2)</li>
               <li>Python discovery for desktop spawn; orphan port reclaim; Settings resolves real install root</li>
               <li>Settings error surfacing when server commands fail</li>
             </ul>

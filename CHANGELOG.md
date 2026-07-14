@@ -19,6 +19,10 @@ Hotfix completing v1.3.2 desktop server lifecycle on Windows — start, stop, re
 
 - Version strings and publish defaults updated to **1.3.3**.
 
+### Ship artifacts
+
+- `APXV_1.3.3_x64_en-US.msi`, `APXV_1.3.3_x64-setup.exe`, `APXV_1.3.3_amd64.deb`, `APXV_1.3.3_amd64.AppImage`
+
 ## [1.3.2] - 2026-07-13
 
 v1.3 series stabilization — operators on Windows and Linux can connect, run jobs, and read markdown artifact reports without fighting the API key, server lifecycle, or raw JSON.

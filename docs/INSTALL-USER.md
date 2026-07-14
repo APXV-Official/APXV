@@ -26,7 +26,7 @@ For teams without a desktop install, use [DOCKER.md](DOCKER.md) instead.
 2. Run the installer (standard per-user or per-machine install).
 3. Launch **APXV™** from the Start Menu.
 4. Complete the **bootstrap wizard** on first launch (sovereign ZK setup — see [SOVEREIGN-SETUP.md](SOVEREIGN-SETUP.md)).
-5. Paste or confirm your operator API key on the setup screen (v1.3.3 can auto-discover `OPERATOR-KEY-*.txt`).
+5. Paste or confirm your operator API key on the setup screen (v1.3.2+ can auto-discover `OPERATOR-KEY-*.txt`).
 6. Use the dashboard — pipeline, jobs, verify, governance, packs.
 
 ### Linux

@@ -6,7 +6,7 @@ APXV is a local governed runtime. Verticals ship as **agent packs** on top. This
 
 ## Shipped (v1.3.3 — current)
 
-**v1.3 lifecycle hotfix** — Windows desktop start/stop/restart/quit reliably manages `:8741`.
+**v1.3.3 Windows desktop hotfix** — start/stop/restart/quit reliably manages `:8741` on Windows (Linux path largely shipped in v1.3.2).
 
 - **Windows Python discovery** — desktop spawn finds real interpreter (not Store stub)
 - **Orphan port reclaim** — foreign listeners cleared on start/restart

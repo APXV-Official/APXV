@@ -43,7 +43,7 @@ APXV is a **foundation for builders** — not a finished consumer product and no
 | Official agent packs (v1.2) | Reference Redaction, Document Processing, AI Governance |
 | Current version | **v1.3.3** |
 
-The reference 3-agent pipeline (redact → orchestrate → attest), three official pack smoke tests, voice path, dual-track Groth16 verification, sovereign bootstrap, and API v2 are covered by **756 automated tests** (1 optional Vosk skip; see `python -m pytest tests/ -q`).
+The reference 3-agent pipeline (redact → orchestrate → attest), three official pack smoke tests, voice path, dual-track Groth16 verification, sovereign bootstrap, and API v2 are covered by **797 automated tests** (2 skipped when Vosk/voice deps absent; see `python -m pytest tests/ -q`).
 
 ---
 
@@ -163,7 +163,7 @@ flowchart TB
 
 | Check | Coverage |
 |-------|----------|
-| Unit & integration tests | `tests/` (756 in CI; voice, ceremony, packs, dual ZK E2E, integrity diagnostics) |
+| Unit & integration tests | `tests/` (797 in CI, 2 skipped; voice, ceremony, packs, dual ZK E2E, integrity diagnostics) |
 | Rust tests | `cargo test` in `apxv-circuits` + `apxv-zk` |
 | CI | `.github/workflows/ci.yml` — pytest, voice extras, ceremony, setup, doctor, integrity |
 | Independent ZK verify | `python -m scripts.verify_attestation --real-zk` |
