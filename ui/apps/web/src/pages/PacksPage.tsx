@@ -25,8 +25,12 @@ import {
   Checkbox,
 } from "@apxv/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import {
+  PackAuthoringWizard,
+  samplePackRunInput,
+} from "../components/PackAuthoringWizard";
 import { PageShell } from "../components/PageShell";
 import { QueryState } from "../components/QueryState";
 import {
@@ -38,30 +42,22 @@ import { formatApiError } from "../lib/api-errors";
 import { notifyPipelineQueued } from "../lib/jobs-cache";
 import {
   defaultQuickCloneId,
+  packIdFromSlug,
+  packKindFromInfo,
   REFERENCE_PACK_ID,
   type PackTemplate,
 } from "../lib/pack-studio";
 
-function packKind(pack: PackInfo): string {
-  const id = pack.id.toLowerCase();
-  if (id.includes("document")) return "document";
-  if (id.includes("ai")) return "ai";
-  if (id.includes("reference")) return "reference";
-  return "custom";
-}
-
-function defaultPackId(slug: string) {
-  const clean = slug
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  return clean ? `apxv-pack-${clean}` : "";
-}
-
 export function PacksPage() {
   const navigate = useNavigate();
+  const { wizard, pack: packFromUrl } = useSearch({ from: "/shell/packs" });
   const queryClient = useQueryClient();
+  const showWizard = wizard === "1";
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (packFromUrl) setSelectedId(packFromUrl);
+  }, [packFromUrl]);
   const [showCreate, setShowCreate] = useState(false);
   const [showClone, setShowClone] = useState(false);
   const [nameInput, setNameInput] = useState("");
@@ -96,14 +92,22 @@ export function PacksPage() {
   });
 
   const packIdPreview = useMemo(
-    () => defaultPackId(slugInput || nameInput),
+    () => packIdFromSlug(slugInput || nameInput),
     [slugInput, nameInput],
   );
 
   const clonePackIdPreview = useMemo(
-    () => defaultPackId(cloneSlug || cloneName),
+    () => packIdFromSlug(cloneSlug || cloneName),
     [cloneSlug, cloneName],
   );
+
+  function closeWizard() {
+    void navigate({
+      to: "/packs",
+      search: { wizard: undefined, pack: packFromUrl },
+      replace: true,
+    });
+  }
 
   const createMutation = useMutation({
     mutationFn: () =>
@@ -188,7 +192,7 @@ export function PacksPage() {
     mutationFn: async (pack: PackInfo) => {
       setRunMessage(null);
       setActionError(null);
-      const kind = packKind(pack);
+      const kind = packKindFromInfo(pack);
       const body: Parameters<typeof runPipeline>[0] = {
         pack: pack.id,
         attest: true,
@@ -199,8 +203,7 @@ export function PacksPage() {
           "Document pack needs a file — open Pipeline and upload a file to run.",
         );
       }
-      body.input_text =
-        "Contact: jane@example.com, phone (555) 123-4567, SSN 123-45-6789.";
+      body.input_text = samplePackRunInput();
       return runPipeline(body);
     },
     onSuccess: (result, pack) => {
@@ -240,6 +243,8 @@ export function PacksPage() {
 
   return (
     <PageShell wide className="space-y-10">
+      {showWizard && <PackAuthoringWizard onClose={closeWizard} />}
+
       <PackStudioOnRamp
         onDuplicateReference={() => quickCloneReferenceMutation.mutate()}
         onCreateFromTemplate={openCreateForm}
@@ -385,7 +390,7 @@ export function PacksPage() {
                     subtitle={pack.id}
                     badge={
                       <>
-                        <SelectableListBadge>{packKind(pack)}</SelectableListBadge>
+                        <SelectableListBadge>{packKindFromInfo(pack)}</SelectableListBadge>
                         {pack.id === activePackId && (
                           <SelectableListBadge variant="success">Active</SelectableListBadge>
                         )}
@@ -411,6 +416,12 @@ export function PacksPage() {
               <Skeleton className="h-4 w-1/3" />
               <Skeleton className="h-24 w-full" />
             </div>
+          )}
+
+          {activeId && detailQuery.isError && (
+            <Alert variant="destructive">
+              <AlertDescription>{formatApiError(detailQuery.error)}</AlertDescription>
+            </Alert>
           )}
 
           {activePack && (
@@ -502,7 +513,7 @@ export function PacksPage() {
                     onClick={() => {
                       setShowClone((v) => !v);
                       setCloneName(`${activePack.name} Copy`);
-                      setCloneSlug(`${packKind(activePack)}-copy`);
+                      setCloneSlug(`${packKindFromInfo(activePack)}-copy`);
                     }}
                   >
                     {showClone ? "Cancel clone" : "Clone pack"}
@@ -564,7 +575,7 @@ export function PacksPage() {
                 </div>
               )}
 
-              {packKind(activePack) === "document" && (
+              {packKindFromInfo(activePack) === "document" && (
                 <Alert variant="warning">
                   <AlertTitle>Document pack</AlertTitle>
                   <AlertDescription>

@@ -21,6 +21,7 @@ from agents.env import get_env
 from agents.runtime import APXVRuntime
 from scripts.bootstrap.install_json import read_install_json
 from scripts.bootstrap.sovereign_check import verify_sovereign_setup
+from scripts.bootstrap.constants import ENTITY_CIRCUITS
 from scripts.setup_first_run import verify_entity_zk_keys, verify_zk_keys
 
 
@@ -42,10 +43,10 @@ def _check_command(name: str) -> bool:
 def _check_rust() -> dict:
     cargo = _check_command("cargo")
     rustc = _check_command("rustc")
-    from scripts.rust_bins import resolve_apx_circuits_binary, resolve_apx_zk_binary
+    from scripts.rust_bins import resolve_apxv_circuits_binary, resolve_apxv_zk_binary
 
-    circuits_bin = resolve_apx_circuits_binary(ROOT) or shutil.which("apxv-circuits")
-    zk_bin = resolve_apx_zk_binary(ROOT) or shutil.which("apxv-zk")
+    circuits_bin = resolve_apxv_circuits_binary(ROOT) or shutil.which("apxv-circuits")
+    zk_bin = resolve_apxv_zk_binary(ROOT) or shutil.which("apxv-zk")
     container = get_env("APXV_CONTAINER_BIND") == "1"
     ok = (cargo and rustc) or (container and circuits_bin and zk_bin)
     return {
@@ -103,7 +104,7 @@ def run_doctor(base_path: Path, *, check_llm: bool = False) -> dict:
             "name": "zk_keys_entity",
             "ok": entity_zk["ready"],
             "detail": entity_zk["circuits"],
-            "required": "entity: 8 apxv-zk circuits",
+            "required": f"entity: {len(ENTITY_CIRCUITS)} apxv-zk circuits",
         }
     )
 

@@ -4,6 +4,46 @@ All notable changes to APXV are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-07-17
+
+### Removed
+
+- **Legacy CLI shims** — `scripts/apx_*.py`, `scripts/run_apx.py`, `auditor/apx_verify.py`, `apx_demo.sh` / `apx_demo.ps1`
+- **Pip entry points** — `run-apx`, `apx-serve`, `apx-ctl`, `apx-doctor`, `apx-verify-bundle`, `apx-onboard`
+- **`APX_*` environment fallbacks** — only `APXV_*` names are read (`agents/env.py`)
+- **Rust/Python compat aliases** — `resolve_apx_*`, `build_apx_*`, `resolve_apx_root`, `APXLocalServer`
+- **Tauri legacy commands** — `start_apx_server`, `stop_apx_server`, `get_apx_server_status`
+
+### Added
+
+- [docs/MIGRATION-v1.4.md](docs/MIGRATION-v1.4.md) — upgrade guide from v1.3.x
+- **Pack Studio authoring wizard** — five-step flow (template → name → governance → activate → test run) at `/packs?wizard=1`
+- **Build your pipeline** on-ramp — Dashboard and Pack Studio entry; copy notes full agent/step composer ships in v1.5
+- **Verify page** — `?job=` deep link from Jobs, recent completed jobs with artifacts, URL sync on artifact pick
+- **Integrity repair helpers** — `scripts/repair_integrity.py` (audit chain rebuild + governance approval reconcile); branding migration for APX → APXV wording
+
+### Changed
+
+- Operator docs, runbooks, and pack READMEs use canonical `apxv_*` / `APXV_*` only
+- **Default entity ZK bootstrap** — `normalization` + `threat` removed from `ENTITY_CIRCUITS`, sovereign keygen, and shipped `rust/apxv-zk/keys/` (6 entity circuits; attest path for official packs unchanged)
+- [docs/cryptography/CIRCUITS.md](docs/cryptography/CIRCUITS.md) — documents deferred `normalization` / `threat` modules (Rust sources retained)
+- **Onboarding / setup** — honor `?redirect=` after connect; distinguish API unreachable vs missing operator key; health wait on browser onboarding; inline invalid-key feedback
+- **Jobs** — status-filter empty states, list errors as alerts, stale job deep-link recovery
+- **BUILD-YOUR-FIRST-PACK** links on Setup, Onboarding, Jobs, Pipeline, and Verify empty states
+- **QA / bug sweep** — 401 session recovery, sidebar typed-route resets, pack deep links (`?pack=`), governance/system/proposal error states, onboarding redirect preserves search params
+- **Branding** — user-facing product name is **APXV** only (no bare APX / APXV1 in UI shell or seed governance copy)
+- Version strings and publish defaults updated to **1.4.0**
+
+### Fixed
+
+- Pack wizard **Open Governance** uses in-app navigation (no 404 against the API port)
+- Governance seed and library markdown — "APX agent" / "APX-governed" → **APXV** wording
+- LLM reasoner default system prompt uses **APXV**
+
+### Ship artifacts
+
+- `APXV_1.4.0_x64_en-US.msi`, `APXV_1.4.0_x64-setup.exe`, `APXV_1.4.0_amd64.deb`, `APXV_1.4.0_amd64.AppImage`
+
 ## [1.3.3] - 2026-07-14
 
 Hotfix completing v1.3.2 desktop server lifecycle on Windows — start, stop, restart, and quit must leave a single predictable listener on `:8741`.
@@ -373,6 +413,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.4.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.4.0
 [1.3.3]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.3
 [1.3.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.2
 [1.3.1]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.1

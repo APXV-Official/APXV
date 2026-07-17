@@ -35,7 +35,8 @@ import { useApp } from "../context/AppContext";
 import { QueryState } from "../components/QueryState";
 import { formatApiError } from "../lib/api-errors";
 import { downloadJson } from "../lib/download";
-import { getDefaultBaseUrl } from "../lib/tauri";
+import { getDefaultBaseUrl, getFirstRunPath } from "../lib/tauri";
+import { router } from "../router";
 import {
   ensureApxvServerStarted,
   formatServerStatus,
@@ -48,7 +49,7 @@ import {
 
 export function SettingsPage() {
   const navigate = useNavigate();
-  const { apiKey, resetOnboarding } = useApp();
+  const { apiKey, resetOnboarding, sovereignReady } = useApp();
   const [serverStatus, setServerStatus] = useState<ServerStatus | null>(null);
   const [busy, setBusy] = useState(false);
   const [newKeyId, setNewKeyId] = useState("");
@@ -186,7 +187,9 @@ export function SettingsPage() {
 
   async function handleReset() {
     await resetOnboarding();
-    void navigate({ to: "/onboarding", search: { redirect: undefined } });
+    router.update({ context: { onboarded: false, sovereignReady } });
+    await router.invalidate();
+    void navigate({ to: getFirstRunPath(), search: { redirect: undefined } });
   }
 
   useEffect(() => {

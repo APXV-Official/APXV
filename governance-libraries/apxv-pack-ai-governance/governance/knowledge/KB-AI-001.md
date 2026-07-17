@@ -22,7 +22,7 @@ This pack sets **policy id 4** on `output.compliance_policy_id` and the attested
 
 ### Agentic component
 
-Any LLM-powered or tool-using agent operating within APX (e.g. `LLMReasoner`, `ToolUser`).
+Any LLM-powered or tool-using agent operating within APXV (e.g. `LLMReasoner`, `ToolUser`).
 
 ### Human review trigger
 

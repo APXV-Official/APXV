@@ -34,14 +34,14 @@ python -m scripts.apxv_bootstrap
 1. Preflight (disk, ports, Python, prover binaries)
 2. Build provers if missing (`cargo build --release`) — native/dev only
 3. Governance ZK setup (3 circuits)
-4. Entity ZK setup (8 circuits)
+4. Entity ZK setup (6 circuits)
 5. `setup_first_run` — policy, governance, operator key
 6. Ollama (optional — AI Governance pack)
 7. Vosk voice model (optional — voice workflows)
 8. Write `managed/config/install.json`
 9. Smoke: doctor → integrity → pipeline attest → verify
 
-First run typically takes **20–60 minutes** (prover build, 11-circuit setup, optional model downloads). The desktop wizard and CLI show per-step progress.
+First run typically takes **20–60 minutes** (prover build, 3 governance + 6 entity circuit setup, optional model downloads). The desktop wizard and CLI show per-step progress.
 
 ### `install.json`
 

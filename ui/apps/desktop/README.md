@@ -30,7 +30,7 @@ pnpm dev
 
 ## Production build
 
-v1.3.3 ships **Windows MSI/NSIS** and **Linux deb/AppImage**. macOS DMG is planned for a follow-up release (build requires a Mac). On Windows, install **Python 3.10+** from [python.org](https://www.python.org/downloads/) so the desktop app can spawn `apxv_serve`.
+v1.4.0 ships **Windows MSI/NSIS** and **Linux deb/AppImage**. macOS DMG is planned for a follow-up release (build requires a Mac). On Windows, install **Python 3.10+** from [python.org](https://www.python.org/downloads/) so the desktop app can spawn `apxv_serve`.
 
 ### Windows
 
@@ -43,8 +43,8 @@ From the repo root:
 Outputs:
 
 - `ui\apps\desktop\src-tauri\target\release\apxv.exe`
-- `ui\apps\desktop\src-tauri\target\release\bundle\msi\APXV_1.3.3_x64_en-US.msi`
-- `ui\apps\desktop\src-tauri\target\release\bundle\nsis\APXV_1.3.3_x64-setup.exe`
+- `ui\apps\desktop\src-tauri\target\release\bundle\msi\APXV_1.4.0_x64_en-US.msi`
+- `ui\apps\desktop\src-tauri\target\release\bundle\nsis\APXV_1.4.0_x64-setup.exe`
 
 Use `pnpm exec -- tauri build` (or `.\scripts\build-desktop.ps1`) — not `cargo build --release` alone — so the UI is embedded in the release binary.
 
@@ -66,7 +66,9 @@ Outputs (platform-dependent):
 
 ### App icon
 
-Source: `src-tauri/icons/app-icon.svg` (site colors `#10141c`, white **APXV**).
+Canonical logo: `assets/branding/apxv-logo.svg` (site colors `#10141c`, white **APXV**).
+
+Desktop builds use `src-tauri/icons/app-icon.svg` — keep it in sync with the canonical logo, then regenerate platform icons:
 
 Regenerate platform icons after editing the SVG:
 

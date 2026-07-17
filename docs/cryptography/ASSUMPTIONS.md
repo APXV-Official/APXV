@@ -31,7 +31,7 @@
 **Proves:** A non-zero rule hash was in force during a non-zero-count redaction, bound to a specific redaction proof commitment.
 
 **Public inputs:**
-- `rule_hash` — hash of APX-RULE-001
+- `rule_hash` — hash of APXV-RULE-001
 - `redaction_proof_hash` — SHA-256 commitment to the redaction proof bundle
 - `redaction_count` — redactions performed
 
@@ -110,7 +110,7 @@ Tier A commits VK hashes in manifests and an optional ceremony transcript. Tier 
 
 A forgery is a verifying Groth16 proof where:
 
-- Public inputs do not correspond to actual APX execution, but satisfy circuit constraints
+- Public inputs do not correspond to actual APXV execution, but satisfy circuit constraints
 - A setup party used retained setup entropy to create proofs for arbitrary inputs
 - A tampered VK is substituted (detected by manifest VK integrity checks when the manifest is trusted)
 - An attacker replays a valid proof bundle against different claimed execution context (mitigated by binding public inputs to artifact content)

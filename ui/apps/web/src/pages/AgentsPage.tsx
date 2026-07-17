@@ -1,6 +1,8 @@
 import { getAgent, listAgents, type AgentInfo } from "@apxv/api-client";
 import {
   ActionGroup,
+  Alert,
+  AlertDescription,
   Badge,
   Button,
   DataSurface,
@@ -19,6 +21,7 @@ import {
   SelectableListItem,
 } from "../components/SelectableListItem";
 import { useDebouncedValue } from "../hooks/use-debounced-value";
+import { formatApiError } from "../lib/api-errors";
 
 function agentKindLabel(agent: AgentInfo): string {
   if (agent.kind === "core") return "core";
@@ -72,7 +75,9 @@ export function AgentsPage() {
         </div>
         <ActionGroup>
           <Button variant="link" size="sm" asChild>
-            <Link to="/packs">Pack studio</Link>
+            <Link to="/packs" search={{ wizard: undefined, pack: undefined }}>
+              Pack studio
+            </Link>
           </Button>
           <Button variant="link" size="sm" onClick={() => agentsQuery.refetch()}>
             Refresh
@@ -125,6 +130,12 @@ export function AgentsPage() {
         <section className="min-w-0 space-y-5 border-t border-[hsl(var(--divider))] pt-6 xl:col-span-7 xl:border-l xl:border-t-0 xl:pl-10 xl:pt-0">
           <SectionHeader title={activeAgent?.name ?? "Agent detail"} />
 
+          {activeId && detailQuery.isError && (
+            <Alert variant="destructive">
+              <AlertDescription>{formatApiError(detailQuery.error)}</AlertDescription>
+            </Alert>
+          )}
+
           {activeAgent ? (
             <>
               <p className="font-mono text-sm text-[hsl(var(--muted-foreground))]">
@@ -159,7 +170,12 @@ export function AgentsPage() {
                   <div className="flex flex-wrap gap-2">
                     {activeAgent.packs.map((packId) => (
                       <Button key={packId} variant="link" size="sm" asChild className="h-auto p-0">
-                        <Link to="/packs">{packId}</Link>
+                        <Link
+                          to="/packs"
+                          search={{ wizard: undefined, pack: packId }}
+                        >
+                          {packId}
+                        </Link>
                       </Button>
                     ))}
                   </div>

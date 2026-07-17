@@ -3,7 +3,7 @@
 **Rule ID:** APXV-RULE-AI-001  
 **Version:** 0.1.0  
 **Effective Date:** 2026-06-28  
-**Purpose:** Mandatory constraints for LLM-powered and tool-using agents in APX-governed pipelines.
+**Purpose:** Mandatory constraints for LLM-powered and tool-using agents in APXV-governed pipelines.
 
 ---
 

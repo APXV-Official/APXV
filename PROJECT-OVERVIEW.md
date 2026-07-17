@@ -2,7 +2,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform.
 
-**Version:** 1.3.3 · **License:** Apache 2.0
+**Version:** 1.4.0 · **License:** Apache 2.0
 
 This guide describes the repository layout, core components, and documentation index. For a quick start, see [README.md](README.md) and [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
@@ -10,7 +10,7 @@ This guide describes the repository layout, core components, and documentation i
 
 ## What APXV Provides
 
-APXV is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. Legacy code modules retain `APX*` aliases (e.g. `APXRuntime = APXVRuntime`) for one release; new artifacts use `APXV-*` IDs.
+APXV is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, local API — bring your own LLMs. Operator surfaces and new artifacts use **APXV** naming (`apxv_*` CLI, `APXV-*` IDs). Pre-v1.3 `apx_*` / `APX_*` shims were removed in v1.4 — see [docs/MIGRATION-v1.4.md](docs/MIGRATION-v1.4.md).
 
 | Capability | Description |
 |------------|-------------|
@@ -21,7 +21,7 @@ APXV is an air-gapped governed agent platform: markdown rules, signed capabiliti
 | **Approval workflow** | Propose → approve → apply for governance changes |
 | **Redaction engine v3** | Format-aware pattern redaction with `entities[]` output |
 | **Optional E2EE** | `APXE2EE` encryption (`--encrypt` on pipeline) |
-| **Dual-track ZK** | 3 governance circuits + entity proofs per attest (`merkle-inclusion`, `compliance`, and more; 8 circuits in crate) |
+| **Dual-track ZK** | 3 governance circuits + entity proofs per attest (`merkle-inclusion`, `compliance`, and more; 6 default sovereign circuits) |
 | **Voice privacy** | STT → redact → attest (`agents/voice/`; simulated or local Vosk/pyttsx3) |
 | **Ceremony (Tier A/B)** | VK manifest transcript (+ signature when signing keys exist) + exportable verifier bundle |
 | **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
@@ -41,7 +41,8 @@ APXV is a **foundation for builders** — not a finished consumer product and no
 | Voice suite + ceremony transparency (v1.1) | Complete |
 | Onboarding & packaging | Complete (install scripts, doctor, Docker, examples, CI) |
 | Official agent packs (v1.2) | Reference Redaction, Document Processing, AI Governance |
-| Current version | **v1.3.3** |
+| Pack Studio authoring wizard (v1.4) | Complete |
+| Current version | **v1.4.0** |
 
 The reference 3-agent pipeline (redact → orchestrate → attest), three official pack smoke tests, voice path, dual-track Groth16 verification, sovereign bootstrap, and API v2 are covered by **797 automated tests** (2 skipped when Vosk/voice deps absent; see `python -m pytest tests/ -q`).
 
@@ -132,7 +133,7 @@ flowchart TB
 | `setup_entity_zk.py` | Entity circuit trusted setup only |
 | `apxv_doctor.py` | Prerequisites and health check |
 | `apxv_ctl.py` | Integrity, API keys, governance, backups |
-| `run_apx.py` | Full pipeline (`--attest`, `--voice-transcript`, `--voice-file`, optional `--encrypt`) |
+| `run_apxv.py` | Full pipeline (`--attest`, `--voice-transcript`, `--voice-file`, optional `--encrypt`) |
 | `verify_attestation.py` | Independent dual-track ZK verification (`--real-zk`) |
 | `ceremony_transcript.py` | Tier A/B ceremony transcript write/verify |
 | `export_verifier_bundle.py` | Publishable VK-only bundle for releases |

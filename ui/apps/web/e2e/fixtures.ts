@@ -1,8 +1,5 @@
 import { test as base } from "@playwright/test";
-
-const DEFAULT_API_KEY =
-  process.env.APXV_API_KEY ??
-  "gnKiTGGjRimhIPWeoP9BLnumQVPClWxYVbAD8J_FXVM";
+import { API_KEY as DEFAULT_API_KEY } from "./constants";
 
 export const test = base.extend({
   onboardedPage: async ({ page }, use) => {

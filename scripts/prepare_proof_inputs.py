@@ -128,7 +128,7 @@ def main():
         artifacts_dir = provider.artifacts_path
         candidates = sorted(artifacts_dir.glob("attested_result_pipeline_*.json"), reverse=True)
         if not candidates:
-            print("No attested_result artifacts found. Run `python scripts/run_apx.py` first.")
+            print("No attested_result artifacts found. Run `python -m scripts.run_apxv --attest` first.")
             sys.exit(1)
         latest = candidates[0]
         print(f"Using latest artifact: {latest.name}")

@@ -100,7 +100,7 @@ def test_dual_proof_bundle_structure():
 def test_voice_redaction_proof_via_bridge():
     import os
 
-    os.environ["APX_VOICE_MODE"] = "simulated"
+    os.environ["APXV_VOICE_MODE"] = "simulated"
     from agents.voice import VoicePrivacyPipeline
 
     attested = run_pipeline(input_text=SAMPLE_INPUT)
@@ -257,7 +257,7 @@ def test_entity_zk_prove_redaction_v1_round_trip(poseidon_client: PoseidonClient
 )
 def test_full_dual_attest_and_verify():
     result = subprocess.run(
-        [sys.executable, "-m", "scripts.run_apx", "--attest"],
+        [sys.executable, "-m", "scripts.run_apxv", "--attest"],
         cwd=str(ROOT),
         capture_output=True,
         text=True,

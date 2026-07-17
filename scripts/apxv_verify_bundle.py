@@ -1,7 +1,7 @@
 """
 APXV — Standalone Proof Verifier (Phase 1 Criterion #3)
 
-Third-party verification without the full APX Python runtime.
+Third-party verification without the full APXV Python runtime.
 Requires only:
   - This script OR the compiled apxv-circuits binary
   - A proof bundle (from an attested artifact or exported JSON)
@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.verify_attestation import verify_real_zk_independent
 
 
-def _find_apx_circuits_binary() -> Path | None:
+def _find_apxv_circuits_binary() -> Path | None:
     candidates = [
         ROOT / "rust" / "target" / "release" / "apxv-circuits.exe",
         ROOT / "rust" / "target" / "release" / "apxv-circuits",
@@ -57,7 +57,7 @@ def extract_proof_bundle(attested: dict, circuit: str) -> dict | None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Standalone APX Groth16 proof verifier")
+    parser = argparse.ArgumentParser(description="Standalone APXV Groth16 proof verifier")
     parser.add_argument("path", type=Path, help="Attested artifact or proof bundle JSON")
     parser.add_argument(
         "--circuit",
@@ -72,7 +72,7 @@ def main():
     )
     args = parser.parse_args()
 
-    binary = _find_apx_circuits_binary()
+    binary = _find_apxv_circuits_binary()
     if args.check_binary:
         if binary:
             print(f"apxv-circuits binary found: {binary}")

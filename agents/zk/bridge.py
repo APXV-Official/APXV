@@ -22,7 +22,9 @@ from .merkle_tree import (
     build_merkle_inclusion_witness,
     build_poseidon_merkle_tree,
 )
-from .poseidon_client import PoseidonClient, build_apx_zk_command
+from scripts.rust_bins import build_apxv_zk_command
+
+from .poseidon_client import PoseidonClient
 
 ENTITY_VERSION = "1.1.0"
 MAX_MERKLE_INCLUSION_PROOFS = 8
@@ -143,7 +145,7 @@ class EntityZKBridge:
         with tempfile.TemporaryDirectory() as tmp:
             inputs_path = Path(tmp) / f"{circuit}_inputs.json"
             inputs_path.write_text(json.dumps(inputs, indent=2), encoding="utf-8")
-            cmd, cwd = build_apx_zk_command(
+            cmd, cwd = build_apxv_zk_command(
                 self.base_path,
                 "prove", circuit, "--inputs", str(inputs_path),
             )

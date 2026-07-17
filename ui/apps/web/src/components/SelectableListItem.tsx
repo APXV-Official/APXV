@@ -20,6 +20,7 @@ export function SelectableListItem({
     <button
       type="button"
       onClick={onClick}
+      aria-selected={selected}
       className={[
         "w-full cursor-pointer rounded-lg px-5 py-4 text-left transition-colors",
         selected

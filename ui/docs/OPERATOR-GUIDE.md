@@ -1,6 +1,6 @@
 # APXV — Operator Guide
 
-**Version:** 1.3.3 · **API:** v2 (`127.0.0.1:8741`)
+**Version:** 1.4.0 · **API:** v2 (`127.0.0.1:8741`)
 
 Local operator console for governed agent pipelines — browser UI or Tauri desktop app. Every action maps to a documented REST endpoint.
 
@@ -87,7 +87,9 @@ Pack governance files are scaffolded under each pack's `governance/` folder. App
 |---------|-----|
 | 401 Unauthorized | Re-run onboarding in **Settings**; confirm key in `api_keys.json` |
 | Cannot reach runtime | Start `apxv_serve` or relaunch desktop app |
-| Start server does nothing (Windows desktop) | Install Python 3.10+ from python.org; **Settings → Runtime process → Start server** (v1.3.3+ shows errors if spawn fails) |
+| Start server does nothing (Windows desktop) | Install Python 3.10+ from python.org; **Settings → Runtime process → Start server** (shows errors if spawn fails) |
+| Runtime degraded / Integrity issues | Quit the app; from install root run `python -m scripts.repair_integrity --all`; relaunch |
+| Create a pack without editing repo files | Dashboard **Build your pipeline** or Pack Studio → wizard |
 | Doctor integrity fail | **System → Repair audit chain**; check sovereign status |
 | `sovereign_setup: false` | Re-run bootstrap — [SOVEREIGN-SETUP.md](../../docs/SOVEREIGN-SETUP.md) |
 | AI pack unavailable | Install Ollama; **Settings → Repair integrations** |

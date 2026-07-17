@@ -5,16 +5,15 @@ import { cn } from "../lib/utils";
 export function Panel({
   children,
   className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+  ...props
+}: React.ComponentPropsWithoutRef<"section">) {
   return (
     <section
       className={cn(
         "rounded-2xl bg-[hsl(var(--surface))] ring-1 ring-[hsl(var(--ring-border))] shadow-[0_1px_2px_hsl(var(--shadow-color))]",
         className,
       )}
+      {...props}
     >
       {children}
     </section>

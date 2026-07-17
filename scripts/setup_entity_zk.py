@@ -1,7 +1,7 @@
 """
 APXV — Entity ZK Circuit Setup (Phase 3)
 
-Runs one-time honest trusted setup for all 8 entity Groth16 circuits in apxv-zk.
+Runs one-time honest trusted setup for all 6 default entity Groth16 circuits in apxv-zk.
 Keys persist under rust/apxv-zk/keys/ with a separate entity-manifest.json.
 """
 
@@ -15,7 +15,7 @@ from .entity_zk_manifest import (
     rebuild_manifest,
     update_manifest_for_circuit,
 )
-from .rust_bins import build_apx_zk_command
+from .rust_bins import build_apxv_zk_command
 
 
 def ensure_entity_zk_setup(base_path: Path | None = None, force: bool = False) -> dict:
@@ -41,7 +41,7 @@ def ensure_entity_zk_setup(base_path: Path | None = None, force: bool = False) -
             continue
 
         print(f"[Entity ZK Setup] Running one-time setup for circuit: {circuit}")
-        cmd, cwd = build_apx_zk_command(base, "setup", circuit)
+        cmd, cwd = build_apxv_zk_command(base, "setup", circuit)
         result = subprocess.run(
             cmd,
             cwd=cwd,

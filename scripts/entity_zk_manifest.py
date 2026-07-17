@@ -1,7 +1,7 @@
 """
 APXV — Entity ZK Key Manifest (Phase 3)
 
-Tracks versioned verification keys for the 8 entity Groth16 circuits in apxv-zk.
+Tracks versioned verification keys for the 6 default entity Groth16 circuits in apxv-zk.
 Separate from governance circuit manifest (apxv-circuits).
 """
 
@@ -16,10 +16,8 @@ import json
 CIRCUIT_VERSION = "1.0.0"
 MANIFEST_VERSION = "1.0.0"
 ENTITY_CIRCUITS = (
-    "normalization",
     "core-redaction",
     "compliance",
-    "threat",
     "voice-redaction",
     "redaction-v1",
     "merkle-inclusion",

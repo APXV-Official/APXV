@@ -25,6 +25,11 @@ import { SystemPage } from "./pages/SystemPage";
 import { GovernancePage } from "./pages/GovernancePage";
 import { VerifyPage } from "./pages/VerifyPage";
 import { readOnboardedSync } from "./lib/auth-storage";
+import {
+  parseOnboardingRedirect,
+  shellRedirectTarget,
+} from "./lib/onboarding-nav";
+import { normalizeSearchString, parseWizardSearch } from "./lib/route-search";
 import { Skeleton } from "@apxv/ui";
 import { BrandLogo } from "./components/BrandLogo";
 
@@ -63,29 +68,6 @@ const rootRoute = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
 });
 
-const SHELL_PATHS = [
-  "/",
-  "/packs",
-  "/agents",
-  "/pipeline",
-  "/jobs",
-  "/artifacts",
-  "/verify",
-  "/audit",
-  "/governance",
-  "/system",
-  "/settings",
-] as const;
-
-type ShellPath = (typeof SHELL_PATHS)[number];
-
-function onboardingRedirectTarget(redirectTo: string | undefined): ShellPath {
-  if (redirectTo && (SHELL_PATHS as readonly string[]).includes(redirectTo)) {
-    return redirectTo as ShellPath;
-  }
-  return "/";
-}
-
 function OnboardingGate() {
   return usesSetupFlow() ? <SetupPage /> : <OnboardingPage />;
 }
@@ -105,7 +87,8 @@ const bootstrapRoute = createRoute({
       throw redirect({ to: "/setup", search: { redirect: search.redirect } });
     }
     if (context.onboarded) {
-      throw redirect({ to: onboardingRedirectTarget(search.redirect) });
+      const target = parseOnboardingRedirect(search.redirect);
+      throw redirect({ to: target.to, search: target.search });
     }
   },
 });
@@ -122,7 +105,8 @@ const setupRoute = createRoute({
       throw redirect({ to: "/bootstrap", search: { redirect: search.redirect } });
     }
     if (context.onboarded) {
-      throw redirect({ to: onboardingRedirectTarget(search.redirect) });
+      const target = parseOnboardingRedirect(search.redirect);
+      throw redirect({ to: target.to, search: target.search });
     }
   },
 });
@@ -148,7 +132,8 @@ const onboardingRoute = createRoute({
       });
     }
     if (context.onboarded) {
-      throw redirect({ to: onboardingRedirectTarget(search.redirect) });
+      const target = parseOnboardingRedirect(search.redirect);
+      throw redirect({ to: target.to, search: target.search });
     }
   },
 });
@@ -158,16 +143,20 @@ const shellRoute = createRoute({
   id: "shell",
   component: ShellLayout,
   beforeLoad: ({ context, location }) => {
+    const redirectTarget = shellRedirectTarget(
+      location.pathname,
+      location.search as Record<string, unknown>,
+    );
     if (isTauri() && !context.sovereignReady) {
       throw redirect({
         to: "/bootstrap",
-        search: { redirect: location.pathname },
+        search: { redirect: redirectTarget },
       });
     }
     if (!context.onboarded) {
       throw redirect({
         to: getFirstRunPath(),
-        search: { redirect: location.pathname },
+        search: { redirect: redirectTarget },
       });
     }
   },
@@ -183,6 +172,10 @@ const packsRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/packs",
   component: PacksPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    wizard: parseWizardSearch(search.wizard),
+    pack: normalizeSearchString(search.pack),
+  }),
 });
 
 const agentsRoute = createRoute({
@@ -224,6 +217,7 @@ const verifyRoute = createRoute({
   component: VerifyPage,
   validateSearch: (search: Record<string, unknown>) => ({
     hash: typeof search.hash === "string" ? search.hash : undefined,
+    job: typeof search.job === "string" ? search.job : undefined,
   }),
 });
 
@@ -240,7 +234,10 @@ const governanceRoute = createRoute({
   validateSearch: (search: Record<string, unknown>) => ({
     proposal:
       typeof search.proposal === "string" ? search.proposal : undefined,
-    tab: typeof search.tab === "string" ? search.tab : undefined,
+    tab:
+      search.tab === "specs" || search.tab === "proposals"
+        ? search.tab
+        : undefined,
   }),
 });
 
@@ -249,7 +246,12 @@ const systemRoute = createRoute({
   path: "/system",
   component: SystemPage,
   validateSearch: (search: Record<string, unknown>) => ({
-    tab: typeof search.tab === "string" ? search.tab : undefined,
+    tab:
+      search.tab === "health" ||
+      search.tab === "backups" ||
+      search.tab === "integrations"
+        ? search.tab
+        : undefined,
   }),
 });
 
@@ -290,8 +292,8 @@ const routeTree = rootRoute.addChildren([
     agentsRoute,
     pipelineRoute,
     jobsRoute,
-    artifactsRoute,
     artifactDetailRoute,
+    artifactsRoute,
     verifyRoute,
     auditRoute,
     governanceRoute,

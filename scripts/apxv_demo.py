@@ -135,7 +135,7 @@ def main() -> int:
 
     _run(
         "Platform pipeline + attestation",
-        [py, "-m", "scripts.run_apx", "--attest"],
+        [py, "-m", "scripts.run_apxv", "--attest"],
         step=step,
         total=total,
     )

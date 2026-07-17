@@ -15,7 +15,7 @@ from .pack_catalog import (
     is_official_pack,
     pack_dir_for,
     parse_pack_manifest,
-    resolve_apx_root,
+    resolve_apxv_root,
 )
 from .pack_scaffold import _validate_pack_id, _rewrite_custom_agents, _rewrite_pack_identity
 from .runtime import APXRuntime
@@ -274,7 +274,7 @@ def clone_pack(
     if not source:
         raise PackInstallError(f"Source pack not found: {source_pack_id}")
 
-    apx_root = resolve_apx_root(base_path)
+    apx_root = resolve_apxv_root(base_path)
     source_dir = apx_root / source["path"]
     target_dir = apx_root / "governance-libraries" / new_pack_id
     if target_dir.exists():

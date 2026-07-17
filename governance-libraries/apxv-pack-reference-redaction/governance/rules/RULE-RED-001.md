@@ -3,7 +3,7 @@
 **Rule ID:** APXV-RULE-001  
 **Version:** 1.0.0  
 **Effective Date:** 2026-05-31  
-**Purpose:** Define the minimum redaction behavior that any APX agent must follow when processing sensitive text.
+**Purpose:** Define the minimum redaction behavior that any APXV agent must follow when processing sensitive text.
 
 ---
 

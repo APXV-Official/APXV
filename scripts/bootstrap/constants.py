@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-BOOTSTRAP_VERSION = "1.3.3"
+BOOTSTRAP_VERSION = "1.4.0"
 
 GOVERNANCE_CIRCUITS = ("redaction", "rule-binding", "pipeline")
 
 ENTITY_CIRCUITS = (
-    "normalization",
     "core-redaction",
     "compliance",
-    "threat",
     "voice-redaction",
     "redaction-v1",
     "merkle-inclusion",

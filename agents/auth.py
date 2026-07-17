@@ -101,13 +101,12 @@ class APIKeyAuth:
         hint_path.write_text(
             "\n".join(
                 [
-                    "APX Operator API Key (save securely — delete after copying)",
+                    "APXV Operator API Key (save securely — delete after copying)",
                     f"Key ID: {key_id}",
                     f"API Key: {raw_key}",
                     "",
                     "Usage:",
                     f'  export APXV_API_KEY="{raw_key}"',
-                    "  (legacy: APX_API_KEY also accepted)",
                     "  Authorization: Bearer <key>",
                 ]
             ),

@@ -10,7 +10,7 @@ To verify Groth16 proofs **without re-proving**:
    - `rust/apxv-circuits/keys/manifest.json` + `rust/apxv-zk/keys/entity-manifest.json` + `.vk` files
 3. A verifier:
    - `python -m scripts.verify_attestation --real-zk [artifact.json]`
-   - `python -m scripts.apx_verify_bundle <artifact.json>`
+   - `python -m scripts.apxv_verify_bundle <artifact.json>`
    - Rust: `apxv-circuits verify` / `apxv-zk verify` with proof bundle JSON
 
 ## Trust model
@@ -66,7 +66,7 @@ python -m scripts.verify_attestation path/to/artifact.json --real-zk
 ### Option B — Standalone bundle verifier
 
 ```bash
-python -m scripts.apx_verify_bundle managed/artifacts/attested_result_pipeline_with_zk_*.json
+python -m scripts.apxv_verify_bundle managed/artifacts/attested_result_pipeline_with_zk_*.json
 ```
 
 ### Option C — Rust binary only

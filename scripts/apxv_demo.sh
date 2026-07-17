@@ -14,7 +14,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     -h|--help)
       echo "Usage: $0 [--pack reference|document|ai|all]"
-      echo "Runs pack demo(s), run_apx --attest, verify_attestation --real-zk."
+      echo "Runs pack demo(s), run_apxv --attest, verify_attestation --real-zk."
       exit 0
       ;;
     *)

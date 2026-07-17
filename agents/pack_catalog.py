@@ -239,7 +239,3 @@ def resolve_pack_key(pack: Optional[str], base_path: Optional[Path] = None) -> s
             return pack.strip()
         raise ValueError(f"Unknown pack: {pack}. Use reference, document, ai, or a pack id.")
     return aliases[normalized]
-
-
-# v1.3.x compat alias — removed in v1.4
-resolve_apx_root = resolve_apxv_root

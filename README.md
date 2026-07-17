@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV**, the first open-source implementation.
 
-> **Current release:** [v1.3.3](https://github.com/APXV-Official/APXV/releases/tag/v1.3.3) — v1.3 lifecycle hotfix (Windows start/stop/restart on `:8741`). [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/) · [Downloads](docs/DOWNLOADS.md)
+> **Version 1.4.0** — Pack Studio authoring wizard, **Build your pipeline** on-ramp, legacy surface cleanup, entity circuit trim. [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/) · [Downloads](docs/DOWNLOADS.md) · [Migration from v1.3.x](docs/MIGRATION-v1.4.md)
 
 ## Downloads
 
@@ -31,13 +31,13 @@ Pack demo complete: final_status=ATTESTED, total_redactions=4
 ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]
 ```
 
-First native install with sovereign bootstrap typically takes **20–60 minutes** (Rust compile plus 11-circuit ZK setup). Docker build is slower once, then cached.
+First native install with sovereign bootstrap typically takes **20–60 minutes** (Rust compile plus 3 governance + 6 entity circuit setup). Docker build is slower once, then cached.
 
 Re-run without reinstalling: `python -m scripts.onboard --skip-setup`
 
 **Linux / WSL:** use `python3` or activate `.venv/bin/activate` if `python` is not on PATH.
 
-**API key:** printed once at onboard, saved to `managed/config/OPERATOR-KEY-default-operator.txt`, or create with `python -m scripts.apxv_ctl api-key create my-app --save-hint`.
+**API key:** printed once at onboard, saved to `managed/config/OPERATOR-KEY-*.txt`, or create with `python -m scripts.apxv_ctl api-key create my-app --save-hint`.
 
 Details: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
@@ -50,8 +50,6 @@ Details: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 | **Windows** | `.\scripts\apxv_demo.ps1` |
 | **macOS / Linux / WSL** | `./scripts/apxv_demo.sh` |
 
-Pick a pack (v1.2 adds document batch + AI governance):
-
 ```bash
 ./scripts/apxv_demo.sh --pack reference   # default — same as onboarding
 ./scripts/apxv_demo.sh --pack document    # batch .txt/.json, compliance policy 2
@@ -63,7 +61,7 @@ Equivalent: `python -m scripts.apxv_demo --pack document`
 
 On success you get `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]` plus the **artifact path** under `managed/artifacts/`.
 
-## Operator UI (v1.3+)
+## Operator UI
 
 With sovereign bootstrap done and the API running:
 
@@ -76,6 +74,8 @@ cd ui && pnpm install && pnpm dev
 ```
 
 Open http://localhost:5173 → paste operator API key → **Dashboard**, **Agent packs**, **Pipeline**, **Jobs**, **Verify**.
+
+Use **Build your pipeline** or Pack Studio (`/packs?wizard=1`) to author packs without editing repository files.
 
 Docs: [ui/docs/OPERATOR-GUIDE.md](ui/docs/OPERATOR-GUIDE.md) · Pack index: [docs/PACK-CATALOG.md](docs/PACK-CATALOG.md) · Tutorial: [docs/BUILD-YOUR-FIRST-PACK.md](docs/BUILD-YOUR-FIRST-PACK.md)
 
@@ -98,7 +98,7 @@ APXV is a **runtime you build on** — not a finished end-user product. The core
 | **Controlled change** | Rule updates go through propose → approve → apply; audit chain records every action |
 | **Signed capabilities** | Each agent is granted explicit permissions; policy is verified before execution |
 | **Immutable artifacts** | Pipeline outputs land in SQLite + content-addressable storage |
-| **Dual-track Groth16 ZK** | Governance proofs (3 circuits) + entity proofs (subset per attest; `merkle-inclusion`, `compliance`, and more) over BN254 |
+| **Dual-track Groth16 ZK** | Governance proofs (3 circuits) + entity proofs (6 default sovereign circuits) over BN254 |
 | **Local API** | HTTP on `127.0.0.1:8741` — no cloud, no telemetry |
 | **Optional voice + E2EE** | Voice privacy suite and payload encryption when you need them |
 
@@ -110,43 +110,28 @@ The **3-agent reference pipeline** (redactor → orchestrator → attestation co
 
 A **pack** is a vertical bundle on top of APXV: governance specs, install steps, a runnable acceptance path, capability notes, and an acceptance checklist. You install only what you need; multiple packs can share one runtime.
 
-**Packs are not the platform.** The platform is the runtime (store, audit, capabilities, ZK, API). A pack is how you turn that runtime into something specific — e.g. governed redaction.
-
 ### What's available today
 
 | Artifact | Type | What you get |
 |----------|------|--------------|
-| [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) | **Official pack** | Rules, workflow, knowledge for sensitive-text redaction → orchestration → attestation. Runnable acceptance path + acceptance tests. |
-| [Document Processing Pack](governance-libraries/apxv-pack-document-processing/) | **Official pack** | Batch `.txt` / `.json` folder ingest, manifest, compliance policy 2. |
-| [AI Governance Pack](governance-libraries/apxv-pack-ai-governance/) | **Official pack** | Redaction + `LLMReasoner` review, compliance policy 4. |
-| [AI governance template](governance-libraries/ai-governance-template/) | **Template** | Starter markdown only — copy into `managed/` and customize. Prefer the AI Governance Pack for a full install path. |
-| [governance-libraries/](governance-libraries/) | **Index** | Packs vs templates — read before assuming something is a full pack |
-
-The Reference Redaction Pack agents ship in **APXV core** (`agents/agent1.py` … `agent3.py`). The pack provides the **governance bundle** that binds those agents to a real vertical — not duplicate agent code.
-
-### How packs fit in
-
-```
-APXV core (this repo)          Agent pack (e.g. reference redaction)
-─────────────────────────       ─────────────────────────────────────
-Runtime, audit, store, ZK  +    Rules / workflows / knowledge
-3-agent pipeline pattern   +    Install + acceptance + capability notes
-Capability framework       +    Vertical binding for that use case
-```
-
-**Onboarding already applies the reference pack** — `install.ps1` / `install-docker.ps1` run the pack pipeline as proof the stack works. For production, follow the pack's own install flow (governance propose → approve → apply) in [apxv-pack-reference-redaction/README.md](governance-libraries/apxv-pack-reference-redaction/README.md).
+| [Reference Redaction Pack](governance-libraries/apxv-pack-reference-redaction/) | **Official pack** | Sensitive-text redaction → orchestration → attestation |
+| [Document Processing Pack](governance-libraries/apxv-pack-document-processing/) | **Official pack** | Batch `.txt` / `.json` folder ingest, compliance policy 2 |
+| [AI Governance Pack](governance-libraries/apxv-pack-ai-governance/) | **Official pack** | Redaction + `LLMReasoner` review, compliance policy 4 |
+| [AI governance template](governance-libraries/ai-governance-template/) | **Template** | Starter markdown — prefer the AI Governance Pack for a full install path |
+| [governance-libraries/](governance-libraries/) | **Index** | Packs vs templates |
 
 ### Build your own
 
 | Goal | Start here |
 |------|------------|
+| Pack Studio wizard (desktop / UI) | Dashboard **Build your pipeline** or `/packs?wizard=1` |
+| Tutorial | [docs/BUILD-YOUR-FIRST-PACK.md](docs/BUILD-YOUR-FIRST-PACK.md) |
 | Custom agent on the runtime | [docs/BUILDING.md](docs/BUILDING.md) |
 | Minimal worked example | [examples/hello-agent/](examples/hello-agent/) |
 | API integration | [examples/api-client/](examples/api-client/) |
 | Local LLM (Ollama) | [examples/llm-ollama/](examples/llm-ollama/) |
-| New vertical / community pack | BUILDING.md + pack layout in [governance-libraries/README.md](governance-libraries/README.md) |
 
-**Direction:** [ROADMAP.md](ROADMAP.md) — v1.3 ships Pack Studio and the operator console; v1.4 adds composition depth.
+**Direction:** [ROADMAP.md](ROADMAP.md) — v1.4 ships the authoring wizard; v1.5+ adds workflow composition and ecosystem tools.
 
 ## What it does not do
 
@@ -168,13 +153,13 @@ python -m scripts.export_verifier_bundle --out dist/apxv-verifier-bundle
 | You want to… | Trust |
 |--------------|-------|
 | Run APXV yourself (`apxv_bootstrap`, your keys) | **Your deployment** |
-| Verify artifacts from another operator | **Their** exported verifier bundle (proof math is self-checking; setup honesty is separate) |
+| Verify artifacts from another operator | **Their** exported verifier bundle |
 
-Circuit semantics unchanged since v1.1.0 — each operator still runs their own ceremony. See [docs/SOVEREIGN-SETUP.md](docs/SOVEREIGN-SETUP.md) and [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
+See [docs/SOVEREIGN-SETUP.md](docs/SOVEREIGN-SETUP.md) and [docs/cryptography/CEREMONY.md](docs/cryptography/CEREMONY.md).
 
 ## Status
 
-**v1.3.3 (current release)** — completes Windows desktop server lifecycle (Python discovery, orphan port reclaim, Settings Start/Restart path fix, error surfacing). **v1.3.2** — operator reliability: Linux jobs, onboarding/API key UX, jobs freshness, markdown reports, Pack Studio on-ramp, downloads hub. **v1.3.1** fixed desktop Connect and Jobs on Windows/Linux. **v1.3.0** added sovereign local trust, API v2, Pack Studio, desktop app. Migration: [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md). Full history: [CHANGELOG.md](CHANGELOG.md).
+**v1.4.0 (current)** — Pack Studio authoring wizard, Build your pipeline on-ramp, removal of pre-v1.3 compatibility shims, default entity keygen without unused `normalization` / `threat` circuits, operator UI polish. Upgrade: [docs/MIGRATION-v1.4.md](docs/MIGRATION-v1.4.md). Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 
@@ -215,7 +200,7 @@ flowchart TB
 
 | Layer | Components |
 |-------|------------|
-| **Privacy** | `APXRedactionEngine`, optional `APXE2EE` |
+| **Privacy** | RedactionEngine, optional E2EE |
 | **Deterministic core** | RuleGovernedRedactor, WorkflowOrchestrator, AttestationCoordinator |
 | **Agentic layer** | `LLMBackend`, `LLMReasoner`, `ToolUser`, `AgenticContract` |
 | **Governance & control** | CapabilityChecker, AuditLogger, GovernanceRegistry |
@@ -228,11 +213,13 @@ See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for repository layout and compone
 | Doc | Purpose |
 |-----|---------|
 | [docs/SOVEREIGN-SETUP.md](docs/SOVEREIGN-SETUP.md) | Local trust model, backup, verify keys |
-| [docs/DOWNLOADS.md](docs/DOWNLOADS.md) | Canonical download hub (releases/latest) |
+| [docs/DOWNLOADS.md](docs/DOWNLOADS.md) | Canonical download hub |
 | [docs/INSTALL-USER.md](docs/INSTALL-USER.md) | Desktop MSI / Linux installers |
 | [docs/QUICKSTART.md](docs/QUICKSTART.md) | Install, troubleshoot, re-run onboarding |
-| [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md) | Upgrade from v1.2.x + sovereign changes |
+| [docs/MIGRATION-v1.4.md](docs/MIGRATION-v1.4.md) | Upgrade from v1.3.x |
+| [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md) | Upgrade from v1.2.x |
 | [docs/BUILDING.md](docs/BUILDING.md) | Custom agents, API, LLMs, deployment |
+| [docs/BUILD-YOUR-FIRST-PACK.md](docs/BUILD-YOUR-FIRST-PACK.md) | Pack authoring tutorial |
 | [governance-libraries/](governance-libraries/) | Official packs and templates |
 | [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) | Repository layout and architecture |
 | [docs/DOCKER.md](docs/DOCKER.md) | Container deployment |

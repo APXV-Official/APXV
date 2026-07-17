@@ -1,5 +1,4 @@
 import {
-  ApiError,
   getSystemDoctor,
   getSystemHealth,
   isValidOperatorApiKey,
@@ -28,7 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@apxv/ui";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
 import {
@@ -37,18 +36,29 @@ import {
 } from "../lib/doctor-format";
 import { BrandLogo } from "../components/BrandLogo";
 import { OperatorKeyPanel } from "../components/OperatorKeyPanel";
-import { discoverOperatorKey } from "../lib/operator-key-discovery";
+import { formatApiError } from "../lib/api-errors";
+import { parseOnboardingRedirect } from "../lib/onboarding-nav";
+import {
+  discoverOperatorKey,
+  type DiscoveredOperatorKey,
+} from "../lib/operator-key-discovery";
+import { PACK_TUTORIAL_URL } from "../lib/pack-studio";
 import {
   ensureApxvServerStarted,
+  formatServerStatus,
+  getApxvServerStatus,
   getDefaultApxvRoot,
   isTauri,
+  type ServerStatus,
 } from "../lib/tauri";
+import { waitForHealth } from "../lib/wait-for-health";
 import { router } from "../router";
 
 const STEPS: OnboardingStep[] = ["welcome", "connect", "doctor", "complete"];
 
 export function OnboardingPage() {
   const navigate = useNavigate();
+  const { redirect } = useSearch({ strict: false });
   const { apiKey, onboarded, setApiKey, completeOnboarding, resetOnboarding } =
     useApp();
 
@@ -60,47 +70,76 @@ export function OnboardingPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [serverMessage, setServerMessage] = useState<string | null>(null);
+  const [serverStatus, setServerStatus] = useState<ServerStatus | null>(null);
   const [apxvRoot, setApxvRoot] = useState<string | null>(null);
   const [doctorChecks, setDoctorChecks] = useState<
     Awaited<ReturnType<typeof getSystemDoctor>>["checks"] | null
   >(null);
   const [repairMessage, setRepairMessage] = useState<string | null>(null);
-  const [operatorKey, setOperatorKey] = useState<
-    Awaited<ReturnType<typeof discoverOperatorKey>>
-  >(null);
+  const [operatorKey, setOperatorKey] = useState<DiscoveredOperatorKey | null>(
+    null,
+  );
   const [keyLoadError, setKeyLoadError] = useState<string | null>(null);
 
   const stepIndex = STEPS.indexOf(step);
+  const normalized = normalizeOperatorApiKey(apiKeyInput) ?? "";
+  const keyValid = isValidOperatorApiKey(normalized);
+  const keyInvalid = apiKeyInput.trim().length > 0 && !keyValid;
 
   const reloadOperatorKey = useCallback(async () => {
     setKeyLoadError(null);
-    const discovered = await discoverOperatorKey();
-    if (discovered) {
-      setOperatorKey(discovered);
-      setApiKeyInput((prev) => prev.trim() || discovered.key);
+    const result = await discoverOperatorKey();
+    if (result.status === "found") {
+      setOperatorKey(result.key);
+      setApiKeyInput((prev) => prev.trim() || result.key.key);
     } else {
       setOperatorKey(null);
-      setKeyLoadError(
-        "Start apxv_serve, then reload — or paste OPERATOR-KEY-*.txt manually.",
-      );
+      if (result.status === "unreachable") {
+        setKeyLoadError(
+          `API not reachable — ${result.message} Start apxv_serve, then reload.`,
+        );
+      } else {
+        setKeyLoadError(
+          "Start apxv_serve, then reload — or paste OPERATOR-KEY-*.txt manually.",
+        );
+      }
     }
   }, []);
 
   useEffect(() => {
     if (step !== "connect") return;
     void reloadOperatorKey();
-    const normalized = apiKey ? normalizeOperatorApiKey(apiKey) : null;
-    if (apiKey && !normalized) {
+    const normalizedStored = apiKey ? normalizeOperatorApiKey(apiKey) : null;
+    if (apiKey && !normalizedStored) {
       void resetOnboarding().then(() => {
         setApiKeyInput("");
         setKeyRejected(true);
       });
       return;
     }
-    if (normalized) {
-      setApiKeyInput(normalized);
+    if (normalizedStored) {
+      setApiKeyInput(normalizedStored);
     }
   }, [step, apiKey, resetOnboarding, reloadOperatorKey]);
+
+  useEffect(() => {
+    if (!isTauri() || step !== "connect") return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const status = await getApxvServerStatus();
+        if (!cancelled) {
+          setServerStatus(status);
+          setServerMessage(formatServerStatus(status));
+        }
+      } catch {
+        // Server status is optional on connect step.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [step]);
 
   async function handleClearKey() {
     await resetOnboarding();
@@ -129,8 +168,10 @@ export function OnboardingPage() {
       const result = await ensureApxvServerStarted();
       setServerMessage(result);
       await getSystemHealth();
+      const status = await getApxvServerStatus();
+      setServerStatus(status);
     } catch (err) {
-      setError((err as Error).message);
+      setError(formatApiError(err));
     } finally {
       setBusy(false);
     }
@@ -140,16 +181,13 @@ export function OnboardingPage() {
     setBusy(true);
     setError(null);
     try {
+      await waitForHealth(15_000);
       await setApiKey(apiKeyInput);
       await testApiConnection();
       setStep("doctor");
     } catch (err) {
-      const message =
-        err instanceof ApiError
-          ? `${err.message} (${err.status})`
-          : (err as Error).message;
       setKeyRejected(true);
-      setError(message);
+      setError(formatApiError(err));
     } finally {
       setBusy(false);
     }
@@ -174,7 +212,7 @@ export function OnboardingPage() {
         setStep("complete");
       }
     } catch (err) {
-      setError((err as Error).message);
+      setError(formatApiError(err));
     } finally {
       setBusy(false);
     }
@@ -201,7 +239,7 @@ export function OnboardingPage() {
         }
       }
     } catch (err) {
-      setError((err as Error).message);
+      setError(formatApiError(err));
     } finally {
       setBusy(false);
     }
@@ -210,7 +248,9 @@ export function OnboardingPage() {
   async function handleFinish() {
     await completeOnboarding();
     await router.invalidate();
-    await navigate({ to: "/" });
+    const redirectTo = typeof redirect === "string" ? redirect : undefined;
+    const target = parseOnboardingRedirect(redirectTo);
+    await navigate({ to: target.to, search: target.search });
   }
 
   return (
@@ -287,6 +327,21 @@ export function OnboardingPage() {
 
           {step === "connect" && (
             <>
+              <div className="rounded-lg bg-[hsl(var(--surface-elevated))] px-4 py-4">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-base font-medium">Runtime API</p>
+                  <Badge variant={serverStatus?.port_open ? "success" : "secondary"}>
+                    {serverStatus?.port_open ? "ready" : "starting"}
+                  </Badge>
+                </div>
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  {serverMessage ??
+                    (isTauri()
+                      ? "Starting apxv_serve on :8741…"
+                      : "Waiting for API on :8741…")}
+                </p>
+              </div>
+
               <OperatorKeyPanel
                 operatorKey={operatorKey}
                 loadError={keyLoadError}
@@ -331,10 +386,10 @@ export function OnboardingPage() {
                   onChange={(e) => handleApiKeyChange(e.target.value)}
                   onPaste={(e) => {
                     const pasted = e.clipboardData.getData("text");
-                    const normalized = normalizeOperatorApiKey(pasted);
-                    if (normalized) {
+                    const normalizedPaste = normalizeOperatorApiKey(pasted);
+                    if (normalizedPaste) {
                       e.preventDefault();
-                      handleApiKeyChange(normalized);
+                      handleApiKeyChange(normalizedPaste);
                     }
                   }}
                   placeholder="Paste key from OPERATOR-KEY-*.txt"
@@ -350,6 +405,11 @@ export function OnboardingPage() {
                   </code>{" "}
                   line from the file, or the whole file — we extract it automatically.
                 </p>
+                {keyInvalid && (
+                  <p className="text-xs text-[hsl(var(--destructive))]">
+                    Paste the full operator key from OPERATOR-KEY-*.txt (43+ characters).
+                  </p>
+                )}
               </div>
               <ActionGroup>
                 <Button
@@ -361,13 +421,7 @@ export function OnboardingPage() {
                 </Button>
                 <Button
                   onClick={() => void handleTestConnection()}
-                  disabled={
-                    busy ||
-                    !apiKeyInput.trim() ||
-                    !isValidOperatorApiKey(
-                      normalizeOperatorApiKey(apiKeyInput) ?? "",
-                    )
-                  }
+                  disabled={busy || !apiKeyInput.trim() || !keyValid}
                 >
                   {busy ? "Testing…" : "Test connection"}
                 </Button>
@@ -471,6 +525,18 @@ export function OnboardingPage() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          <p className="text-xs text-[hsl(var(--muted-foreground))]">
+            New operator?{" "}
+            <a
+              href={PACK_TUTORIAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2"
+            >
+              BUILD-YOUR-FIRST-PACK guide
+            </a>
+          </p>
         </PanelBody>
       </Panel>
     </div>

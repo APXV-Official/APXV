@@ -20,7 +20,7 @@ VOICE_SAMPLE = (
 
 @pytest.fixture(autouse=True)
 def simulated_voice_mode(monkeypatch):
-    monkeypatch.setenv("APX_VOICE_MODE", "simulated")
+    monkeypatch.setenv("APXV_VOICE_MODE", "simulated")
 
 
 @pytest.mark.skipif(
@@ -28,12 +28,12 @@ def simulated_voice_mode(monkeypatch):
     reason="Rust workspace not available",
 )
 def test_voice_transcript_attest_and_verify():
-    env = {**os.environ, "APX_VOICE_MODE": "simulated"}
+    env = {**os.environ, "APXV_VOICE_MODE": "simulated"}
     result = subprocess.run(
         [
             sys.executable,
             "-m",
-            "scripts.run_apx",
+            "scripts.run_apxv",
             "--voice-transcript",
             VOICE_SAMPLE,
             "--attest",

@@ -27,7 +27,7 @@ On Linux/WSL use `python3` if `python` is not on PATH.
 `LLMReasoner` enforces a wall-clock limit per call. Default is **120 seconds** (v1.2.1+). Slow CPU inference may need more:
 
 ```bash
-export APX_LLM_TIMEOUT_SECONDS=180
+export APXV_LLM_TIMEOUT_SECONDS=180
 python examples/llm-ollama/run_llm_agent.py "Your prompt"
 ```
 

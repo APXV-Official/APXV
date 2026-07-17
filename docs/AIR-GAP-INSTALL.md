@@ -30,7 +30,7 @@ pip install --no-index --find-links=./offline-wheels -e ".[dev]"
 python -m scripts.apxv_bootstrap
 ```
 
-ZK circuit keys are generated during sovereign bootstrap (requires Rust prover binaries on the offline machine). Bootstrap runs all 11 circuits and writes `managed/config/install.json`.
+ZK circuit keys are generated during sovereign bootstrap (requires Rust prover binaries on the offline machine). Bootstrap runs the default circuit set (3 governance + 6 entity) and writes `managed/config/install.json`.
 
 Skip optional integrations if bandwidth or time is limited:
 

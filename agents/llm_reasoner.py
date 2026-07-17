@@ -80,7 +80,7 @@ class LLMReasoner:
         self.capability_checker.require_capability(self.agent_id, "execute_agent")
 
         prompt = context.get("prompt") or context.get("input_text") or ""
-        system = context.get("system", "You are a governed APX assistant. Be concise.")
+        system = context.get("system", "You are a governed APXV assistant. Be concise.")
         if not prompt:
             prompt = (
                 f"Given governance decision hint '{context.get('governance_decision', 'REVIEW_REQUIRED')}', "

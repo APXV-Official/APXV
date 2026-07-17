@@ -25,34 +25,41 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _git_show_bytes(relpath: str) -> bytes:
-    """Read committed blob — survives CI bootstrap mutating the working tree."""
+def _read_repo_bytes(relpath: str) -> bytes:
+    """Read committed blob when git is available; else fall back to working tree."""
     result = subprocess.run(
         ["git", "show", f"HEAD:{relpath}"],
         cwd=ROOT,
         capture_output=True,
-        check=True,
     )
-    return result.stdout
+    if result.returncode == 0:
+        return result.stdout
+    fallback = ROOT / relpath
+    if fallback.is_file():
+        return fallback.read_bytes()
+    raise FileNotFoundError(relpath)
 
 
 def _committed_governance_manifest() -> dict:
     return json.loads(
-        _git_show_bytes("rust/apxv-circuits/keys/manifest.json").decode("utf-8")
+        _read_repo_bytes("rust/apxv-circuits/keys/manifest.json").decode("utf-8")
     )
 
 
 def _copy_vendor_governance_keys(tmp_path: Path) -> None:
     dest = tmp_path / "rust" / "apxv-circuits" / "keys"
     dest.mkdir(parents=True, exist_ok=True)
+    copied = 0
     for circuit in GOVERNANCE_CIRCUITS:
         for ext in ("pk", "vk"):
             rel = f"rust/apxv-circuits/keys/{circuit}.{ext}"
             try:
-                data = _git_show_bytes(rel)
-            except subprocess.CalledProcessError:
+                data = _read_repo_bytes(rel)
+            except FileNotFoundError:
                 continue
             (dest / f"{circuit}.{ext}").write_bytes(data)
+            copied += 1
+    assert copied > 0, "vendor governance keys unavailable (git HEAD or working tree)"
 
 
 def _write_sovereign_keys(tmp_path: Path, *, suffix: bytes = b"operator-vk") -> dict[str, str]:

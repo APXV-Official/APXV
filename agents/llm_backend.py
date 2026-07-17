@@ -112,7 +112,7 @@ class OllamaLLMBackend:
         except TimeoutError as exc:
             raise RuntimeError(
                 f"Ollama request timed out ({self.base_url}). "
-                "Is Ollama responding? Try a smaller model or increase APX_LLM_TIMEOUT_SECONDS."
+                "Is Ollama responding? Try a smaller model or increase APXV_LLM_TIMEOUT_SECONDS."
             ) from exc
         except urllib.error.URLError as exc:
             raise RuntimeError(

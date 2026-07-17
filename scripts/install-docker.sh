@@ -29,7 +29,7 @@ else
   exit 1
 fi
 
-reset_apx_fresh_runtime() {
+reset_apxv_fresh_runtime() {
   local dirs=(
     managed/artifacts managed/audit managed/backups managed/config managed/store
     rust/apxv-circuits/keys rust/apxv-zk/keys
@@ -68,7 +68,7 @@ ensure_governance_templates() {
 
 if [[ "$FRESH" -eq 1 ]]; then
   echo "Resetting runtime state (keeping governance templates)..."
-  reset_apx_fresh_runtime
+  reset_apxv_fresh_runtime
 fi
 ensure_governance_templates
 

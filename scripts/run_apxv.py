@@ -1,5 +1,5 @@
 """
-APXV — Script 1: run_apx.py (Main Orchestrator)
+APXV — Script 1: run_apxv.py (Main Orchestrator)
 
 This is the primary end-to-end runner for the APXV tiny implementation.
 
@@ -182,12 +182,12 @@ def generate_zk_proof(
         inputs_file = Path(tmp) / f"{circuit}_inputs.json"
         inputs_file.write_text(json.dumps(inputs_for_circuit, indent=2))
 
-        from .rust_bins import build_apx_circuits_command
+        from .rust_bins import build_apxv_circuits_command
 
         print(f"\n[ZK] Invoking Rust Groth16 prover for circuit: {circuit}")
         print("     (First run will compile — can take 30-120s)")
 
-        cmd, cwd = build_apx_circuits_command(
+        cmd, cwd = build_apxv_circuits_command(
             base_path, "prove", circuit, "--inputs", str(inputs_file),
         )
 

@@ -1,6 +1,6 @@
 # APXV Quickstart (15 Minutes)
 
-**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3** adds sovereign local trust and a desktop operator console; **v1.3.2** stabilizes connect → run → read on Windows and Linux; **v1.3.3** completes Windows desktop server start/stop/restart on `:8741`.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3** added sovereign local trust and a desktop operator console; **v1.3.3** completed Windows server lifecycle on `:8741`. **v1.4** adds the Pack Studio **authoring wizard**, **Build your pipeline** on-ramp, removes pre-v1.3 shims, and trims unused entity circuits from default keygen.
 
 ## Choose your path
 
@@ -21,7 +21,7 @@ After bootstrap completes:
 - `Pack demo complete: final_status=ATTESTED, total_redactions=4`
 - `ALL GOVERNANCE + ENTITY GROTH16 PROOFS INDEPENDENTLY VERIFIED [OK]`
 
-First native install may take **20–60 minutes** (Rust compile + 11-circuit setup). Docker build is slower once, then cached. Desktop wizard shows per-step progress.
+First native install may take **20–60 minutes** (Rust compile + 3 governance and 6 entity circuit setup). Docker build is slower once, then cached. Desktop wizard shows per-step progress.
 
 Re-run demos without reinstalling: `python -m scripts.onboard --skip-setup`
 

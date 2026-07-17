@@ -1,6 +1,8 @@
 import type { Job } from "@apxv/api-client";
 import {
   ActionGroup,
+  Alert,
+  AlertDescription,
   Button,
   EmptyState,
   Skeleton,
@@ -27,6 +29,8 @@ export function JobsTable({
   errorMessage,
   isLoading,
   emptyAction,
+  statusFilter,
+  onClearFilter,
 }: {
   jobs: Job[];
   selectedId?: string | null;
@@ -36,6 +40,8 @@ export function JobsTable({
   errorMessage?: string | null;
   isLoading?: boolean;
   emptyAction?: ReactNode;
+  statusFilter?: Job["status"] | "";
+  onClearFilter?: () => void;
 }) {
   if (isLoading) {
     return (
@@ -49,17 +55,35 @@ export function JobsTable({
 
   if (errorMessage) {
     return (
-      <p className="text-sm text-[hsl(var(--destructive))]">{errorMessage}</p>
+      <Alert variant="destructive">
+        <AlertDescription>{errorMessage}</AlertDescription>
+      </Alert>
     );
   }
 
   if (jobs.length === 0) {
+    const filtered = Boolean(statusFilter);
+    const statusLabel = statusFilter
+      ? statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)
+      : "";
     return (
       <EmptyState
         icon={<Clock className="h-5 w-5" />}
-        title="No jobs yet"
-        description="Run a pipeline to queue your first governed job."
-        action={emptyAction}
+        title={filtered ? `No ${statusLabel.toLowerCase()} jobs` : "No jobs yet"}
+        description={
+          filtered
+            ? `No jobs match the ${statusLabel.toLowerCase()} filter. Try another status or clear the filter.`
+            : "Run a pipeline to queue your first governed job."
+        }
+        action={
+          filtered && onClearFilter ? (
+            <Button size="sm" variant="secondary" onClick={onClearFilter}>
+              Clear filter
+            </Button>
+          ) : (
+            emptyAction
+          )
+        }
       />
     );
   }

@@ -26,6 +26,7 @@ import { JobDetailPanel } from "../components/JobDetailPanel";
 import { JobsTable } from "../components/JobsTable";
 import { PageShell } from "../components/PageShell";
 import { formatApiError } from "../lib/api-errors";
+import { PACK_TUTORIAL_URL } from "../lib/pack-studio";
 import { truncateId } from "../lib/format-id";
 import {
   invalidateJobsQueries,
@@ -105,7 +106,11 @@ export function JobsPage() {
             tone={connected ? "success" : streamError ? "warning" : "muted"}
             pulse={connected}
           />
-          {connected ? "Live updates" : streamError ? "Polling" : "Connecting…"}
+          {connected
+            ? "Live updates"
+            : streamError
+              ? "Polling"
+              : "Connecting to live updates…"}
           {streamError && (
             <span className="text-[hsl(var(--muted-foreground))]">· {streamError}</span>
           )}
@@ -147,6 +152,8 @@ export function JobsPage() {
             <JobsTable
               jobs={jobs}
               selectedId={selectedId}
+              statusFilter={statusFilter}
+              onClearFilter={() => setStatusFilter("")}
               onSelect={(job) => {
                 if (job.id) {
                   void navigate({ to: "/jobs", search: { id: job.id } });
@@ -157,9 +164,20 @@ export function JobsPage() {
                 jobsQuery.isError ? formatApiError(jobsQuery.error) : null
               }
               emptyAction={
-                <Button size="sm" asChild>
-                  <Link to="/pipeline">Run a pipeline</Link>
-                </Button>
+                <ActionGroup>
+                  <Button size="sm" asChild>
+                    <Link to="/pipeline">Run a pipeline</Link>
+                  </Button>
+                  <Button variant="link" size="sm" asChild>
+                    <a
+                      href={PACK_TUTORIAL_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      First pipeline guide
+                    </a>
+                  </Button>
+                </ActionGroup>
               }
               onRetry={(job) => retryMutation.mutate(job)}
               retryingId={
@@ -198,7 +216,22 @@ export function JobsPage() {
           )}
           {selectedId && detailQuery.isError && (
             <Alert variant="destructive">
-              <AlertDescription>{formatApiError(detailQuery.error)}</AlertDescription>
+              <AlertDescription className="space-y-3">
+                <p>{formatApiError(detailQuery.error)}</p>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="h-auto p-0"
+                  onClick={() =>
+                    void navigate({
+                      to: "/jobs",
+                      search: { id: undefined },
+                    })
+                  }
+                >
+                  Back to job queue
+                </Button>
+              </AlertDescription>
             </Alert>
           )}
           {detailQuery.data && (

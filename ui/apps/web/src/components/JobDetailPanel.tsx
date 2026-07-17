@@ -261,7 +261,13 @@ export function JobDetailPanel({
                   </Link>
                 </Button>
                 <Button variant="link" size="sm" asChild>
-                  <Link to="/verify" search={{ hash: artifactHash }}>
+                  <Link
+                    to="/verify"
+                    search={{
+                      hash: artifactHash,
+                      job: job.id,
+                    }}
+                  >
                     Verify
                   </Link>
                 </Button>

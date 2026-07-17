@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional
 import importlib.util
 import sys
 
-from .pack_catalog import find_pack, resolve_apx_root, resolve_pack_key
+from .pack_catalog import find_pack, resolve_apxv_root, resolve_pack_key
 from .runtime import APXRuntime
 
 
@@ -24,7 +24,7 @@ def _load_module_from_file(module_name: str, file_path: Path):
 
 
 def _pack_module(base_path: Path, pack_key: str):
-    apx_root = resolve_apx_root(base_path)
+    apx_root = resolve_apxv_root(base_path)
     files = {
         "document": apx_root
         / "governance-libraries"
@@ -67,7 +67,7 @@ def _run_custom_pack(
     upload_id: Optional[str],
     llm: Optional[Dict[str, Any]],
 ) -> Dict[str, Any]:
-    apx_root = resolve_apx_root(runtime.base_path)
+    apx_root = resolve_apxv_root(runtime.base_path)
     pack_dir = apx_root / pack_entry["path"]
     mod = _load_pack_agents_module(runtime.base_path, pack_dir, pack_entry["id"])
 
@@ -165,7 +165,7 @@ def _resolve_llm_backend(llm: Optional[Dict[str, Any]], runtime: APXRuntime):
 
 
 def apply_zk_attestation(attested: Dict[str, Any], runtime: APXRuntime) -> Dict[str, Any]:
-    """Attach full governance + entity Groth16 proofs (same path as run_apx --attest)."""
+    """Attach full governance + entity Groth16 proofs (same path as run_apxv --attest)."""
     from scripts.run_apxv import generate_zk_proof
     from scripts.setup_zk import ensure_zk_setup
     from agents.zk.bridge import generate_entity_proofs

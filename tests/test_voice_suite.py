@@ -22,7 +22,7 @@ from agents.voice import (
 
 @pytest.fixture(autouse=True)
 def simulated_voice_mode(monkeypatch):
-    monkeypatch.setenv("APX_VOICE_MODE", "simulated")
+    monkeypatch.setenv("APXV_VOICE_MODE", "simulated")
 
 
 def test_resolve_voice_providers_simulated():
@@ -62,8 +62,8 @@ def test_build_voice_session():
 
 
 @pytest.mark.skipif(
-    os.environ.get("APX_VOICE_MODE") == "simulated",
-    reason="Local backend test requires APX_VOICE_MODE=local and vosk model",
+    os.environ.get("APXV_VOICE_MODE") == "simulated",
+    reason="Local backend test requires APXV_VOICE_MODE=local and vosk model",
 )
 def test_local_vosk_when_model_present():
     model_dir = ROOT / "managed" / "store" / "voice-models" / "vosk-small-en-us-0.15"

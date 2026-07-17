@@ -93,4 +93,4 @@ def test_export_verifier_bundle_no_pk(tmp_path):
     assert not any(bundle.rglob("*.pk"))
     assert (bundle / "governance" / "manifest.json").exists()
     assert (bundle / "entity" / "entity-manifest.json").exists()
-    assert len(list((bundle / "entity").glob("*.vk"))) == 8
+    assert len(list((bundle / "entity").glob("*.vk"))) == 6

@@ -1,8 +1,10 @@
 import { ActionGroup, Button, Panel, PanelBody, PanelHeader } from "@apxv/ui";
-import { BookOpen, Copy, Plus } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { BookOpen, Copy, Layers, Plus } from "lucide-react";
 import {
   PACK_CATALOG_URL,
   PACK_TUTORIAL_URL,
+  PIPELINE_COMPOSER_V15_NOTE,
   type PackTemplate,
 } from "../lib/pack-studio";
 
@@ -24,10 +26,13 @@ export function PackStudioOnRamp({
   return (
     <Panel className="border border-[hsl(var(--divider-subtle))] bg-[hsl(var(--surface-elevated))]/40">
       <PanelHeader
-        title="Build your first pack"
-        description="Duplicate the reference redaction pack, edit governance rules, then activate and run."
+        title="Build your pipeline"
+        description="Author a governed agent pack — template, governance, activate, test."
       />
       <PanelBody className="space-y-4 pt-0">
+        <p className="text-sm text-[hsl(var(--muted-foreground))]">
+          {PIPELINE_COMPOSER_V15_NOTE}
+        </p>
         <ol className="list-decimal space-y-1 pl-5 text-sm text-[hsl(var(--muted-foreground))]">
           <li>
             <strong className="font-medium text-[hsl(var(--foreground))]">
@@ -50,6 +55,12 @@ export function PackStudioOnRamp({
         </ol>
 
         <ActionGroup className="flex-wrap">
+          <Button asChild className="gap-2">
+            <Link to="/packs" search={{ wizard: "1", pack: undefined }}>
+              <Layers className="h-4 w-4" aria-hidden />
+              Start pack wizard
+            </Link>
+          </Button>
           <Button
             onClick={onDuplicateReference}
             disabled={duplicatePending}

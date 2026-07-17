@@ -32,19 +32,15 @@ use apxv_zk::circuits::{
     compliance::ComplianceCircuit,
     core_redaction::CoreRedactionCircuit,
     merkle_inclusion::MerkleInclusionCircuit,
-    normalization::NormalizationCircuit,
     redaction_v1::RedactionProofV1Circuit,
-    threat::ThreatCircuit,
     voice_redaction::VoiceRedactionCircuit,
 };
 use apxv_zk::keygen::{load_proving_key, load_verification_key};
 use apxv_zk::poseidon::Poseidon;
 
 const CIRCUITS: &[&str] = &[
-    "normalization",
     "core-redaction",
     "compliance",
-    "threat",
     "voice-redaction",
     "redaction-v1",
     "merkle-inclusion",
@@ -188,10 +184,8 @@ fn json_fr_matrix<const R: usize, const C: usize>(v: &Value, key: &str) -> [[Fr;
 use std::str::FromStr;
 
 enum BuiltCircuit {
-    Normalization(NormalizationCircuit, Vec<Fr>),
     CoreRedaction(CoreRedactionCircuit, Vec<Fr>),
     Compliance(ComplianceCircuit, Vec<Fr>),
-    Threat(ThreatCircuit, Vec<Fr>),
     VoiceRedaction(VoiceRedactionCircuit, Vec<Fr>),
     RedactionV1(RedactionProofV1Circuit, Vec<Fr>),
     MerkleInclusion(MerkleInclusionCircuit, Vec<Fr>),
@@ -202,22 +196,12 @@ impl BuiltCircuit {
     fn prove(self, pk: &ark_groth16::ProvingKey<Bn254>, vk: &ark_groth16::VerifyingKey<Bn254>) -> (Proof<Bn254>, bool) {
         let mut rng = StdRng::from_entropy();
         match self {
-            BuiltCircuit::Normalization(c, pi) => {
-                let proof = Groth16::<Bn254>::prove(pk, c, &mut rng).expect("prove failed");
-                let valid = Groth16::<Bn254>::verify(vk, &pi, &proof).unwrap_or(false);
-                (proof, valid)
-            }
             BuiltCircuit::CoreRedaction(c, pi) => {
                 let proof = Groth16::<Bn254>::prove(pk, c, &mut rng).expect("prove failed");
                 let valid = Groth16::<Bn254>::verify(vk, &pi, &proof).unwrap_or(false);
                 (proof, valid)
             }
             BuiltCircuit::Compliance(c, pi) => {
-                let proof = Groth16::<Bn254>::prove(pk, c, &mut rng).expect("prove failed");
-                let valid = Groth16::<Bn254>::verify(vk, &pi, &proof).unwrap_or(false);
-                (proof, valid)
-            }
-            BuiltCircuit::Threat(c, pi) => {
                 let proof = Groth16::<Bn254>::prove(pk, c, &mut rng).expect("prove failed");
                 let valid = Groth16::<Bn254>::verify(vk, &pi, &proof).unwrap_or(false);
                 (proof, valid)
@@ -247,10 +231,8 @@ impl BuiltCircuit {
 
     fn public_inputs(&self) -> Vec<Fr> {
         match self {
-            BuiltCircuit::Normalization(_, pi) => pi.clone(),
             BuiltCircuit::CoreRedaction(_, pi) => pi.clone(),
             BuiltCircuit::Compliance(_, pi) => pi.clone(),
-            BuiltCircuit::Threat(_, pi) => pi.clone(),
             BuiltCircuit::VoiceRedaction(_, pi) => pi.clone(),
             BuiltCircuit::RedactionV1(_, pi) => pi.clone(),
             BuiltCircuit::MerkleInclusion(_, pi) => pi.clone(),
@@ -261,23 +243,6 @@ impl BuiltCircuit {
 
 fn build_circuit(name: &str, v: &Value) -> BuiltCircuit {
     match name {
-        "normalization" => {
-            let original_hash = json_fr(v, "original_hash");
-            let normalized_hash = json_fr(v, "normalized_hash");
-            let feature_bitmap = json_fr(v, "feature_bitmap");
-            let entropy_drop = json_fr(v, "entropy_drop");
-            let circuit = NormalizationCircuit {
-                original_hash,
-                normalized_hash,
-                feature_bitmap,
-                entropy_drop,
-                original_length: json_fr(v, "original_length"),
-                normalized_length: json_fr(v, "normalized_length"),
-                feature_count: json_fr(v, "feature_count"),
-            };
-            let pi = vec![original_hash, normalized_hash, feature_bitmap, entropy_drop];
-            BuiltCircuit::Normalization(circuit, pi)
-        }
         "core-redaction" => {
             let merkle_root = json_fr(v, "merkle_root");
             let entity_count = json_fr(v, "entity_count");
@@ -301,18 +266,6 @@ fn build_circuit(name: &str, v: &Value) -> BuiltCircuit {
             };
             let pi = vec![entity_count, policy_id];
             BuiltCircuit::Compliance(circuit, pi)
-        }
-        "threat" => {
-            let threat_score = json_fr(v, "threat_score");
-            let policy_id = json_fr(v, "policy_id");
-            let circuit = ThreatCircuit {
-                threat_score,
-                policy_id,
-                original_hash: json_fr(v, "original_hash"),
-                mitigated_hash: json_fr(v, "mitigated_hash"),
-            };
-            let pi = vec![threat_score, policy_id];
-            BuiltCircuit::Threat(circuit, pi)
         }
         "voice-redaction" => {
             let entity_count = json_fr(v, "entity_count");
@@ -388,18 +341,6 @@ fn run_setup(circuit: &str) {
     let mut rng = StdRng::from_entropy();
 
     let (pk, vk) = match circuit {
-        "normalization" => Groth16::<Bn254>::circuit_specific_setup(
-            NormalizationCircuit {
-                original_hash: Fr::from(1u64),
-                normalized_hash: Fr::from(2u64),
-                feature_bitmap: Fr::from(127u64),
-                entropy_drop: Fr::from(50u64),
-                original_length: Fr::from(1000u64),
-                normalized_length: Fr::from(900u64),
-                feature_count: Fr::from(5u64),
-            },
-            &mut rng,
-        ),
         "core-redaction" => Groth16::<Bn254>::circuit_specific_setup(
             CoreRedactionCircuit {
                 merkle_root: Fr::from(12345u64),
@@ -415,15 +356,6 @@ fn run_setup(circuit: &str) {
                 policy_id: Fr::from(3u64),
                 original_hash: Fr::from(111111u64),
                 redacted_hash: Fr::from(222222u64),
-            },
-            &mut rng,
-        ),
-        "threat" => Groth16::<Bn254>::circuit_specific_setup(
-            ThreatCircuit {
-                threat_score: Fr::from(80u64),
-                policy_id: Fr::from(2u64),
-                original_hash: Fr::from(111111u64),
-                mitigated_hash: Fr::from(222222u64),
             },
             &mut rng,
         ),

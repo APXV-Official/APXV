@@ -1,6 +1,6 @@
-# APXV — Local API v1 (Deprecated)
+# APXV — Local API v1 (historical)
 
-> **Deprecated in v1.3.0** — removed in **v1.4.0**. Use [LOCAL-API-V2.md](LOCAL-API-V2.md) for the operator API contract (`/api/v2/*`). Legacy v1 responses include `Deprecation: true` and `Sunset: v1.4` headers.
+> **Superseded.** Use [LOCAL-API-V2.md](LOCAL-API-V2.md) for the supported operator API (`/api/v2/*`). This page documents the pre-v1.4 v1 surface for migration reference only.
 
 **Deployment:** Localhost only, air-gapped compatible  
 **Dependencies:** Python stdlib only (no FastAPI, no cloud)

@@ -4,7 +4,7 @@
 **Last Updated:** 2026-06-10
 
 ## Purpose
-These rules define mandatory constraints and safeguards for any LLM-powered or tool-using agent operating within an APX-governed environment.
+These rules define mandatory constraints and safeguards for any LLM-powered or tool-using agent operating within an APXV-governed environment.
 
 ## Scope
 Applies to all agentic components (LLM reasoners, tool users, hybrid agents) unless explicitly overridden by a more specific rule set.

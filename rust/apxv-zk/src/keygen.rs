@@ -27,9 +27,7 @@ use crate::circuits::{
     compliance::ComplianceCircuit,
     core_redaction::CoreRedactionCircuit,
     merkle_inclusion::MerkleInclusionCircuit,
-    normalization::NormalizationCircuit,
     redaction_v1::RedactionProofV1Circuit,
-    threat::ThreatCircuit,
     voice_redaction::VoiceRedactionCircuit,
 };
 use crate::poseidon::Poseidon;
@@ -92,28 +90,12 @@ pub fn load_verification_key(path: &str) -> Result<VerifyingKey<Bn254>, Box<dyn 
     Ok(VerifyingKey::<Bn254>::deserialize_compressed(&bytes[..])?)
 }
 
-/// Generate Groth16 keys for all 8 entity circuits.
+/// Generate Groth16 keys for all 6 default entity circuits.
 pub fn apx_generate_all_keys(output_dir: &str) -> Result<(), Box<dyn std::error::Error>> {
-    println!("\n=== APX ZK Key Generation ===");
-    println!("Generating Groth16 keys for all 8 circuits...\n");
+    println!("\n=== APXV ZK Key Generation ===");
+    println!("Generating Groth16 keys for all 6 default circuits...\n");
 
-    println!("[1/8] Normalization Circuit");
-    let norm_circuit = NormalizationCircuit {
-        original_hash: Fr::from(1u64),
-        normalized_hash: Fr::from(2u64),
-        feature_bitmap: Fr::from(127u64),
-        entropy_drop: Fr::from(50u64),
-        original_length: Fr::from(1000u64),
-        normalized_length: Fr::from(900u64),
-        feature_count: Fr::from(5u64),
-    };
-    generate_keys(
-        norm_circuit,
-        &format!("{}/normalization.pk", output_dir),
-        &format!("{}/normalization.vk", output_dir),
-    )?;
-
-    println!("\n[2/8] Core Redaction Circuit");
+    println!("[1/6] Core Redaction Circuit");
     let core_circuit = CoreRedactionCircuit {
         merkle_root: Fr::from(12345u64),
         entity_count: Fr::from(10u64),
@@ -126,7 +108,7 @@ pub fn apx_generate_all_keys(output_dir: &str) -> Result<(), Box<dyn std::error:
         &format!("{}/core-redaction.vk", output_dir),
     )?;
 
-    println!("\n[3/8] Compliance Circuit");
+    println!("\n[2/6] Compliance Circuit");
     let compliance_circuit = ComplianceCircuit {
         entity_count: Fr::from(5u64),
         policy_id: Fr::from(3u64),
@@ -139,20 +121,7 @@ pub fn apx_generate_all_keys(output_dir: &str) -> Result<(), Box<dyn std::error:
         &format!("{}/compliance.vk", output_dir),
     )?;
 
-    println!("\n[4/8] Threat Circuit");
-    let threat_circuit = ThreatCircuit {
-        threat_score: Fr::from(80u64),
-        policy_id: Fr::from(2u64),
-        original_hash: Fr::from(111111u64),
-        mitigated_hash: Fr::from(222222u64),
-    };
-    generate_keys(
-        threat_circuit,
-        &format!("{}/threat.pk", output_dir),
-        &format!("{}/threat.vk", output_dir),
-    )?;
-
-    println!("\n[5/8] Voice Redaction Circuit");
+    println!("\n[3/6] Voice Redaction Circuit");
     let voice_circuit = VoiceRedactionCircuit {
         entity_count: Fr::from(3u64),
         policy_id: Fr::from(3u64),
@@ -165,7 +134,7 @@ pub fn apx_generate_all_keys(output_dir: &str) -> Result<(), Box<dyn std::error:
         &format!("{}/voice-redaction.vk", output_dir),
     )?;
 
-    println!("\n[6/8] Redaction Proof V1 Circuit");
+    println!("\n[4/6] Redaction Proof V1 Circuit");
     let leaf_commitments = [
         Fr::from(1000u64),
         Fr::from(2000u64),
@@ -193,7 +162,7 @@ pub fn apx_generate_all_keys(output_dir: &str) -> Result<(), Box<dyn std::error:
         &format!("{}/redaction-v1.vk", output_dir),
     )?;
 
-    println!("\n[7/8] Merkle Inclusion Circuit");
+    println!("\n[5/6] Merkle Inclusion Circuit");
     let merkle_circuit = MerkleInclusionCircuit {
         merkle_root: Fr::from(12345u64),
         leaf: Fr::from(1000u64),
@@ -206,7 +175,7 @@ pub fn apx_generate_all_keys(output_dir: &str) -> Result<(), Box<dyn std::error:
         &format!("{}/merkle-inclusion.vk", output_dir),
     )?;
 
-    println!("\n[8/8] Batch Merkle Circuit");
+    println!("\n[6/6] Batch Merkle Circuit");
     let batch_circuit = BatchMerkleCircuit {
         merkle_root: Fr::from(12345u64),
         entity_count: Fr::from(4u64),
@@ -220,7 +189,7 @@ pub fn apx_generate_all_keys(output_dir: &str) -> Result<(), Box<dyn std::error:
         &format!("{}/batch-merkle.vk", output_dir),
     )?;
 
-    println!("\nAll 8 circuit keys generated successfully!");
+    println!("\nAll 6 default circuit keys generated successfully!");
     println!("Keys saved to: {}/", output_dir);
 
     Ok(())

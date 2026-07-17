@@ -1,7 +1,5 @@
 import {
-  ApiError,
   getSystemDoctor,
-  getSystemHealth,
   isValidOperatorApiKey,
   normalizeOperatorApiKey,
   repairAuditLogs,
@@ -19,18 +17,22 @@ import {
   PanelBody,
   PanelHeader,
 } from "@apxv/ui";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { router } from "../router";
 import { useCallback, useEffect, useState } from "react";
+import { formatApiError } from "../lib/api-errors";
 import { isOnboardingComplete } from "../lib/auth-storage";
 import { useApp } from "../context/AppContext";
 import { BrandLogo } from "../components/BrandLogo";
 import { OperatorKeyPanel } from "../components/OperatorKeyPanel";
 import { integrityCheckFailed } from "../lib/doctor-format";
+import { parseOnboardingRedirect } from "../lib/onboarding-nav";
 import {
   discoverOperatorKey,
   type DiscoveredOperatorKey,
 } from "../lib/operator-key-discovery";
+import { PACK_TUTORIAL_URL } from "../lib/pack-studio";
+import { waitForHealth } from "../lib/wait-for-health";
 import {
   formatServerStatus,
   getApxvServerStatus,
@@ -43,6 +45,7 @@ import {
 
 export function SetupPage() {
   const navigate = useNavigate();
+  const { redirect } = useSearch({ strict: false });
   const { setApiKey, completeOnboarding } = useApp();
 
   const [apiKeyInput, setApiKeyInput] = useState("");
@@ -54,8 +57,10 @@ export function SetupPage() {
   const [testMessage, setTestMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [doctorWarning, setDoctorWarning] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [connecting, setConnecting] = useState(false);
   const [autoFilled, setAutoFilled] = useState(false);
+  const busy = testing || connecting;
 
   const isSetupPreview =
     typeof window !== "undefined" &&
@@ -74,23 +79,34 @@ export function SetupPage() {
           file_content: `API Key: ${previewKey}`,
           key_id: "default-operator",
         });
+        setApiKeyInput((prev) => {
+          if (prev.trim()) return prev;
+          setAutoFilled(true);
+          return previewKey;
+        });
       }
       return;
     }
 
-    const discovered = await discoverOperatorKey();
-    if (discovered) {
-      setOperatorKey(discovered);
+    const result = await discoverOperatorKey();
+    if (result.status === "found") {
+      setOperatorKey(result.key);
       setApiKeyInput((prev) => {
         if (prev.trim()) return prev;
         setAutoFilled(true);
-        return discovered.key;
+        return result.key.key;
       });
     } else {
       setOperatorKey(null);
-      setKeyLoadError(
-        "No OPERATOR-KEY-*.txt found under managed/config. Run bootstrap or setup_first_run.",
-      );
+      if (result.status === "unreachable") {
+        setKeyLoadError(
+          `API not reachable — ${result.message} Start apxv_serve, then reload.`,
+        );
+      } else {
+        setKeyLoadError(
+          "No OPERATOR-KEY-*.txt found under managed/config. Run bootstrap or setup_first_run.",
+        );
+      }
     }
   }, [isSetupPreview]);
 
@@ -107,13 +123,16 @@ export function SetupPage() {
       });
       await router.invalidate();
       if (!cancelled) {
-        await navigate({ to: "/" });
+        const redirectTo =
+          typeof redirect === "string" ? redirect : undefined;
+        const target = parseOnboardingRedirect(redirectTo);
+        await navigate({ to: target.to, search: target.search });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [isSetupPreview, navigate]);
+  }, [isSetupPreview, navigate, redirect]);
 
   useEffect(() => {
     let cancelled = false;
@@ -167,7 +186,7 @@ export function SetupPage() {
   }, [isSetupPreview, reloadOperatorKey]);
 
   function handleApiKeyChange(value: string) {
-    setApiKeyInput(value);
+    setApiKeyInput(normalizeOperatorApiKey(value) ?? value);
     setAutoFilled(false);
     setError(null);
     setTestMessage(null);
@@ -181,18 +200,19 @@ export function SetupPage() {
   }
 
   async function handleSaveKey() {
-    if (!operatorKey) return;
+    const exportKey = operatorKey ?? buildExportKeyFromInput(apiKeyInput);
+    if (!exportKey) return;
     setSaveMessage(null);
-    setBusy(true);
+    setConnecting(true);
     try {
       if (isTauri()) {
         const path = await invokeTauri<string>("save_operator_key_file");
         setSaveMessage(`Saved to ${path}`);
       } else {
-        const filename = operatorKey.key_id
-          ? `OPERATOR-KEY-${operatorKey.key_id}.txt`
+        const filename = exportKey.key_id
+          ? `OPERATOR-KEY-${exportKey.key_id}.txt`
           : "OPERATOR-KEY-export.txt";
-        const blob = new Blob([operatorKey.file_content], {
+        const blob = new Blob([exportKey.file_content], {
           type: "text/plain;charset=utf-8",
         });
         const url = URL.createObjectURL(blob);
@@ -204,14 +224,14 @@ export function SetupPage() {
         setSaveMessage(`Downloaded ${filename}`);
       }
     } catch (err) {
-      setSaveMessage((err as Error).message);
+      setSaveMessage(formatApiError(err));
     } finally {
-      setBusy(false);
+      setConnecting(false);
     }
   }
 
   async function handleTestConnection() {
-    setBusy(true);
+    setTesting(true);
     setError(null);
     setTestMessage(null);
     try {
@@ -220,18 +240,14 @@ export function SetupPage() {
       await testApiConnection();
       setTestMessage("Connection OK — API accepted your operator key.");
     } catch (err) {
-      const message =
-        err instanceof ApiError
-          ? `${err.message} (${err.status})`
-          : (err as Error).message;
-      setError(message);
+      setError(formatApiError(err));
     } finally {
-      setBusy(false);
+      setTesting(false);
     }
   }
 
   async function handleConnect() {
-    setBusy(true);
+    setConnecting(true);
     setError(null);
     setDoctorWarning(null);
     setTestMessage(null);
@@ -258,20 +274,20 @@ export function SetupPage() {
       }
       await completeOnboarding();
       await router.invalidate();
-      await navigate({ to: "/" });
+      const redirectTo =
+        typeof redirect === "string" ? redirect : undefined;
+      const target = parseOnboardingRedirect(redirectTo);
+      await navigate({ to: target.to, search: target.search });
     } catch (err) {
-      const message =
-        err instanceof ApiError
-          ? `${err.message} (${err.status})`
-          : (err as Error).message;
-      setError(message);
+      setError(formatApiError(err));
     } finally {
-      setBusy(false);
+      setConnecting(false);
     }
   }
 
   const normalized = normalizeOperatorApiKey(apiKeyInput) ?? "";
   const keyValid = isValidOperatorApiKey(normalized);
+  const keyInvalid = apiKeyInput.trim().length > 0 && !keyValid;
   const canTest = !busy && apiKeyInput.trim().length > 0 && keyValid;
   const canConnect = canTest;
   const connectLabel =
@@ -351,6 +367,11 @@ export function SetupPage() {
                 ? "Key loaded from your runtime. Test connection, then Connect to enter the dashboard."
                 : "Paste the API Key line if auto-discovery did not run yet."}
             </p>
+            {keyInvalid && (
+              <p className="text-xs text-[hsl(var(--destructive))]">
+                Paste the full operator key from OPERATOR-KEY-*.txt (43+ characters).
+              </p>
+            )}
           </div>
 
           <ActionGroup>
@@ -359,10 +380,10 @@ export function SetupPage() {
               onClick={() => void handleTestConnection()}
               disabled={!canTest}
             >
-              {busy ? "Testing…" : "Test connection"}
+              {testing ? "Testing…" : "Test connection"}
             </Button>
             <Button onClick={() => void handleConnect()} disabled={!canConnect}>
-              {busy ? "Connecting…" : connectLabel}
+              {connecting ? "Connecting…" : connectLabel}
             </Button>
             {isTauri() && (
               <Button
@@ -399,28 +420,33 @@ export function SetupPage() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+
+          <p className="text-xs text-[hsl(var(--muted-foreground))]">
+            New operator?{" "}
+            <a
+              href={PACK_TUTORIAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2"
+            >
+              BUILD-YOUR-FIRST-PACK guide
+            </a>
+          </p>
         </PanelBody>
       </Panel>
     </div>
   );
 }
 
-async function waitForHealth(timeoutMs: number): Promise<void> {
-  const deadline = Date.now() + timeoutMs;
-  let lastError: Error | null = null;
-
-  while (Date.now() < deadline) {
-    try {
-      await getSystemHealth();
-      return;
-    } catch (err) {
-      lastError = err as Error;
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
-  }
-
-  throw new Error(
-    lastError?.message ??
-      "API did not respond on :8741. Check that apxv_serve started correctly.",
-  );
+function buildExportKeyFromInput(
+  input: string,
+): DiscoveredOperatorKey | null {
+  const normalized = normalizeOperatorApiKey(input);
+  if (!normalized || !isValidOperatorApiKey(normalized)) return null;
+  return {
+    key: normalized,
+    file_path: "managed/config/OPERATOR-KEY-export.txt",
+    file_content: `API Key: ${normalized}`,
+    key_id: "export",
+  };
 }

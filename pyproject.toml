@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "apxv"
-version = "1.3.3"
+version = "1.4.0"
 description = "APXV — air-gapped governed agent platform (Attested Proof Execution Verified): Groth16 proofs, Pack Studio, local API v2"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -49,13 +49,6 @@ ceremony-transcript = "scripts.ceremony_transcript:main"
 export-verifier-bundle = "scripts.export_verifier_bundle:main"
 apxv-onboard = "scripts.onboard:main"
 apxv-bootstrap = "scripts.apxv_bootstrap:main"
-# v1.3.x compat shims (removed in v1.4)
-run-apx = "scripts.run_apx:main"
-apx-doctor = "scripts.apx_doctor:main"
-apx-verify-bundle = "scripts.apx_verify_bundle:main"
-apx-ctl = "scripts.apx_ctl:main"
-apx-serve = "scripts.apx_serve:main"
-apx-onboard = "scripts.onboard:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

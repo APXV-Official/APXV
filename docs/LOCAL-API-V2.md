@@ -20,7 +20,7 @@ or:
 APXV-API-KEY: <api-key>
 ```
 
-(`X-APX-API-Key` is accepted as a legacy alias.)
+Use the `APXV-API-KEY` header (or `Authorization: Bearer <key>`). The header `X-APX-API-Key` remains accepted for upgrade compatibility.
 
 ## Error envelope
 

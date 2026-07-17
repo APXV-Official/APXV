@@ -61,8 +61,17 @@ def export_verifier_bundle(
     for vk in gov_src.glob("*.vk"):
         shutil.copy2(vk, gov_dest / vk.name)
 
+    # Only ship default entity circuits (v1.4+ trims deferred modules).
+    try:
+        from scripts.bootstrap.constants import ENTITY_CIRCUITS
+        entity_allow = frozenset(ENTITY_CIRCUITS)
+    except Exception:
+        entity_allow = None
+
     shutil.copy2(ent_src / "entity-manifest.json", ent_dest / "entity-manifest.json")
     for vk in ent_src.glob("*.vk"):
+        if entity_allow is not None and vk.stem not in entity_allow:
+            continue
         shutil.copy2(vk, ent_dest / vk.name)
 
     transcript_src = base / "managed" / "config" / "ceremony-transcript.json"

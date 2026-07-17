@@ -79,7 +79,7 @@ export function ArtifactDetailPage() {
             <Link to="/artifacts">← Library</Link>
           </Button>
           <Button variant="link" size="sm" asChild>
-            <Link to="/verify" search={{ hash }}>
+            <Link to="/verify" search={{ hash, job: undefined }}>
               Open in verifier
             </Link>
           </Button>

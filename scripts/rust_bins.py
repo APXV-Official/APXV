@@ -88,10 +88,3 @@ def build_apxv_zk_command(base_path: Path, *args: str) -> tuple[list[str], str]:
         "--manifest-path", str(manifest),
         "-p", "apxv-zk", "--", *args,
     ], str(crate_dir)
-
-
-# v1.3.x compat aliases — removed in v1.4
-resolve_apx_circuits_binary = resolve_apxv_circuits_binary
-resolve_apx_zk_binary = resolve_apxv_zk_binary
-build_apx_circuits_command = build_apxv_circuits_command
-build_apx_zk_command = build_apxv_zk_command

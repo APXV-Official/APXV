@@ -155,7 +155,7 @@ export function SystemPage() {
       setRestoreResult(
         `Dry-run OK — would restore ${String(data.file_count ?? "?")} files`,
       ),
-    onError: (err) => setRestoreResult((err as Error).message),
+    onError: (err) => setRestoreResult(formatApiError(err)),
   });
 
   const restoreMutation = useMutation({
@@ -165,7 +165,7 @@ export function SystemPage() {
       void backupsQuery.refetch();
       void queryClient.invalidateQueries({ queryKey: ["health"] });
     },
-    onError: (err) => setRestoreResult((err as Error).message),
+    onError: (err) => setRestoreResult(formatApiError(err)),
   });
 
   const backups = backupsQuery.data?.backups ?? [];
@@ -238,13 +238,28 @@ export function SystemPage() {
           <section className="space-y-4">
             <SectionHeader title="Doctor checks" />
             <DataSurface>
+              {doctorQuery.isError && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription className="space-y-3">
+                    <p>{formatApiError(doctorQuery.error)}</p>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="h-auto p-0"
+                      onClick={() => void doctorQuery.refetch()}
+                    >
+                      Retry doctor
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
               {doctorQuery.isLoading ? (
                 <div className="space-y-2">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Skeleton key={i} className="h-9 w-full" />
                   ))}
                 </div>
-              ) : (
+              ) : doctorQuery.isError ? null : (
                 <Table>
                   <TableHeader>
                     <TableRow>

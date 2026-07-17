@@ -32,7 +32,7 @@ python -m scripts.run_apxv --attest
 python -m scripts.verify_attestation --real-zk
 ```
 
-- [ ] `run_apx --attest` exit code 0
+- [ ] `run_apxv --attest` exit code 0
 - [ ] `verify_attestation --real-zk` reports OK
 
 ## Sign-off

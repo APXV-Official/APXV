@@ -38,14 +38,14 @@ LOCALHOST_BIND_ADDRESSES = frozenset({"127.0.0.1", "localhost", "::1"})
 
 
 def validate_localhost_bind(bind_address: str) -> str:
-    """Reject non-localhost binds — APX local API is air-gap safe by design."""
+    """Reject non-localhost binds — APXV local API is air-gap safe by design."""
     normalized = bind_address.strip().lower()
     allowed = set(LOCALHOST_BIND_ADDRESSES)
     if get_env("APXV_CONTAINER_BIND") == "1":
         allowed.add("0.0.0.0")
     if normalized not in allowed:
         raise ValueError(
-            f"APX local API must bind to localhost only (got {bind_address!r}). "
+            f"APXV local API must bind to localhost only (got {bind_address!r}). "
             f"Allowed: {', '.join(sorted(allowed))}"
         )
     return bind_address
@@ -420,7 +420,3 @@ class APXVLocalServer:
         finally:
             self.worker.stop()
             self.httpd.server_close()
-
-
-# v1.3.x compat — removed in v1.4
-APXLocalServer = APXVLocalServer

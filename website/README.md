@@ -1,21 +1,33 @@
 # APXV marketing site
 
-Static site deployed to **GitHub Pages** via `.github/workflows/pages.yml`.
+Static landing page for [apxv-official.github.io/APXV](https://apxv-official.github.io/APXV/).
 
-**Current release on site:** v1.3.3 — Windows desktop server lifecycle hotfix.
+**Current story:** v1.4.0 — local governed agents, Pack Studio wizard, sovereign bootstrap, proof receipts.
 
-Download hub and APXV™ branding on the site shipped in the prior v1.3.2 release.
+## What’s included
 
-**Live URL (after Pages is enabled):** https://apxv-official.github.io/APXV/
+- Professional landing (hero, pillars, how it works, packs, download, docs)
+- Motion: ambient orbs/grid, cursor spotlight (desktop), stagger reveals, card hover, pipeline bar
+- Mobile: hamburger menu, full-width CTAs, safe-area insets, lighter ambient on small screens
+- Honest scope (includes / does not include)
+- `prefers-reduced-motion` support
 
-**Preview locally:** `preview.ps1` or `preview.bat` → http://127.0.0.1:5500
+## Preview
 
-Edit here, then push `main`. Workflow **Deploy static content to Pages** runs on pushes that touch `website/` or `pages.yml`.
+```powershell
+cd website
+.\preview.ps1
+```
 
-## Republish after Pages was disabled
+http://127.0.0.1:5500/
 
-1. Repo **Settings → Pages**
-2. Under **Build and deployment**, click **Static HTML** (GitHub Actions) — do **not** pick Jekyll
-3. If GitHub offers to commit a workflow, **cancel** — this repo already has `.github/workflows/pages.yml`
-4. **Actions** → **Deploy static content to Pages** → **Run workflow** → branch `main`
-5. When the run is green, open https://apxv-official.github.io/APXV/ (hard refresh with Ctrl+F5)
+## Files
+
+| File | Role |
+|------|------|
+| `index.html` | Landing page |
+| `styles.css` | Layout, theme, motion |
+| `main.js` | Header, mobile menu, reveals, spotlight |
+| `assets/` | Logo, favicon |
+
+Keep claims aligned with [CHANGELOG.md](../CHANGELOG.md) and [ROADMAP.md](../ROADMAP.md).

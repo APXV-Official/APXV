@@ -68,7 +68,15 @@ export function CommandPalette({
         group: "Navigate",
         icon: Package,
         keywords: "pack studio",
-        action: () => go("/packs"),
+        action: () => go("/packs", { wizard: undefined, pack: undefined }),
+      },
+      {
+        id: "pack-wizard",
+        label: "Start pack wizard",
+        group: "Author",
+        icon: Package,
+        keywords: "build your pipeline pack authoring template",
+        action: () => go("/packs", { wizard: "1", pack: undefined }),
       },
       {
         id: "nav-agents",
@@ -104,7 +112,7 @@ export function CommandPalette({
         label: "Verify",
         group: "Navigate",
         icon: ShieldCheck,
-        action: () => go("/verify", { hash: undefined }),
+        action: () => go("/verify", { hash: undefined, job: undefined }),
       },
       {
         id: "nav-audit",

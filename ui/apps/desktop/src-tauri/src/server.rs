@@ -273,22 +273,6 @@ pub fn get_apxv_server_status() -> Result<ServerStatus, String> {
     })
 }
 
-/// v1.3.x compat — removed in desktop v1.4
-#[tauri::command]
-pub fn start_apx_server(apxv_root: Option<String>) -> Result<String, String> {
-    start_apxv_server(apxv_root)
-}
-
-#[tauri::command]
-pub fn stop_apx_server() -> Result<(), String> {
-    stop_apxv_server()
-}
-
-#[tauri::command]
-pub fn get_apx_server_status() -> Result<ServerStatus, String> {
-    get_apxv_server_status()
-}
-
 #[tauri::command]
 pub fn get_default_apxv_root() -> String {
     resolve_apxv_root()

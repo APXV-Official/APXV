@@ -53,4 +53,4 @@ The demo runs the governance attestation path (Agents 1–3 + LLM review metadat
 
 The pack demo and `apxv_demo --pack ai` use a **simulated** backend unless you pass a real one. For Ollama or another local model, pass `backend=OllamaLLMBackend(model="llama3.2")` to `run_governed_ai_pipeline` — see `examples/run_pack_demo.py` and [examples/llm-ollama/](../../examples/llm-ollama/).
 
-Set `APX_LLM_TIMEOUT_SECONDS=120` (or higher) for slow CPU inference. See [docs/BUILDING.md](../../docs/BUILDING.md) and [examples/llm-ollama/](../../examples/llm-ollama/).
+Set `APXV_LLM_TIMEOUT_SECONDS=120` (or higher) for slow CPU inference. See [docs/BUILDING.md](../../docs/BUILDING.md) and [examples/llm-ollama/](../../examples/llm-ollama/).

@@ -81,7 +81,7 @@ export APXV_API_KEY="<your-key>"
 export APXV_BASE_PATH="/path/to/runtime"
 ```
 
-`APX_*` variables still work through v1.3.x.
+`APX_*` variables still work through v1.3.x. **Removed in v1.4.0** — see [MIGRATION-v1.4.md](MIGRATION-v1.4.md).
 
 ### 4. Agent and governance IDs
 
@@ -124,11 +124,13 @@ Confirm `managed/config/install.json` shows `"sovereign_setup": true`.
 - Historical files in `managed/store/blobs/`, `managed/audit/*.log`
 - Private operator workspace folder names (e.g. local `APXV Production\APXV`) — not part of the public repo layout
 
-## Removed in v1.4.0 (planned)
+## Removed in v1.4.0
 
-- Legacy HTTP API v1 paths
-- CLI/env shims: `apx_*`, `APX_*` (except documented migration notes)
+See [MIGRATION-v1.4.md](MIGRATION-v1.4.md) for the full upgrade guide.
+
+- CLI/env shims: `apx_*`, `APX_*`
 - Tauri command aliases `start_apx_server`, etc.
+- Pip entry points `run-apx`, `apx-serve`, …
 
 ## Related
 

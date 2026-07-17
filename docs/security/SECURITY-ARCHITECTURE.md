@@ -103,7 +103,7 @@ See [RUNBOOKS/RUNBOOK-INCIDENT-RESPONSE.md](../../RUNBOOKS/RUNBOOK-INCIDENT-RESP
 
 ## ZK circuit scope (v1.1)
 
-Eight entity circuits exist in `apxv-zk`; the default `--attest` path proves a subset (see [../cryptography/CIRCUITS.md](../cryptography/CIRCUITS.md)). `merkle-inclusion` and `compliance` are wired from v1.2.0; `normalization` and `threat` remain future modules.
+Six entity circuits ship in default sovereign bootstrap (`apxv-zk`); the default `--attest` path proves the attest-path subset (see [../cryptography/CIRCUITS.md](../cryptography/CIRCUITS.md)). `merkle-inclusion` and `compliance` are wired from v1.2.0. `normalization` and `threat` remain in the Rust crate for future packs (v1.7+) but are **not** in default keygen since v1.4.0.
 
 ---
 

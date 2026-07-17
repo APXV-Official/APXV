@@ -179,7 +179,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Create or update a GitHub Release and upload assets"
     )
-    parser.add_argument("--tag", default="v1.3.3")
+    parser.add_argument("--tag", default="v1.4.0")
     parser.add_argument("--repo", default=DEFAULT_REPO)
     parser.add_argument(
         "--bundle-zip",

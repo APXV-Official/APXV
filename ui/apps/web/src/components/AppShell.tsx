@@ -20,6 +20,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
 
+import { defaultNavSearch } from "../lib/nav-search";
 import { BrandLogo } from "./BrandLogo";
 import { CommandPalette, CommandPaletteTrigger } from "./CommandPalette";
 import { IntegrityBadge } from "./IntegrityBadge";
@@ -60,7 +61,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
 
 const PAGE_DESCRIPTIONS: Record<string, string> = {
   "/": "Runtime overview and recent activity",
-  "/packs": "Pack studio — install, activate, clone, and run packs",
+  "/packs": "Pack studio — wizard, install, activate, clone, and run packs",
   "/agents": "Core and pack agents, capabilities, and chains",
   "/pipeline": "Run governed pipelines with attestation",
   "/jobs": "Pipeline queue and job inspection",
@@ -174,6 +175,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <Link
                       key={item.to}
                       to={item.to}
+                      search={defaultNavSearch(item.to)}
                       className={[
                         "relative flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-[0.9375rem] transition-colors",
                         active

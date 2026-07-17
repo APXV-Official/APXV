@@ -158,7 +158,7 @@ def verify_real_zk_independent(
     inputs_for_circuit = circuit_inputs[input_key]
 
     # Look for the proof bundle that was attached during --attest
-    # The new run_apx.py stores them under zk_proof_<circuit>
+    # run_apxv.py stores them under zk_proof_<circuit>
     proof_key = f"zk_proof_{circuit.replace('-', '_')}"
     if proof_key not in attested_result:
         # Fallback to old key name for redaction
@@ -205,12 +205,12 @@ def verify_real_zk_independent(
             )
         )
 
-        from scripts.rust_bins import build_apx_circuits_command
+        from scripts.rust_bins import build_apxv_circuits_command
 
         print(f"\n[REAL ZK] Performing independent Groth16 verification for {circuit}...")
         print("            (Using only the serialized proof + vk + public inputs)")
 
-        cmd, cwd = build_apx_circuits_command(
+        cmd, cwd = build_apxv_circuits_command(
             base_path, "verify", circuit, "--proof", str(proof_file),
         )
 
@@ -296,9 +296,9 @@ def verify_entity_zk_independent(
         crate_dir = rust_dir / "apxv-zk"
         manifest = rust_dir / "Cargo.toml"
 
-        from agents.zk.poseidon_client import build_apx_zk_command
+        from scripts.rust_bins import build_apxv_zk_command
 
-        cmd, cwd = build_apx_zk_command(
+        cmd, cwd = build_apxv_zk_command(
             base_path,
             "verify", circuit,
             "--inputs", str(proof_file),
@@ -381,7 +381,7 @@ def main():
             latest = candidates[0] if candidates else None
 
         if not latest:
-            print("No attested artifacts found. Run scripts/run_apx.py --attest first.")
+            print("No attested artifacts found. Run `python -m scripts.run_apxv --attest` first.")
             sys.exit(1)
 
         print(f"Verifying latest artifact: {latest.name}")

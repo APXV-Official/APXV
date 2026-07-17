@@ -1,8 +1,5 @@
 import { expect, test } from "./fixtures";
-
-const API_KEY =
-  process.env.APXV_API_KEY ??
-  "gnKiTGGjRimhIPWeoP9BLnumQVPClWxYVbAD8J_FXVM";
+import { API_BASE, API_KEY } from "./constants";
 
 const SIDEBAR_NAV = [
   { label: "Dashboard", path: "/", heading: "Dashboard" },
@@ -127,17 +124,32 @@ test.describe("full app smoke", () => {
     onboardedPage: page,
     request,
   }) => {
-    const apiBase = process.env.APXV_API_URL ?? "http://127.0.0.1:8741";
-    const res = await request.get(`${apiBase}/api/v2/artifacts?limit=1`, {
+    const res = await request.get(`${API_BASE}/api/v2/artifacts?limit=20`, {
       headers: { "APXV-API-KEY": API_KEY },
     });
     expect(res.ok()).toBeTruthy();
-    const body = (await res.json()) as { items?: { artifact_hash: string }[] };
-    const hash = body.items?.[0]?.artifact_hash;
+    const body = (await res.json()) as {
+      items?: { artifact_hash: string; name: string }[];
+    };
+    const hash =
+      body.items?.find((a) => a.name.toLowerCase().includes("attest"))
+        ?.artifact_hash ?? body.items?.[0]?.artifact_hash;
     test.skip(!hash, "No artifacts yet");
 
-    await page.goto(`/artifacts/${hash}`);
-    await expect(page.getByRole("tab", { name: /ZK/i })).toBeVisible({
+    await page.goto("/artifacts");
+    await expect(
+      page.getByRole("heading", { name: "Artifact library" }),
+    ).toBeVisible({ timeout: 20_000 });
+    const artifactLink = page.locator(`a[href="/artifacts/${hash}"]`);
+    if ((await artifactLink.count()) > 0) {
+      await artifactLink.first().click();
+    } else {
+      await page.getByRole("link", { name: "Open" }).first().click();
+    }
+    await expect(page).toHaveURL(new RegExp(`/artifacts/${hash.slice(0, 8)}`), {
+      timeout: 20_000,
+    });
+    await expect(page.getByRole("tab", { name: "Summary" })).toBeVisible({
       timeout: 20_000,
     });
     await expect(page.getByRole("tab", { name: "Verify" })).toBeVisible();

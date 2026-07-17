@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT))
 
 from agents.auth import APIKeyAuth
 from agents.job_queue import JobQueue
-from agents.local_api import APXLocalServer, validate_localhost_bind
+from agents.local_api import APXVLocalServer, validate_localhost_bind
 from agents.pipeline_service import run_pipeline_quiet
 
 from tests.helpers import seed_test_instance
@@ -71,7 +71,7 @@ def api_server(tmp_path):
         json.dumps({"bind_address": "127.0.0.1", "port": 0, "require_auth": True}),
         encoding="utf-8",
     )
-    server = APXLocalServer(base_path=tmp_path)
+    server = APXVLocalServer(base_path=tmp_path)
     if not api_key:
         auth = APIKeyAuth(tmp_path / "managed" / "config" / "api_keys.json")
         api_key = auth.create_key("pytest-operator", description="API test fixture key")

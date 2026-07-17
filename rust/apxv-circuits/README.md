@@ -15,7 +15,7 @@ This directory contains the three small, original Rust circuits for the APXV ref
    Proves basic redaction correctness: that a redacted document hash is consistent with an original hash under a known redaction count and categories. Binds the redaction operation.
 
 2. **rule_binding.rs**  
-   Binds the redaction proof to a specific rule set. Takes the `rule_file_hash` (from APX-RULE-001) as a public input and enforces that the redaction was performed under that exact rule version.
+   Binds the redaction proof to a specific rule set. Takes the `rule_file_hash` (from APXV-RULE-001) as a public input and enforces that the redaction was performed under that exact rule version.
 
 3. **pipeline_attestation.rs**  
    Top-level aggregation circuit for the full 3-agent pipeline.  

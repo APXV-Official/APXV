@@ -9,7 +9,7 @@ This document defines key terms, concepts, and supporting knowledge used by the 
 ## Definitions
 
 ### Agentic Component
-Any LLM-powered or tool-using agent that operates within an APX-governed environment (e.g., `LLMReasoner`, `ToolUser`).
+Any LLM-powered or tool-using agent that operates within an APXV-governed environment (e.g., `LLMReasoner`, `ToolUser`).
 
 ### Governance Rule
 A formal, machine-readable constraint defined in a rule file that agentic components must respect.

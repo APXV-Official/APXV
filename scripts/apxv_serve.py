@@ -34,7 +34,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-from agents.local_api import APXLocalServer, DEFAULT_SERVER_CONFIG, validate_localhost_bind
+from agents.local_api import APXVLocalServer, DEFAULT_SERVER_CONFIG, validate_localhost_bind
 
 
 def main() -> int:
@@ -57,7 +57,7 @@ def main() -> int:
             config["port"] = args.port
         config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
 
-    server = APXLocalServer(base_path=ROOT)
+    server = APXVLocalServer(base_path=ROOT)
 
     host, port = server.address
     print("=" * 60)

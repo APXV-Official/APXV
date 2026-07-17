@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 from typing import List, Optional, Union
 
-from scripts.rust_bins import build_apx_zk_command, resolve_apx_zk_binary
+from scripts.rust_bins import build_apxv_zk_command, resolve_apxv_zk_binary
 
 Number = Union[int, str]
 
@@ -17,10 +17,10 @@ class PoseidonClient:
         self.rust_dir = self.base_path / "rust"
         self.crate_dir = self.rust_dir / "apxv-zk"
         self.manifest = self.rust_dir / "Cargo.toml"
-        self._binary = resolve_apx_zk_binary(self.base_path)
+        self._binary = resolve_apxv_zk_binary(self.base_path)
 
     def _run(self, *args: str) -> str:
-        cmd, cwd = build_apx_zk_command(self.base_path, *args)
+        cmd, cwd = build_apxv_zk_command(self.base_path, *args)
         result = subprocess.run(
             cmd,
             cwd=cwd,

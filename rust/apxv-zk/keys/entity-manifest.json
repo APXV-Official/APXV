@@ -2,14 +2,6 @@
   "manifest_version": "1.0.0",
   "circuit_version": "1.0.0",
   "circuits": {
-    "normalization": {
-      "circuit_version": "1.0.0",
-      "pk_hash": "13f8d8883452198b1ef24d6f032a57c89ff27b67a3df3d950a4b23d441dbe27b",
-      "vk_hash": "0ec1a9c53103984d6977351fad448b51b77b036ef1e45c05b1475501a710257c",
-      "pk_path": "rust/apxv-zk/keys/normalization.pk",
-      "vk_path": "rust/apxv-zk/keys/normalization.vk",
-      "setup_at": "2026-06-20T18:05:52.692866+00:00"
-    },
     "core-redaction": {
       "circuit_version": "1.0.0",
       "pk_hash": "688cee4c91dbfe4dd4d24c36ce4d69e581f6b20e9a6aaf939091711602694a6a",
@@ -25,14 +17,6 @@
       "pk_path": "rust/apxv-zk/keys/compliance.pk",
       "vk_path": "rust/apxv-zk/keys/compliance.vk",
       "setup_at": "2026-06-20T18:05:52.708094+00:00"
-    },
-    "threat": {
-      "circuit_version": "1.0.0",
-      "pk_hash": "4068cec90aec4093ec25e86ad55cc1221d35f9173484aa53899e89d43981d7f8",
-      "vk_hash": "3362c1b42ffa88c2b8e16c5e24187f6a5ca01ba6ce38054361c9d30ee4a4a88c",
-      "pk_path": "rust/apxv-zk/keys/threat.pk",
-      "vk_path": "rust/apxv-zk/keys/threat.vk",
-      "setup_at": "2026-06-20T18:05:52.715705+00:00"
     },
     "voice-redaction": {
       "circuit_version": "1.0.0",
@@ -67,5 +51,5 @@
       "setup_at": "2026-06-20T18:05:52.746928+00:00"
     }
   },
-  "updated_at": "2026-06-22T15:44:08.044916+00:00"
+  "updated_at": "2026-07-16T12:00:00+00:00"
 }

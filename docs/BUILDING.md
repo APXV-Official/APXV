@@ -64,7 +64,7 @@ agent = LLMReasoner(
 output = agent.execute({"prompt": "Your task here"})
 ```
 
-Slow local models (CPU Ollama) may need a longer timeout: `export APX_LLM_TIMEOUT_SECONDS=120` (default since v1.2.1).
+Slow local models (CPU Ollama) may need a longer timeout: `export APXV_LLM_TIMEOUT_SECONDS=120` (default since v1.2.1).
 
 LLM agents must return structured `AgenticOutput` — never raw ungoverned text as final output.
 

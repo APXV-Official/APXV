@@ -27,15 +27,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "../components/PageShell";
 import { formatApiError } from "../lib/api-errors";
+import { PACK_TUTORIAL_URL, packKindFromInfo } from "../lib/pack-studio";
 import { notifyPipelineQueued } from "../lib/jobs-cache";
-
-function packKind(pack: PackInfo): "reference" | "document" | "ai" | "custom" {
-  const id = pack.id.toLowerCase();
-  if (id.includes("document")) return "document";
-  if (id.includes("ai")) return "ai";
-  if (id.includes("reference")) return "reference";
-  return "custom";
-}
 
 function disabledReason(
   packs: PackInfo[],
@@ -118,7 +111,7 @@ export function PipelinePage() {
     enabled: Boolean(activePack?.id),
   });
 
-  const kind = activePack ? packKind(activePack) : "reference";
+  const kind = activePack ? packKindFromInfo(activePack) : "reference";
   const showLlm = kind === "ai" || useLlm;
   const blockReason = disabledReason(
     packs,
@@ -192,7 +185,20 @@ export function PipelinePage() {
 
   return (
     <PageShell className="mx-auto max-w-3xl space-y-10">
-      <SectionHeader title="Pipeline runner" />
+      <SectionHeader
+        title="Pipeline runner"
+        action={
+          <Button variant="link" size="sm" asChild>
+            <a
+              href={PACK_TUTORIAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              First pipeline guide
+            </a>
+          </Button>
+        }
+      />
 
       {packsQuery.isError && (
         <Alert variant="destructive">

@@ -183,7 +183,7 @@ Re-sign after editing policy. See [BUILDING.md](BUILDING.md) § capabilities.
 |---------|-----|
 | `Pack not found` | Check `governance-libraries/apxv-pack-<slug>/pack.yaml` exists |
 | `unapproved change detected` on run | Governance edited outside approve workflow — run `apxv_ctl integrity` hints or re-activate pack |
-| `401` from API | Set `APXV_API_KEY`; legacy `APX_API_KEY` works until v1.4 |
+| `401` from API | Set `APXV_API_KEY` (see [MIGRATION-v1.4.md](MIGRATION-v1.4.md) if upgrading from v1.3) |
 | Pack activate warns non-official | Expected for custom packs; use `--confirm` on CLI if prompted |
 
 ---

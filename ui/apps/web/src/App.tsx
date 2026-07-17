@@ -2,6 +2,7 @@ import { setUnauthorizedHandler } from "@apxv/api-client";
 import { RouterProvider } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useApp } from "./context/AppContext";
+import { shellRedirectTarget } from "./lib/onboarding-nav";
 import { getFirstRunPath } from "./lib/tauri";
 import { router } from "./router";
 
@@ -22,18 +23,27 @@ export default function App() {
 
       void (async () => {
         await invalidateSession();
-        const path = router.state.location.pathname;
+        const { pathname, search } = router.state.location;
         const firstRun = getFirstRunPath();
-        if (path !== firstRun && path !== "/onboarding") {
+        if (pathname !== firstRun && pathname !== "/onboarding") {
+          router.update({
+            context: { onboarded: false, sovereignReady },
+          });
+          await router.invalidate();
           void router.navigate({
             to: firstRun,
-            search: { redirect: path },
+            search: {
+              redirect: shellRedirectTarget(
+                pathname,
+                search as Record<string, unknown>,
+              ),
+            },
           });
         }
       })();
     });
     return () => setUnauthorizedHandler(null);
-  }, [invalidateSession]);
+  }, [invalidateSession, sovereignReady]);
 
   return (
     <RouterProvider router={router} context={{ onboarded, sovereignReady }} />

@@ -25,6 +25,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { BuildYourPipelineOnRamp } from "../components/BuildYourPipelineOnRamp";
 import { PageShell } from "../components/PageShell";
 import { JobsTable } from "../components/JobsTable";
 import { formatApiError } from "../lib/api-errors";
@@ -115,6 +116,8 @@ export function DashboardPage() {
           </AlertDescription>
         </Alert>
       )}
+
+      <BuildYourPipelineOnRamp />
 
       <section className="space-y-6">
         {statsLoading ? (
@@ -214,6 +217,11 @@ export function DashboardPage() {
           <JobsTable
             jobs={recentJobs}
             isLoading={jobsQuery.isLoading}
+            onSelect={(job) => {
+              if (job.id) {
+                void navigate({ to: "/jobs", search: { id: job.id } });
+              }
+            }}
             errorMessage={
               jobsQuery.isError ? formatApiError(jobsQuery.error) : null
             }

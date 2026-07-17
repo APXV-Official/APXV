@@ -4,7 +4,7 @@
 **Last Updated:** 2026-06-10
 
 ## Purpose
-This workflow defines the standard process that LLM-powered and tool-using agents must follow when making decisions within an APX-governed environment.
+This workflow defines the standard process that LLM-powered and tool-using agents must follow when making decisions within an APXV-governed environment.
 
 ## Workflow Steps
 

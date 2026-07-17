@@ -53,7 +53,7 @@ python -m scripts.verify_attestation --real-zk
 
 - All configuration is currently file-based under `managed/`
 - No environment variables are required by default
-- To change base path, set `APXV_BASE_PATH` environment variable (legacy `APX_BASE_PATH` still read)
+- To change base path, set `APXV_BASE_PATH` environment variable
 
 ---
 

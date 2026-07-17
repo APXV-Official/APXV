@@ -68,7 +68,7 @@ Treat these as secrets on every deployment.
 | Path | Purpose |
 |------|---------|
 | `rust/apxv-circuits/keys/*.pk` / `*.vk` | Governance Groth16 keys (3 circuits) |
-| `rust/apxv-zk/keys/*.pk` / `*.vk` | Entity Groth16 keys (8 circuits) |
+| `rust/apxv-zk/keys/*.pk` / `*.vk` | Entity Groth16 keys (6 default circuits) |
 | `manifest.json`, `entity-manifest.json` | VK/PK hashes and circuit version |
 
 The repository ships **reference** proving and verification keys so `run_apxv --attest` works after install without an immediate re-setup. Anyone with the proving keys can generate proofs for that circuit version.
@@ -92,7 +92,7 @@ v1.1.0 uses single-party Groth16 trusted setup. See [docs/cryptography/CEREMONY.
 - Invocations can be audit-logged as `redaction_backend_invoked` (backend id + input hash + counts)
 - Groth16 entity proofs bind **`entities[]` and document hashes** produced by your pipeline — **not** semantic correctness of an external ML model
 - Treat backend outputs like any other agent output: validate before attestation
-- **Development:** set `APX_DEV_WARNINGS=1` to print stderr advisories when a BYO backend returns malformed `entities[]` shapes (production default is silent; proofs are still not ZK-backed for model correctness)
+- **Development:** set `APXV_DEV_WARNINGS=1` to print stderr advisories when a BYO backend returns malformed `entities[]` shapes (production default is silent; proofs are still not ZK-backed for model correctness)
 
 ## Voice privacy (v1.1)
 

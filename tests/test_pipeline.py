@@ -68,7 +68,7 @@ def test_prepare_circuit_inputs_uses_proof_chain():
 )
 def test_full_attest_and_verify_real_zk():
     result = subprocess.run(
-        [sys.executable, "-m", "scripts.run_apx", "--attest"],
+        [sys.executable, "-m", "scripts.run_apxv", "--attest"],
         cwd=str(ROOT),
         capture_output=True,
         text=True,
@@ -90,7 +90,7 @@ def test_full_attest_and_verify_real_zk():
         [
             sys.executable,
             "-m",
-            "scripts.apx_verify_bundle",
+            "scripts.apxv_verify_bundle",
             str(sorted((ROOT / "managed" / "artifacts").glob("attested_result_pipeline_with_zk_*.json"))[-1]),
         ],
         cwd=str(ROOT),

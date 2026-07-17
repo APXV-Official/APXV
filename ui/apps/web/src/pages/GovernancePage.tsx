@@ -240,12 +240,18 @@ export function GovernancePage() {
             </Button>
           </ActionGroup>
 
+          {specsQuery.isError && (
+            <Alert variant="destructive">
+              <AlertDescription>{formatApiError(specsQuery.error)}</AlertDescription>
+            </Alert>
+          )}
+
           {specsQuery.isLoading ? (
             <div className="space-y-2">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-32 w-full" />
             </div>
-          ) : !currentSpecContent ? (
+          ) : specsQuery.isError ? null : !currentSpecContent ? (
             <p className="text-sm text-[hsl(var(--muted-foreground))]">
               No active {activeSpec} specification found.
             </p>
@@ -388,6 +394,27 @@ export function GovernancePage() {
                   <Skeleton className="h-4 w-1/2" />
                   <Skeleton className="h-40 w-full" />
                 </div>
+              )}
+
+              {selectedProposalId && proposalDetailQuery.isError && (
+                <Alert variant="destructive">
+                  <AlertDescription className="space-y-3">
+                    <p>{formatApiError(proposalDetailQuery.error)}</p>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="h-auto p-0"
+                      onClick={() =>
+                        void navigate({
+                          to: "/governance",
+                          search: { tab: "proposals", proposal: undefined },
+                        })
+                      }
+                    >
+                      Clear selection
+                    </Button>
+                  </AlertDescription>
+                </Alert>
               )}
 
               {proposalDetailQuery.data && (

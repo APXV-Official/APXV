@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict
 
-from .pack_catalog import resolve_apx_root
+from .pack_catalog import resolve_apxv_root
 
 _PACK_ID_RE = re.compile(r"^apxv-pack-[a-z0-9][a-z0-9-]*$")
 _TEMPLATES = frozenset({"reference", "minimal"})
@@ -36,7 +36,7 @@ def create_pack(
     if template not in _TEMPLATES:
         raise ValueError(f"Unknown template: {template}. Use reference or minimal.")
 
-    apx_root = resolve_apx_root(base_path)
+    apx_root = resolve_apxv_root(base_path)
     libs = apx_root / "governance-libraries"
     target = libs / pack_id
     if target.exists():

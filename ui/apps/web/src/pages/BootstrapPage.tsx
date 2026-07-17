@@ -10,7 +10,7 @@ import {
   PanelBody,
   PanelHeader,
 } from "@apxv/ui";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BrandLogo } from "../components/BrandLogo";
 import { readOnboardedSync } from "../lib/auth-storage";
@@ -33,6 +33,7 @@ const STEPS = [
 
 export function BootstrapPage() {
   const navigate = useNavigate();
+  const { redirect } = useSearch({ strict: false });
   const [status, setStatus] = useState<BootstrapStatus | null>(null);
   const [skipOllama, setSkipOllama] = useState(false);
   const [skipVoice, setSkipVoice] = useState(false);
@@ -71,9 +72,14 @@ export function BootstrapPage() {
           sovereignReady: true,
         },
       });
-      void navigate({ to: "/setup", search: { redirect: undefined } });
+      void navigate({
+        to: "/setup",
+        search: {
+          redirect: typeof redirect === "string" ? redirect : undefined,
+        },
+      });
     }
-  }, [isPreview, navigate]);
+  }, [isPreview, navigate, redirect]);
 
   useEffect(() => {
     void refreshStatus();
@@ -225,8 +231,8 @@ export function BootstrapPage() {
 
           {status?.last_lines && status.last_lines.length > 0 && (
             <div className="max-h-40 overflow-y-auto rounded-md bg-[hsl(var(--surface-elevated))] p-3 font-mono text-xs text-[hsl(var(--muted-foreground))]">
-              {status.last_lines.slice(-12).map((line) => (
-                <div key={line}>{line}</div>
+              {status.last_lines.slice(-12).map((line, index) => (
+                <div key={`${index}-${line}`}>{line}</div>
               ))}
             </div>
           )}
@@ -252,23 +258,27 @@ export function BootstrapPage() {
           )}
 
           <ActionGroup>
-            <Button onClick={() => void handleStart()} disabled={!canStart}>
-              {running
-                ? "Bootstrap running…"
-                : complete
-                  ? "Continue to setup"
+            {complete ? (
+              <Button
+                onClick={() =>
+                  void navigate({
+                    to: "/setup",
+                    search: {
+                      redirect:
+                        typeof redirect === "string" ? redirect : undefined,
+                    },
+                  })
+                }
+              >
+                Continue to setup
+              </Button>
+            ) : (
+              <Button onClick={() => void handleStart()} disabled={!canStart}>
+                {running
+                  ? "Bootstrap running…"
                   : busy
                     ? "Starting…"
                     : "Start sovereign bootstrap"}
-            </Button>
-            {complete && (
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  void navigate({ to: "/setup", search: { redirect: undefined } })
-                }
-              >
-                Open setup
               </Button>
             )}
           </ActionGroup>
