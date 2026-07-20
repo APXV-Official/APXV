@@ -22,7 +22,7 @@ rust/target/
 rust/keys/*.pk
 rust/keys/*.vk
 
-# Runtime state — generated locally, never commit
+# Runtime state â€” generated locally, never commit
 managed.bak.*/
 managed/*.json
 !managed/config/.gitkeep
@@ -65,23 +65,24 @@ docs/resume/
 docs/internal/
 internal-v1.1/
 
-# Local marketing site (iterate before deploy — do not publish)
+# Local marketing site (iterate before deploy â€” do not publish)
 website-local/
 
-# Legacy reference trees (local porting source — never publish)
+# Legacy reference trees (local porting source â€” never publish)
 legacy/
 *SDK v1.0.0/
 *-proof-system/
 
-# E2EE keypair (generated at runtime — never commit)
+# E2EE keypair (generated at runtime â€” never commit)
 managed/config/e2ee-keypair.json
 
 # Agent / IDE session artifacts
 agent-tools/
 terminals/
 
-# Raw screen recordings (published demo is apxv1-demo.mp4 only)
+# Raw screen recordings (local only; do not commit)
 *Visual Studio Code*.mp4
+apxv1-demo.mp4
 
 # OS / editor
 .DS_Store
