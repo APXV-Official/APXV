@@ -16,6 +16,7 @@ CORE_AGENT_CATALOG: Dict[str, Dict[str, Any]] = {
         "agent_type": "deterministic",
         "module": "agents.agent1",
         "description": "Rule-governed text redaction (APXV-RULE-001).",
+        "runnable": True,
     },
     "APXV-AGENT-002": {
         "name": "WorkflowOrchestrator",
@@ -23,6 +24,7 @@ CORE_AGENT_CATALOG: Dict[str, Dict[str, Any]] = {
         "agent_type": "deterministic",
         "module": "agents.agent2",
         "description": "Workflow orchestration and proposed artifact packaging (APXV-WF-001).",
+        "runnable": True,
     },
     "APXV-AGENT-003": {
         "name": "AttestationCoordinator",
@@ -30,6 +32,7 @@ CORE_AGENT_CATALOG: Dict[str, Dict[str, Any]] = {
         "agent_type": "deterministic",
         "module": "agents.agent3",
         "description": "Governance decision and attestation coordination.",
+        "runnable": True,
     },
     "APXV-AGENT-LLM-001": {
         "name": "LLMReasoner",
@@ -37,15 +40,28 @@ CORE_AGENT_CATALOG: Dict[str, Dict[str, Any]] = {
         "agent_type": "agentic",
         "module": "agents.llm_reasoner",
         "description": "Local LLM review step (simulated or Ollama-backed).",
+        "runnable": True,
     },
+    # Reserved / not yet bound in pipeline_runner — omit from Workbench shelf
     "APXV-AGENT-TOOL-001": {
         "name": "ToolRunner",
         "kind": "core",
         "agent_type": "tool",
         "module": "agents.tool_runner",
-        "description": "Reserved tool agent slot in default capability policy.",
+        "description": "Reserved tool agent slot (not placeable until runner binds it).",
+        "runnable": False,
     },
 }
+
+# Agents the freeform Workbench runner can execute today
+RUNNABLE_CORE_AGENT_IDS = frozenset(
+    {
+        "APXV-AGENT-001",
+        "APXV-AGENT-002",
+        "APXV-AGENT-003",
+        "APXV-AGENT-LLM-001",
+    }
+)
 
 
 def _capabilities_for(
@@ -102,6 +118,8 @@ def _base_record(
         "packs": [],
         "capabilities": _capabilities_for(agent_id, runtime),
         "module_files": [],
+        "runnable": bool(meta.get("runnable", agent_id in RUNNABLE_CORE_AGENT_IDS)),
+        "maturity": "core" if agent_id in CORE_AGENT_CATALOG else "example",
     }
 
 
@@ -173,36 +191,41 @@ def _build_index(
                 runtime=runtime,
             )
 
+        # Only attach module files for agents already declared in pack.yaml.
+        # Do NOT invent shelf agents from helper modules (document_agents.py → fake IDs).
         yaml_ids = {spec.get("id") for spec in manifest.get("agents", []) if spec.get("id")}
         for discovered in _discover_pack_agent_files(pack_dir):
-            stem = discovered["stem"]
-            derived_id = f"APXV-AGENT-{stem.replace('_', '-').upper()}"
-            if stem == "custom_agents":
-                derived_id = "APXV-AGENT-CUSTOM-001"
-            if derived_id in yaml_ids:
-                if discovered["file"] not in index.get(derived_id, {}).get("module_files", []):
-                    _merge_agent(index, derived_id, pack_id=pack_id, runtime=runtime)
-                    if derived_id in index:
-                        index[derived_id]["module_files"].append(discovered["file"])
+            for agent_id in yaml_ids:
+                if agent_id not in index:
+                    continue
+                fpath = discovered["file"]
+                if fpath not in index[agent_id].get("module_files", []):
+                    index[agent_id].setdefault("module_files", []).append(fpath)
+
+    # Studio operator agents (managed/studio/agents)
+    try:
+        from .studio_service import list_operator_agents
+
+        for op in list_operator_agents(base_path):
+            aid = op.get("id")
+            if not aid:
                 continue
-            record = index.get(derived_id)
-            if record is None:
-                record = {
-                    "id": derived_id,
-                    "name": stem.replace("_", " ").title(),
-                    "kind": "pack",
-                    "agent_type": "deterministic",
-                    "module": f"agents.{stem}",
-                    "description": f"Discovered pack agent module {discovered['file']}",
-                    "packs": [pack_id],
-                    "capabilities": _capabilities_for(derived_id, runtime),
-                    "module_files": [discovered["file"]],
-                }
-                index[derived_id] = record
-            else:
-                _merge_agent(index, derived_id, pack_id=pack_id, runtime=runtime)
-                if discovered["file"] not in record["module_files"]:
-                    record["module_files"].append(discovered["file"])
+            index[aid] = {
+                "id": aid,
+                "name": op.get("name") or aid,
+                "kind": "operator",
+                "agent_type": op.get("agent_type") or "agentic",
+                "module": "agents.studio_service",
+                "description": op.get("description") or "Studio-authored operator agent",
+                "packs": [],
+                "capabilities": op.get("capabilities")
+                or _capabilities_for(aid, runtime),
+                "module_files": [],
+                "promoted": bool(op.get("promoted")),
+                "maturity": op.get("maturity") or "draft",
+            }
+    except Exception:
+        pass
 
     return index
 
@@ -211,13 +234,25 @@ def list_agents(
     base_path: Path,
     *,
     runtime: Optional[APXVRuntime] = None,
+    runnable_only: bool = True,
 ) -> List[Dict[str, Any]]:
-    """Return all known agents (core + pack), sorted by id."""
+    """Return known agents (core + pack + operator), sorted by id.
+
+    runnable_only=True (default) excludes reserved/unbound agents so Workbench
+    shelf does not offer steps the runner cannot execute.
+    """
     index = _build_index(base_path, runtime=runtime)
     agents = sorted(index.values(), key=lambda item: item["id"])
     for agent in agents:
         agent["packs"] = sorted(agent.get("packs", []))
         agent["module_files"] = sorted(agent.get("module_files", []))
+        if "runnable" not in agent:
+            if agent.get("kind") == "operator":
+                agent["runnable"] = True
+            else:
+                agent["runnable"] = agent["id"] in RUNNABLE_CORE_AGENT_IDS
+    if runnable_only:
+        agents = [a for a in agents if a.get("runnable")]
     return agents
 
 

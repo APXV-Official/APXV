@@ -20,6 +20,34 @@ from ..pack_install import (
 )
 from ..pack_scaffold import create_pack
 from ..pipeline_service import execute_job_payload, run_pipeline_quiet
+from ..studio_service import (
+    StudioError,
+    get_studio_pack,
+    list_operator_agents,
+    list_promoted_for_workbench,
+    list_studio_packs,
+    load_operator_agent,
+    promote_agent,
+    promote_pack,
+    save_operator_agent,
+    save_studio_pack,
+    run_operator_agent_test,
+    run_studio_pack_test,
+)
+from ..proof_studio import (
+    export_proof_claim_bundle,
+    get_proof_profile,
+    list_predicate_catalog,
+    list_proof_profiles,
+    list_proof_templates,
+    promote_proof_profile,
+    run_proof_profile_test,
+    save_from_template,
+    save_profile_from_intent,
+    save_proof_profile,
+    universal_keys_available,
+)
+from ..proof_intent import compile_intent
 from ..upload_manager import parse_multipart_form
 from ..verification_service import load_attested_for_verify, verify_attestation_artifact
 from .context import ApiV2Context
@@ -85,6 +113,30 @@ class ApiV2Router:
             ("GET", r"^/api/v2/jobs/(?P<id>[^/]+)$", "jobs.get"),
             ("GET", r"^/api/v2/jobs$", "jobs.list"),
             ("POST", r"^/api/v2/pipeline/run$", "pipeline.run"),
+            ("GET", r"^/api/v2/pipelines$", "pipelines.list"),
+            ("POST", r"^/api/v2/pipelines$", "pipelines.create"),
+            ("POST", r"^/api/v2/pipelines/validate$", "pipelines.validate"),
+            ("POST", r"^/api/v2/pipelines/import$", "pipelines.import"),
+            ("GET", r"^/api/v2/pipelines/templates$", "pipelines.templates.list"),
+            (
+                "GET",
+                r"^/api/v2/pipelines/templates/(?P<id>[^/]+)$",
+                "pipelines.templates.get",
+            ),
+            ("GET", r"^/api/v2/pipelines/(?P<id>[^/]+)/export$", "pipelines.export"),
+            ("POST", r"^/api/v2/pipelines/(?P<id>[^/]+)/run$", "pipelines.run"),
+            ("GET", r"^/api/v2/pipelines/(?P<id>[^/]+)$", "pipelines.get"),
+            ("DELETE", r"^/api/v2/pipelines/(?P<id>[^/]+)$", "pipelines.delete"),
+            (
+                "POST",
+                r"^/api/v2/jobs/(?P<id>[^/]+)/approve$",
+                "jobs.approve",
+            ),
+            ("GET", r"^/api/v2/catalog/lint$", "catalog.lint"),
+            ("POST", r"^/api/v2/catalog/smoke$", "catalog.smoke"),
+            ("GET", r"^/api/v2/swarms$", "swarms.list"),
+            ("POST", r"^/api/v2/swarms/run$", "swarms.run"),
+            ("GET", r"^/api/v2/swarms/(?P<id>[^/]+)$", "swarms.get"),
             ("GET", r"^/api/v2/packs$", "packs.list"),
             ("POST", r"^/api/v2/packs$", "packs.create"),
             ("GET", r"^/api/v2/packs/active$", "packs.active"),
@@ -94,6 +146,29 @@ class ApiV2Router:
             ("GET", r"^/api/v2/packs/(?P<id>[^/]+)$", "packs.get"),
             ("GET", r"^/api/v2/agents$", "agents.list"),
             ("GET", r"^/api/v2/agents/(?P<id>[^/]+)$", "agents.get"),
+            ("GET", r"^/api/v2/studio/agents$", "studio.agents.list"),
+            ("POST", r"^/api/v2/studio/agents$", "studio.agents.save"),
+            ("GET", r"^/api/v2/studio/agents/(?P<id>[^/]+)$", "studio.agents.get"),
+            ("POST", r"^/api/v2/studio/agents/(?P<id>[^/]+)/test$", "studio.agents.test"),
+            ("POST", r"^/api/v2/studio/agents/(?P<id>[^/]+)/promote$", "studio.agents.promote"),
+            ("GET", r"^/api/v2/studio/packs$", "studio.packs.list"),
+            ("POST", r"^/api/v2/studio/packs$", "studio.packs.save"),
+            ("GET", r"^/api/v2/studio/packs/(?P<id>[^/]+)$", "studio.packs.get"),
+            ("POST", r"^/api/v2/studio/packs/(?P<id>[^/]+)/test$", "studio.packs.test"),
+            ("POST", r"^/api/v2/studio/packs/(?P<id>[^/]+)/promote$", "studio.packs.promote"),
+            ("GET", r"^/api/v2/studio/proofs$", "studio.proofs.list"),
+            ("POST", r"^/api/v2/studio/proofs$", "studio.proofs.save"),
+            ("GET", r"^/api/v2/studio/proofs/catalog$", "studio.proofs.catalog"),
+            ("GET", r"^/api/v2/studio/proofs/templates$", "studio.proofs.templates"),
+            ("POST", r"^/api/v2/studio/proofs/from-template$", "studio.proofs.from_template"),
+            ("POST", r"^/api/v2/studio/proofs/compile-intent$", "studio.proofs.compile_intent"),
+            ("POST", r"^/api/v2/studio/proofs/from-intent$", "studio.proofs.from_intent"),
+            ("GET", r"^/api/v2/studio/proofs/status$", "studio.proofs.status"),
+            ("POST", r"^/api/v2/studio/proofs/export-claim$", "studio.proofs.export_claim"),
+            ("GET", r"^/api/v2/studio/proofs/(?P<id>[^/]+)$", "studio.proofs.get"),
+            ("POST", r"^/api/v2/studio/proofs/(?P<id>[^/]+)/test$", "studio.proofs.test"),
+            ("POST", r"^/api/v2/studio/proofs/(?P<id>[^/]+)/promote$", "studio.proofs.promote"),
+            ("GET", r"^/api/v2/studio/shelf$", "studio.shelf"),
             ("GET", r"^/api/v2/governance/specs$", "governance.specs"),
             ("GET", r"^/api/v2/governance/proposals$", "governance.proposals.list"),
             ("GET", r"^/api/v2/governance/proposals/(?P<proposal_id>[^/]+)$", "governance.proposals.get"),
@@ -147,6 +222,22 @@ class ApiV2Router:
             ("GET", "jobs.get"): _jobs_get,
             ("GET", "jobs.stream"): _jobs_stream,
             ("POST", "pipeline.run"): _pipeline_run,
+            ("GET", "pipelines.list"): _pipelines_list,
+            ("POST", "pipelines.create"): _pipelines_create,
+            ("POST", "pipelines.validate"): _pipelines_validate,
+            ("POST", "pipelines.import"): _pipelines_import,
+            ("GET", "pipelines.templates.list"): _pipelines_templates_list,
+            ("GET", "pipelines.templates.get"): _pipelines_templates_get,
+            ("GET", "pipelines.export"): _pipelines_export,
+            ("POST", "pipelines.run"): _pipelines_run,
+            ("GET", "pipelines.get"): _pipelines_get,
+            ("DELETE", "pipelines.delete"): _pipelines_delete,
+            ("POST", "jobs.approve"): _jobs_approve,
+            ("GET", "catalog.lint"): _catalog_lint,
+            ("POST", "catalog.smoke"): _catalog_smoke,
+            ("GET", "swarms.list"): _swarms_list,
+            ("POST", "swarms.run"): _swarms_run,
+            ("GET", "swarms.get"): _swarms_get,
             ("GET", "packs.list"): _packs_list,
             ("POST", "packs.create"): _packs_create,
             ("GET", "packs.active"): _packs_active,
@@ -156,6 +247,29 @@ class ApiV2Router:
             ("GET", "packs.get"): _packs_get,
             ("GET", "agents.list"): _agents_list,
             ("GET", "agents.get"): _agents_get,
+            ("GET", "studio.agents.list"): _studio_agents_list,
+            ("POST", "studio.agents.save"): _studio_agents_save,
+            ("GET", "studio.agents.get"): _studio_agents_get,
+            ("POST", "studio.agents.test"): _studio_agents_test,
+            ("POST", "studio.agents.promote"): _studio_agents_promote,
+            ("GET", "studio.packs.list"): _studio_packs_list,
+            ("POST", "studio.packs.save"): _studio_packs_save,
+            ("GET", "studio.packs.get"): _studio_packs_get,
+            ("POST", "studio.packs.test"): _studio_packs_test,
+            ("POST", "studio.packs.promote"): _studio_packs_promote,
+            ("GET", "studio.proofs.list"): _studio_proofs_list,
+            ("POST", "studio.proofs.save"): _studio_proofs_save,
+            ("GET", "studio.proofs.catalog"): _studio_proofs_catalog,
+            ("GET", "studio.proofs.templates"): _studio_proofs_templates,
+            ("POST", "studio.proofs.from_template"): _studio_proofs_from_template,
+            ("POST", "studio.proofs.compile_intent"): _studio_proofs_compile_intent,
+            ("POST", "studio.proofs.from_intent"): _studio_proofs_from_intent,
+            ("GET", "studio.proofs.status"): _studio_proofs_status,
+            ("POST", "studio.proofs.export_claim"): _studio_proofs_export_claim,
+            ("GET", "studio.proofs.get"): _studio_proofs_get,
+            ("POST", "studio.proofs.test"): _studio_proofs_test,
+            ("POST", "studio.proofs.promote"): _studio_proofs_promote,
+            ("GET", "studio.shelf"): _studio_shelf,
             ("GET", "governance.specs"): _governance_specs,
             ("GET", "governance.proposals.list"): _governance_proposals_list,
             ("GET", "governance.proposals.get"): _governance_proposals_get,
@@ -434,9 +548,14 @@ def _pipeline_run(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, 
         "upload_id": (body.get("input_files") or [None])[0] if body.get("input_files") else body.get("upload_id"),
         "attest": bool(body.get("attest", False)),
         "llm": body.get("llm"),
+        "proof_profile": body.get("proof_profile") or body.get("proof_profile_id"),
     }
     if body.get("input_files"):
         payload["upload_id"] = body["input_files"][0]
+    if body.get("pipeline_id") or body.get("pipeline"):
+        payload["pipeline_id"] = body.get("pipeline_id") or body.get("pipeline")
+    if body.get("pipeline_document"):
+        payload["pipeline_document"] = body["pipeline_document"]
 
     run_async = body.get("async", True)
     if run_async:
@@ -449,6 +568,372 @@ def _pipeline_run(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, 
         ctx.send_json(200, {"message": "pipeline complete", "result": result})
     except Exception as exc:
         ctx.send_error(500, "pipeline_failed", str(exc))
+    return True
+
+
+def _pipelines_list(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    from ..pipeline_store import list_pipelines
+
+    ctx.send_json(200, {"pipelines": list_pipelines(ctx.runtime.base_path)})
+    return True
+
+
+def _examples_pipelines_dir(base_path: Path) -> Path:
+    from ..pack_catalog import resolve_apxv_root
+
+    root = resolve_apxv_root(base_path)
+    return root / "examples" / "pipelines"
+
+
+def _pipelines_templates_list(
+    ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]
+) -> bool:
+    from ..pipeline_spec import load_pipeline_file, validate_pipeline_document
+
+    directory = _examples_pipelines_dir(ctx.runtime.base_path)
+    templates: List[Dict[str, Any]] = []
+    if directory.is_dir():
+        for path in sorted(directory.glob("*.yaml")) + sorted(directory.glob("*.yml")) + sorted(
+            directory.glob("*.json")
+        ):
+            try:
+                raw = load_pipeline_file(path)
+                result = validate_pipeline_document(raw)
+                if not result.ok or result.document is None:
+                    continue
+                doc = result.document
+                templates.append(
+                    {
+                        "id": doc["id"],
+                        "name": doc.get("name"),
+                        "version": doc.get("version"),
+                        "description": doc.get("description"),
+                        "step_count": len(doc.get("steps", [])),
+                        "maturity": "Example",
+                        "path": str(path.name),
+                    }
+                )
+            except Exception:
+                continue
+    ctx.send_json(200, {"templates": templates})
+    return True
+
+
+def _pipelines_templates_get(
+    ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]
+) -> bool:
+    from ..pipeline_spec import load_pipeline_file, validate_pipeline_document
+
+    directory = _examples_pipelines_dir(ctx.runtime.base_path)
+    template_id = params["id"]
+    candidates = [
+        directory / f"{template_id}.yaml",
+        directory / f"{template_id}.yml",
+        directory / f"{template_id}.json",
+    ]
+    path = next((p for p in candidates if p.is_file()), None)
+    if path is None and directory.is_dir():
+        for p in directory.iterdir():
+            if p.suffix.lower() in (".yaml", ".yml", ".json"):
+                try:
+                    raw = load_pipeline_file(p)
+                    if isinstance(raw, dict) and raw.get("id") == template_id:
+                        path = p
+                        break
+                except Exception:
+                    continue
+    if path is None or not path.is_file():
+        ctx.send_error(404, "template_not_found", f"template not found: {template_id}")
+        return True
+    content = path.read_text(encoding="utf-8")
+    try:
+        raw = load_pipeline_file(path)
+        result = validate_pipeline_document(raw)
+        doc = result.document if result.ok else None
+    except Exception:
+        doc = None
+    ctx.send_json(
+        200,
+        {
+            "template": {
+                "id": (doc or {}).get("id") or template_id,
+                "name": (doc or {}).get("name"),
+                "version": (doc or {}).get("version"),
+                "description": (doc or {}).get("description"),
+                "step_count": len((doc or {}).get("steps") or []),
+                "maturity": "Example",
+                "path": path.name,
+            },
+            "content": content,
+            "pipeline": doc,
+        },
+    )
+    return True
+
+
+def _pipelines_get(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    from ..pipeline_store import PipelineStoreError, load_pipeline
+
+    try:
+        doc = load_pipeline(ctx.runtime.base_path, params["id"])
+        ctx.send_json(200, {"pipeline": doc})
+    except PipelineStoreError as exc:
+        ctx.send_error(404, "pipeline_not_found", str(exc))
+    except Exception as exc:
+        ctx.send_error(400, "pipeline_invalid", str(exc))
+    return True
+
+
+def _pipelines_create(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    from ..pipeline_spec import PipelineSpecError, validate_pipeline_document
+    from ..pipeline_store import PipelineStoreError, save_pipeline
+
+    body = ctx.read_json()
+    document = body.get("pipeline") or body.get("document") or body
+    if "pipeline" in body or "document" in body:
+        document = body.get("pipeline") or body.get("document")
+    try:
+        result = validate_pipeline_document(document)
+        doc = result.raise_if_invalid()
+        path = save_pipeline(
+            ctx.runtime.base_path,
+            doc,
+            fmt=str(body.get("format") or "yaml"),
+            overwrite=bool(body.get("overwrite", True)),
+        )
+        ctx.send_json(
+            201,
+            {
+                "message": "pipeline saved",
+                "pipeline": doc,
+                "path": str(path),
+                "warnings": result.warnings,
+            },
+        )
+    except (PipelineSpecError, PipelineStoreError) as exc:
+        ctx.send_error(400, "pipeline_invalid", str(exc))
+    except Exception as exc:
+        ctx.send_error(500, "pipeline_save_failed", str(exc))
+    return True
+
+
+def _pipelines_validate(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    from ..pipeline_spec import validate_pipeline_document
+
+    body = ctx.read_json()
+    document = body.get("pipeline") or body.get("document") or body
+    result = validate_pipeline_document(document)
+    ctx.send_json(
+        200 if result.ok else 400,
+        {
+            "ok": result.ok,
+            "errors": result.errors,
+            "warnings": result.warnings,
+            "pipeline": result.document,
+        },
+    )
+    return True
+
+
+def _pipelines_import(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    from ..pipeline_store import PipelineStoreError, import_pipeline_text
+    from ..pipeline_spec import PipelineSpecError
+
+    body = ctx.read_json()
+    text = body.get("content") or body.get("text")
+    if not text:
+        ctx.send_error(400, "missing_content", "content is required")
+        return True
+    try:
+        imported = import_pipeline_text(
+            ctx.runtime.base_path,
+            text,
+            fmt=str(body.get("format") or "auto"),
+            overwrite=bool(body.get("overwrite", True)),
+        )
+        ctx.send_json(201, {"message": "pipeline imported", **imported})
+    except (PipelineSpecError, PipelineStoreError) as exc:
+        ctx.send_error(400, "pipeline_import_failed", str(exc))
+    return True
+
+
+def _pipelines_export(ctx: ApiV2Context, query: Dict[str, str], params: Dict[str, str]) -> bool:
+    from ..pipeline_store import PipelineStoreError, export_pipeline
+
+    fmt = query.get("format") or "yaml"
+    try:
+        content = export_pipeline(ctx.runtime.base_path, params["id"], fmt=fmt)
+        ctx.send_json(
+            200,
+            {"pipeline_id": params["id"], "format": fmt, "content": content},
+        )
+    except PipelineStoreError as exc:
+        ctx.send_error(404, "pipeline_not_found", str(exc))
+    except Exception as exc:
+        ctx.send_error(400, "pipeline_export_failed", str(exc))
+    return True
+
+
+def _pipelines_run(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    try:
+        body = ctx.read_json()
+        if not isinstance(body, dict):
+            body = {}
+    except Exception:
+        body = {}
+    payload = {
+        "pipeline_id": params["id"],
+        "input_text": body.get("input_text"),
+        "upload_id": body.get("upload_id"),
+        "attest": body.get("attest"),
+        "llm": body.get("llm"),
+        "proof_profile": body.get("proof_profile") or body.get("proof_profile_id"),
+    }
+    run_async = body.get("async", True)
+    if run_async:
+        job = ctx.queue.enqueue("pipeline", payload)
+        ctx.send_json(202, {"message": "job queued", **job})
+        return True
+    try:
+        result = execute_job_payload(payload, runtime=ctx.runtime)
+        ctx.send_json(200, {"message": "pipeline complete", "result": result})
+    except Exception as exc:
+        ctx.send_error(500, "pipeline_failed", str(exc))
+    return True
+
+
+def _pipelines_delete(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    from ..pipeline_store import delete_pipeline
+
+    deleted = delete_pipeline(ctx.runtime.base_path, params["id"])
+    if not deleted:
+        ctx.send_error(404, "pipeline_not_found", f"pipeline not found: {params['id']}")
+        return True
+    ctx.send_json(200, {"message": "pipeline deleted", "id": params["id"]})
+    return True
+
+
+def _jobs_approve(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    body = {}
+    try:
+        body = ctx.read_json()
+        if not isinstance(body, dict):
+            body = {}
+    except Exception:
+        body = {}
+    job = ctx.queue.get(params["id"])
+    if not job:
+        ctx.send_error(404, "job_not_found", f"job not found: {params['id']}")
+        return True
+    if job.get("status") != "awaiting_approval":
+        ctx.send_error(
+            400,
+            "job_not_awaiting_approval",
+            f"job status is {job.get('status')!r}, expected awaiting_approval",
+        )
+        return True
+    result = job.get("result") or {}
+    pause = result.get("pause") or {}
+    resume_state = pause.get("resume_state")
+    if not resume_state:
+        ctx.send_error(400, "missing_resume_state", "job has no pause.resume_state")
+        return True
+    approved = body.get("approved", True)
+    if approved is False or str(approved).lower() in ("0", "false", "no"):
+        payload = {
+            "resume_approval": True,
+            "resume_state": resume_state,
+            "approved": False,
+            "note": body.get("note") or "operator rejected",
+        }
+    else:
+        payload = {
+            "resume_approval": True,
+            "resume_state": resume_state,
+            "approved": True,
+            "note": body.get("note") or "",
+        }
+    requeued = ctx.queue.resume_from_approval(params["id"], payload)
+    if not requeued:
+        ctx.send_error(500, "resume_failed", "could not re-queue job")
+        return True
+    run_async = body.get("async", True)
+    if run_async:
+        ctx.send_json(202, {"message": "approval accepted; job re-queued", **requeued})
+        return True
+    try:
+        result = execute_job_payload(payload, runtime=ctx.runtime)
+        if (
+            isinstance(result, dict)
+            and result.get("final_status") == "awaiting_approval"
+        ):
+            ctx.queue.pause_awaiting_approval(params["id"], result)
+        else:
+            ctx.queue.complete(params["id"], result)
+        ctx.send_json(200, {"message": "pipeline continued", "result": result})
+    except Exception as exc:
+        ctx.queue.fail(params["id"], str(exc), retry=False)
+        ctx.send_error(500, "pipeline_failed", str(exc))
+    return True
+
+
+def _catalog_lint(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    from ..catalog_quality import lint_catalog
+
+    ctx.send_json(200, lint_catalog(ctx.runtime.base_path))
+    return True
+
+
+def _catalog_smoke(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    from ..catalog_quality import smoke_pipeline
+
+    body = ctx.read_json()
+    pipeline_id = str(body.get("pipeline_id") or "").strip()
+    if not pipeline_id:
+        ctx.send_error(400, "missing_pipeline_id", "pipeline_id is required")
+        return True
+    report = smoke_pipeline(ctx.runtime.base_path, pipeline_id)
+    ctx.send_json(200 if report.get("ok") else 400, report)
+    return True
+
+
+def _swarms_list(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    from ..swarm import list_swarms
+
+    ctx.send_json(200, {"swarms": list_swarms(ctx.runtime.base_path)})
+    return True
+
+
+def _swarms_run(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    from ..swarm import run_swarm
+
+    body = ctx.read_json()
+    pipeline_ids = body.get("pipeline_ids") or []
+    if not isinstance(pipeline_ids, list) or not pipeline_ids:
+        ctx.send_error(400, "missing_pipeline_ids", "pipeline_ids array is required")
+        return True
+    try:
+        record = run_swarm(
+            runtime=ctx.runtime,
+            name=str(body.get("name") or "swarm"),
+            pipeline_ids=[str(p) for p in pipeline_ids],
+            input_text=body.get("input_text"),
+            attest_each=bool(body.get("attest_each", False)),
+        )
+        ctx.send_json(200, {"message": "swarm complete", "swarm": record})
+    except Exception as exc:
+        ctx.send_error(500, "swarm_failed", str(exc))
+    return True
+
+
+def _swarms_get(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    from ..swarm import get_swarm
+
+    record = get_swarm(ctx.runtime.base_path, params["id"])
+    if not record:
+        ctx.send_error(404, "swarm_not_found", f"swarm not found: {params['id']}")
+        return True
+    ctx.send_json(200, {"swarm": record})
     return True
 
 
@@ -511,6 +996,369 @@ def _agents_get(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str
         ctx.not_found()
         return True
     ctx.send_json(200, agent)
+    return True
+
+
+def _studio_agents_list(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    ctx.send_json(200, {"agents": list_operator_agents(ctx.runtime.base_path)})
+    return True
+
+
+def _studio_agents_save(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    body = ctx.read_json()
+    try:
+        agent = save_operator_agent(
+            ctx.runtime,
+            agent_id=str(body.get("id") or body.get("agent_id") or ""),
+            name=str(body.get("name") or ""),
+            description=str(body.get("description") or ""),
+            agent_type=str(body.get("agent_type") or "agentic"),
+            instruction_md=str(body.get("instruction_md") or body.get("instruction") or ""),
+            knowledge_md=str(body.get("knowledge_md") or body.get("knowledge") or ""),
+            capabilities=body.get("capabilities"),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    ctx.send_json(200, {"message": "Agent saved and registered", "agent": agent})
+    return True
+
+
+def _studio_agents_get(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    agent = load_operator_agent(ctx.runtime.base_path, params["id"])
+    if not agent:
+        ctx.not_found()
+        return True
+    ctx.send_json(200, agent)
+    return True
+
+
+def _studio_agents_test(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    if not isinstance(body, dict):
+        body = {}
+    try:
+        result = run_operator_agent_test(
+            ctx.runtime,
+            params["id"],
+            input_text=str(
+                body.get("input_text")
+                or "Studio test sample: contact test@example.com"
+            ),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    except Exception as exc:
+        ctx.send_json(500, {"error": "test_failed", "message": str(exc)})
+        return True
+    ctx.send_json(200, result)
+    return True
+
+
+def _studio_agents_promote(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    body = {}
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    try:
+        agent = promote_agent(
+            ctx.runtime,
+            params["id"],
+            force=bool((body or {}).get("force")),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    ctx.send_json(200, {"message": "Agent promoted to Workbench shelf", "agent": agent})
+    return True
+
+
+def _studio_packs_list(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    ctx.send_json(200, {"packs": list_studio_packs(ctx.runtime.base_path)})
+    return True
+
+
+def _studio_packs_save(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    body = ctx.read_json()
+    try:
+        pack = save_studio_pack(
+            ctx.runtime,
+            pack_id=str(body.get("id") or body.get("pack_id") or ""),
+            name=str(body.get("name") or ""),
+            description=str(body.get("description") or ""),
+            rules_md=str(body.get("rules_md") or body.get("rules") or ""),
+            workflow_md=str(body.get("workflow_md") or body.get("workflow") or ""),
+            knowledge_md=str(body.get("knowledge_md") or body.get("knowledge") or ""),
+            agent_ids=body.get("agent_ids") or body.get("agents"),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    ctx.send_json(200, {"message": "Pack saved", "pack": pack})
+    return True
+
+
+def _studio_packs_get(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    try:
+        pack = get_studio_pack(ctx.runtime.base_path, params["id"])
+    except StudioError:
+        ctx.not_found()
+        return True
+    ctx.send_json(200, pack)
+    return True
+
+
+def _studio_packs_test(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    body = {}
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    try:
+        result = run_studio_pack_test(
+            ctx.runtime,
+            params["id"],
+            input_text=str(
+                (body or {}).get("input_text")
+                or "Studio pack test: email demo@example.com"
+            ),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    except Exception as exc:
+        ctx.send_json(500, {"error": "test_failed", "message": str(exc)})
+        return True
+    ctx.send_json(200, result)
+    return True
+
+
+def _studio_packs_promote(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    body = {}
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    try:
+        pack = promote_pack(
+            ctx.runtime,
+            params["id"],
+            force=bool((body or {}).get("force")),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    ctx.send_json(200, {"message": "Pack promoted to Workbench shelf", "pack": pack})
+    return True
+
+
+def _studio_shelf(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    ctx.send_json(200, list_promoted_for_workbench(ctx.runtime.base_path))
+    return True
+
+
+def _studio_proofs_list(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    ctx.send_json(200, {"proofs": list_proof_profiles(ctx.runtime.base_path)})
+    return True
+
+
+def _studio_proofs_catalog(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    ctx.send_json(200, {"predicates": list_predicate_catalog()})
+    return True
+
+
+def _studio_proofs_templates(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    ctx.send_json(200, {"templates": list_proof_templates()})
+    return True
+
+
+def _studio_proofs_from_template(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    if not isinstance(body, dict):
+        body = {}
+    try:
+        proof = save_from_template(
+            ctx.runtime,
+            str(body.get("template_id") or body.get("id") or ""),
+            proof_id=body.get("proof_id") or body.get("new_id"),
+            name=body.get("name"),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    ctx.send_json(200, {"message": "Proof profile created from template", "proof": proof})
+    return True
+
+
+def _studio_proofs_status(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    ctx.send_json(
+        200,
+        {
+            "universal_predicate_v1": {
+                "keys_available": universal_keys_available(ctx.runtime.base_path),
+                "circuit": "universal-predicate-v1",
+            },
+            "predicate_count": len(list_predicate_catalog()),
+            "template_count": len(list_proof_templates()),
+        },
+    )
+    return True
+
+
+def _studio_proofs_compile_intent(
+    ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]
+) -> bool:
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    if not isinstance(body, dict):
+        body = {}
+    intent = str(body.get("intent_md") or body.get("intent") or body.get("text") or "")
+    try:
+        compiled = compile_intent(
+            intent,
+            proof_id=str(body.get("proof_id") or body.get("id") or "APXV-PROOF-FROM-INTENT"),
+            name=str(body.get("name") or "From intent"),
+            use_llm=bool(body.get("use_llm")),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    except Exception as exc:
+        ctx.send_json(400, {"error": "compile_failed", "message": str(exc)})
+        return True
+    ctx.send_json(200, compiled)
+    return True
+
+
+def _studio_proofs_from_intent(
+    ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]
+) -> bool:
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    if not isinstance(body, dict):
+        body = {}
+    try:
+        proof = save_profile_from_intent(
+            ctx.runtime,
+            intent_md=str(body.get("intent_md") or body.get("intent") or ""),
+            proof_id=str(body.get("proof_id") or body.get("id") or "APXV-PROOF-FROM-INTENT"),
+            name=str(body.get("name") or "From intent"),
+            prefer_universal=bool(body.get("prefer_universal", True)),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    ctx.send_json(200, {"message": "Proof profile saved from intent", "proof": proof})
+    return True
+
+
+def _studio_proofs_export_claim(
+    ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]
+) -> bool:
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    if not isinstance(body, dict):
+        body = {}
+    bundle = export_proof_claim_bundle(
+        ctx.runtime.base_path,
+        proof_profile_id=body.get("proof_profile_id") or body.get("proof_id"),
+        claim=body.get("claim") if isinstance(body.get("claim"), dict) else None,
+        attested=body.get("attested") if isinstance(body.get("attested"), dict) else None,
+    )
+    ctx.send_json(200, {"bundle": bundle})
+    return True
+
+
+def _studio_proofs_save(ctx: ApiV2Context, _query: Dict[str, str], _params: Dict[str, str]) -> bool:
+    body = ctx.read_json()
+    try:
+        proof = save_proof_profile(
+            ctx.runtime,
+            proof_id=str(body.get("id") or body.get("proof_id") or ""),
+            name=str(body.get("name") or ""),
+            description=str(body.get("description") or ""),
+            intent_md=str(body.get("intent_md") or body.get("intent") or ""),
+            predicates=body.get("predicates"),
+            circuit_binding=str(
+                body.get("circuit_binding") or "existing-dual-track"
+            ),
+            fail_closed=bool(body.get("fail_closed", True)),
+            require_attest=body.get("require_attest"),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    ctx.send_json(200, {"message": "Proof profile saved", "proof": proof})
+    return True
+
+
+def _studio_proofs_get(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    try:
+        proof = get_proof_profile(ctx.runtime.base_path, params["id"])
+    except StudioError:
+        ctx.not_found()
+        return True
+    ctx.send_json(200, proof)
+    return True
+
+
+def _studio_proofs_test(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    body: Dict[str, Any] = {}
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    if not isinstance(body, dict):
+        body = {}
+    try:
+        result = run_proof_profile_test(
+            ctx.runtime,
+            params["id"],
+            input_text=body.get("input_text"),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    except Exception as exc:
+        ctx.send_json(500, {"error": "test_failed", "message": str(exc)})
+        return True
+    ctx.send_json(200, result)
+    return True
+
+
+def _studio_proofs_promote(ctx: ApiV2Context, _query: Dict[str, str], params: Dict[str, str]) -> bool:
+    body: Dict[str, Any] = {}
+    try:
+        body = ctx.read_json()
+    except Exception:
+        body = {}
+    try:
+        proof = promote_proof_profile(
+            ctx.runtime,
+            params["id"],
+            force=bool((body or {}).get("force")),
+        )
+    except StudioError as exc:
+        ctx.send_json(400, {"error": "studio_error", "message": str(exc)})
+        return True
+    ctx.send_json(
+        200,
+        {"message": "Proof profile promoted to Workbench shelf", "proof": proof},
+    )
     return True
 
 

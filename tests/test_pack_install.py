@@ -78,12 +78,27 @@ def test_activate_snapshots_previous_pack(pack_env):
 
 
 def test_activate_custom_pack_requires_confirm(pack_env):
-    _, runtime = pack_env
-    with pytest.raises(PackInstallError, match="confirm"):
-        activate_pack(runtime, "apxv-pack-test-ui")
+    """Non-official packs require confirm=true; official packs do not."""
+    base, runtime = pack_env
+    from agents.studio_service import save_studio_pack
 
-    result = activate_pack(runtime, "apxv-pack-test-ui", confirm=True)
-    assert result["pack_id"] == "apxv-pack-test-ui"
+    save_studio_pack(
+        runtime,
+        pack_id="apxv-pack-unofficial-confirm",
+        name="Unofficial Confirm Pack",
+        description="for confirm test",
+        rules_md="# R\n",
+        workflow_md="# W\n",
+        knowledge_md="# K\n",
+        agent_ids=["APXV-AGENT-001"],
+    )
+    with pytest.raises(PackInstallError, match="confirm"):
+        activate_pack(runtime, "apxv-pack-unofficial-confirm")
+
+    result = activate_pack(
+        runtime, "apxv-pack-unofficial-confirm", confirm=True
+    )
+    assert result["pack_id"] == "apxv-pack-unofficial-confirm"
 
 
 def test_clone_pack_creates_new_directory(pack_env):
@@ -93,7 +108,7 @@ def test_clone_pack_creates_new_directory(pack_env):
         "apxv-pack-reference-redaction",
         new_pack_id="apxv-pack-clone-test",
         name="Clone Test Pack",
-        description="RnD clone test",
+        description="Pack clone test",
     )
     assert result["pack_id"] == "apxv-pack-clone-test"
     pack_dir = base / "governance-libraries" / "apxv-pack-clone-test"

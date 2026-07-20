@@ -1,0 +1,22 @@
+apiVersion: apxv.pipeline/v0.1
+kind: Pipeline
+id: apxv-pipeline-reference-linear
+name: Reference linear composition
+version: 0.1.0
+description: >
+  Example ordered composition using core agents as building blocks.
+  Teaching pipeline for APXV v1.5 — maturity Example.
+requires_apxv: ">=1.5.0"
+defaults:
+  attest: false
+  on_step_failure: stop
+steps:
+  - id: redact
+    name: Rule-governed redaction
+    uses: agent:APXV-AGENT-001
+  - id: orchestrate
+    name: Workflow orchestration
+    uses: agent:APXV-AGENT-002
+  - id: decide
+    name: Attestation coordination
+    uses: agent:APXV-AGENT-003

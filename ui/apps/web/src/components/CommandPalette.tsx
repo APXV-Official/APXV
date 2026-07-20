@@ -2,11 +2,10 @@ import { Button } from "@apxv/ui";
 import { useNavigate } from "@tanstack/react-router";
 import {
   Archive,
-  Bot,
   Clock,
-  LayoutDashboard,
+  FlaskConical,
+  Layers,
   Package,
-  Play,
   RefreshCw,
   Scale,
   ScrollText,
@@ -56,48 +55,27 @@ export function CommandPalette({
   const commands = useMemo<CommandItem[]>(
     () => [
       {
-        id: "nav-dashboard",
-        label: "Dashboard",
+        id: "nav-workshop",
+        label: "Workbench",
         group: "Navigate",
-        icon: LayoutDashboard,
-        action: () => go("/"),
+        icon: Layers,
+        keywords: "home board compose building blocks pipeline workshop",
+        action: () => go("/workshop", { id: undefined, shelf: undefined }),
       },
       {
-        id: "nav-packs",
-        label: "Agent packs",
+        id: "nav-studio",
+        label: "Studio",
         group: "Navigate",
-        icon: Package,
-        keywords: "pack studio",
-        action: () => go("/packs", { wizard: undefined, pack: undefined }),
+        icon: FlaskConical,
+        keywords: "create agent pack promote test proof",
+        action: () => go("/studio", { tab: undefined }),
       },
       {
-        id: "pack-wizard",
-        label: "Start pack wizard",
-        group: "Author",
-        icon: Package,
-        keywords: "build your pipeline pack authoring template",
-        action: () => go("/packs", { wizard: "1", pack: undefined }),
-      },
-      {
-        id: "nav-agents",
-        label: "Agents",
-        group: "Navigate",
-        icon: Bot,
-        keywords: "registry agent",
-        action: () => go("/agents"),
-      },
-      {
-        id: "nav-pipeline",
-        label: "Pipeline",
-        group: "Navigate",
-        icon: Play,
-        action: () => go("/pipeline"),
-      },
-      {
-        id: "nav-jobs",
-        label: "Jobs",
+        id: "nav-runs",
+        label: "Runs",
         group: "Navigate",
         icon: Clock,
+        keywords: "jobs queue trace",
         action: () => go("/jobs", { id: undefined }),
       },
       {
@@ -108,23 +86,31 @@ export function CommandPalette({
         action: () => go("/artifacts"),
       },
       {
+        id: "nav-trust",
+        label: "Trust",
+        group: "Navigate",
+        icon: ShieldCheck,
+        keywords: "verify audit governance",
+        action: () => go("/trust"),
+      },
+      {
         id: "nav-verify",
         label: "Verify",
-        group: "Navigate",
+        group: "Trust",
         icon: ShieldCheck,
         action: () => go("/verify", { hash: undefined, job: undefined }),
       },
       {
         id: "nav-audit",
         label: "Audit",
-        group: "Navigate",
+        group: "Trust",
         icon: ScrollText,
         action: () => go("/audit"),
       },
       {
         id: "nav-governance",
         label: "Governance",
-        group: "Navigate",
+        group: "Trust",
         icon: Scale,
         action: () => go("/governance", { tab: undefined, proposal: undefined }),
       },
@@ -133,7 +119,8 @@ export function CommandPalette({
         label: "System",
         group: "Navigate",
         icon: Server,
-        action: () => go("/system", { tab: undefined }),
+        keywords: "health doctor backups sovereign keys",
+        action: () => go("/system", { tab: "health" }),
       },
       {
         id: "nav-settings",
@@ -143,14 +130,29 @@ export function CommandPalette({
         action: () => go("/settings"),
       },
       {
-        id: "action-refresh",
-        label: "Refresh all data",
+        id: "nav-library",
+        label: "Pipeline library",
+        group: "Workbench",
+        icon: Layers,
+        keywords: "templates saved pipelines examples",
+        action: () => go("/workshop/library"),
+      },
+      {
+        id: "pack-wizard",
+        label: "Advanced pack wizard",
+        group: "Author",
+        icon: Package,
+        keywords: "wizard pack authoring advanced studio",
+        action: () => go("/packs", { wizard: "1", pack: undefined }),
+      },
+      {
+        id: "refresh",
+        label: "Refresh data",
         group: "Actions",
         icon: RefreshCw,
-        keywords: "reload sync",
         action: () => {
-          close();
           onRefresh();
+          close();
         },
       },
     ],
@@ -161,148 +163,135 @@ export function CommandPalette({
     const q = query.trim().toLowerCase();
     if (!q) return commands;
     return commands.filter(
-      (cmd) =>
-        cmd.label.toLowerCase().includes(q) ||
-        cmd.group.toLowerCase().includes(q) ||
-        cmd.keywords?.toLowerCase().includes(q),
+      (c) =>
+        c.label.toLowerCase().includes(q) ||
+        c.group.toLowerCase().includes(q) ||
+        (c.keywords ?? "").includes(q),
     );
   }, [commands, query]);
 
   useEffect(() => {
     setActiveIndex(0);
-  }, [query]);
+  }, [query, open]);
 
   useEffect(() => {
     if (!open) return;
-    const t = window.setTimeout(() => inputRef.current?.focus(), 0);
+    const t = window.setTimeout(() => inputRef.current?.focus(), 10);
     return () => window.clearTimeout(t);
   }, [open]);
 
   useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        onOpenChange(!open);
-        return;
-      }
-      if (!open) return;
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
         close();
-      }
-      if (e.key === "ArrowDown") {
+      } else if (e.key === "ArrowDown") {
         e.preventDefault();
         setActiveIndex((i) => Math.min(i + 1, Math.max(filtered.length - 1, 0)));
-      }
-      if (e.key === "ArrowUp") {
+      } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setActiveIndex((i) => Math.max(i - 1, 0));
-      }
-      if (e.key === "Enter" && filtered[activeIndex]) {
+      } else if (e.key === "Enter" && filtered[activeIndex]) {
         e.preventDefault();
         filtered[activeIndex].action();
       }
-    }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, onOpenChange, close, filtered, activeIndex]);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, close, filtered, activeIndex]);
 
   if (!open) return null;
 
-  const groups = [...new Set(filtered.map((c) => c.group))];
-
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 px-4 pt-[min(18vh,10rem)] backdrop-blur-sm"
-      role="presentation"
-      onClick={close}
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 px-4 pt-[12vh]"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command palette"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) close();
+      }}
     >
-      <div
-        role="dialog"
-        aria-label="Command palette"
-        className="w-full max-w-lg overflow-hidden rounded-xl border border-[hsl(var(--divider-subtle))] bg-[hsl(var(--surface-elevated))] shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="border-b border-[hsl(var(--divider))] px-5 py-4">
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search pages and actions…"
-            className="w-full bg-transparent text-base text-[hsl(var(--foreground))] outline-none placeholder:text-[hsl(var(--muted-foreground))]"
-            aria-label="Search commands"
-          />
-        </div>
-        <ul className="max-h-80 overflow-y-auto py-2" role="listbox">
+      <div className="w-full max-w-lg overflow-hidden rounded-xl border border-[hsl(var(--divider-subtle))] bg-[hsl(var(--surface))] shadow-2xl">
+        <input
+          ref={inputRef}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Go to Workbench, Studio, Runs, Trust…"
+          className="w-full border-b border-[hsl(var(--divider-subtle))] bg-transparent px-4 py-3 text-sm outline-none"
+          aria-label="Filter commands"
+        />
+        <ul className="max-h-80 overflow-y-auto p-2" role="listbox">
           {filtered.length === 0 ? (
-            <li className="px-5 py-8 text-center text-sm text-[hsl(var(--muted-foreground))]">
-              No matching commands
+            <li className="px-3 py-6 text-center text-sm text-[hsl(var(--muted-foreground))]">
+              No matches
             </li>
           ) : (
-            groups.map((group) => (
-              <li key={group}>
-                <p className="px-5 pb-1.5 pt-3 text-xs font-semibold uppercase tracking-wider text-[hsl(var(--caption))]">
-                  {group}
-                </p>
-                <ul>
-                  {filtered
-                    .filter((cmd) => cmd.group === group)
-                    .map((cmd) => {
-                      const globalIndex = filtered.indexOf(cmd);
-                      const Icon = cmd.icon;
-                      const active = globalIndex === activeIndex;
-                      return (
-                        <li key={cmd.id}>
-                          <button
-                            type="button"
-                            role="option"
-                            aria-selected={active}
-                            className={[
-                              "flex w-full cursor-pointer items-center gap-3 px-5 py-3 text-left text-sm transition-colors",
-                              active
-                                ? "bg-[hsl(var(--primary-muted)/0.1)] text-[hsl(var(--foreground))]"
-                                : "text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--overlay))]",
-                            ].join(" ")}
-                            onMouseEnter={() => setActiveIndex(globalIndex)}
-                            onClick={() => cmd.action()}
-                          >
-                            <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                            <span>{cmd.label}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                </ul>
-              </li>
-            ))
+            filtered.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={index === activeIndex}
+                    className={[
+                      "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm",
+                      index === activeIndex
+                        ? "bg-[hsl(var(--overlay))]"
+                        : "hover:bg-[hsl(var(--overlay-subtle))]",
+                    ].join(" ")}
+                    onMouseEnter={() => setActiveIndex(index)}
+                    onClick={() => item.action()}
+                  >
+                    <Icon className="h-4 w-4 shrink-0 opacity-70" />
+                    <span className="flex-1">{item.label}</span>
+                    <span className="text-xs text-[hsl(var(--muted-foreground))]">
+                      {item.group}
+                    </span>
+                  </button>
+                </li>
+              );
+            })
           )}
         </ul>
-        <div className="flex items-center justify-between border-t border-[hsl(var(--divider))] px-5 py-3 text-xs text-[hsl(var(--caption))]">
-          <span>↑↓ navigate · Enter select · Esc close</span>
-          <span className="rounded-md bg-[hsl(var(--overlay-muted))] px-1.5 py-0.5">Ctrl K</span>
+        <div className="flex justify-end border-t border-[hsl(var(--divider-subtle))] px-3 py-2">
+          <Button size="sm" variant="ghost" onClick={close}>
+            Esc
+          </Button>
         </div>
       </div>
     </div>
   );
 }
 
-export function CommandPaletteTrigger({
-  onClick,
-}: {
-  onClick: () => void;
-}) {
+export function CommandPaletteTrigger({ onClick }: { onClick: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        onClick();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClick]);
+
   return (
     <Button
-      variant="ghost"
+      variant="secondary"
       size="sm"
-      className="hidden gap-2 text-[hsl(var(--muted-foreground))] sm:inline-flex"
       onClick={onClick}
+      className="gap-2 text-[hsl(var(--muted-foreground))]"
       aria-label="Open command palette"
     >
-      <span>Search</span>
-      <kbd className="rounded-md bg-[hsl(var(--overlay-muted))] px-1.5 py-0.5 font-sans text-xs">
-        Ctrl K
+      <span className="hidden sm:inline">Commands</span>
+      <kbd className="rounded border border-[hsl(var(--divider-subtle))] px-1.5 py-0.5 font-mono text-[10px]">
+        {typeof navigator !== "undefined" &&
+        /Mac|iPhone|iPad/.test(navigator.platform)
+          ? "⌘K"
+          : "Ctrl+K"}
       </kbd>
     </Button>
   );

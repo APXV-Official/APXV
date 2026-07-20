@@ -12,6 +12,7 @@ import {
   StatusDot,
 } from "@apxv/ui";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageShell } from "../components/PageShell";
 import { QueryState } from "../components/QueryState";
@@ -72,6 +73,13 @@ export function AuditPage() {
 
   return (
     <PageShell wide className="space-y-10">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <SectionHeader title="Audit logs" />
+        <Button variant="link" size="sm" asChild>
+          <Link to="/trust">← Trust hub</Link>
+        </Button>
+      </div>
+
       {logsQuery.isError && (
         <Alert variant="destructive">
           <AlertDescription>{formatApiError(logsQuery.error)}</AlertDescription>
@@ -80,12 +88,28 @@ export function AuditPage() {
 
       <div className="grid min-w-0 gap-8 xl:grid-cols-12 xl:gap-10">
         <section className="min-w-0 space-y-4 xl:col-span-4">
-          <SectionHeader title="Audit logs" />
           <QueryState
             isLoading={logsQuery.isLoading}
             isEmpty={!logsQuery.isLoading && !logsQuery.isError && logs.length === 0}
             emptyTitle="No audit logs"
             emptyDescription="Audit logs appear after the runtime processes governed actions."
+            emptyAction={
+              <ActionGroup>
+                <Button size="sm" asChild>
+                  <Link
+                    to="/workshop"
+                    search={{ id: undefined, shelf: undefined }}
+                  >
+                    Open Workbench
+                  </Link>
+                </Button>
+                <Button size="sm" variant="secondary" asChild>
+                  <Link to="/jobs" search={{ id: undefined }}>
+                    Open Runs
+                  </Link>
+                </Button>
+              </ActionGroup>
+            }
           >
             <DataSurface>
               <div className="divide-y divide-[hsl(var(--divider-subtle))]">

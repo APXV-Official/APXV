@@ -100,7 +100,12 @@ export function VerifyPage() {
 
   return (
     <PageShell className="mx-auto max-w-3xl space-y-10">
-      <SectionHeader title="Attestation verifier" />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <SectionHeader title="Attestation verifier" />
+        <Button variant="link" size="sm" asChild>
+          <Link to="/trust">← Trust hub</Link>
+        </Button>
+      </div>
 
       {jobFromUrl && (
         <Alert>
@@ -219,7 +224,12 @@ export function VerifyPage() {
           action={
             <ActionGroup>
               <Button size="sm" asChild>
-                <Link to="/pipeline">Run a pipeline</Link>
+                <Link
+                  to="/workshop"
+                  search={{ id: undefined, shelf: undefined }}
+                >
+                  Open Workbench
+                </Link>
               </Button>
               <Button variant="link" size="sm" asChild>
                 <a
@@ -247,6 +257,11 @@ export function VerifyPage() {
           <Button
             onClick={() => verifyMutation.mutate()}
             disabled={!artifactHash.trim() || verifyMutation.isPending}
+            title={
+              !artifactHash.trim()
+                ? "Paste or pick an artifact hash first"
+                : "Verify attestation for this artifact"
+            }
           >
             {verifyMutation.isPending ? "Verifying…" : "Verify attestation"}
           </Button>

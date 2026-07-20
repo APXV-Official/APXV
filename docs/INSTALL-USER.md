@@ -2,18 +2,18 @@
 
 Download-and-run APXV for individual operators. No git clone required.
 
-**v1.4.0 ships:** Windows MSI/NSIS and Linux deb/AppImage. macOS DMG is planned for a follow-up release.
+**v1.5.0 ships:** Windows MSI/NSIS and Linux deb/AppImage. macOS DMG is planned for a follow-up release.
 
 ## Download
 
 Get installers from **[GitHub Releases (latest)](https://github.com/APXV-Official/APXV/releases/latest)** — see also [DOWNLOADS.md](DOWNLOADS.md).
 
-Artifact names follow `APXV_<version>_…` (example for v1.4.0 below). Always prefer **latest** on the release page.
+Artifact names follow `APXV_<version>_…` (example for v1.5.0 below). Always prefer **latest** on the release page.
 
-| Platform | Artifact (v1.4.0 example) | Notes |
+| Platform | Artifact (v1.5.0 example) | Notes |
 |----------|---------------------------|-------|
-| **Windows 10/11** | `APXV_1.4.0_x64_en-US.msi` or `APXV_1.4.0_x64-setup.exe` | Requires Python 3.10+ on the machine (desktop resolves real interpreter path) |
-| **Linux (amd64)** | `APXV_1.4.0_amd64.deb` or `APXV_1.4.0_amd64.AppImage` | Debian/Ubuntu: `.deb`; portable: AppImage. GTK/WebKit deps per [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) |
+| **Windows 10/11** | `APXV_1.5.0_x64_en-US.msi` or `APXV_1.5.0_x64-setup.exe` | Requires Python 3.10+ on the machine (desktop resolves real interpreter path) |
+| **Linux (amd64)** | `APXV_1.5.0_amd64.deb` or `APXV_1.5.0_amd64.AppImage` | Debian/Ubuntu: `.deb`; portable: AppImage. GTK/WebKit deps per [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) |
 | **macOS** | DMG (planned) | Build requires a Mac; not in current launch set |
 
 For teams without a desktop install, use [DOCKER.md](DOCKER.md) instead.
@@ -27,14 +27,14 @@ For teams without a desktop install, use [DOCKER.md](DOCKER.md) instead.
 3. Launch **APXV™** from the Start Menu.
 4. Complete the **bootstrap wizard** on first launch (sovereign ZK setup — see [SOVEREIGN-SETUP.md](SOVEREIGN-SETUP.md)).
 5. Paste or confirm your operator API key on the setup screen (auto-discovery of `OPERATOR-KEY-*.txt` when present).
-6. Use the dashboard — pipeline, jobs, verify, governance, packs. Use **Build your pipeline** or Pack Studio wizard to create packs.
+6. Open **Workbench** (home), **Studio** for Agents/Packs/Proof Profiles, **Runs**, and **Trust**. Advanced pack wizard remains at `/packs?wizard=1`.
 
 ### Linux
 
 **Debian/Ubuntu (.deb):**
 
 ```bash
-sudo dpkg -i APXV_1.4.0_amd64.deb
+sudo dpkg -i APXV_1.5.0_amd64.deb
 sudo apt install -f   # if dependencies are missing
 apxv   # or find APXV in your application menu
 ```
@@ -42,8 +42,8 @@ apxv   # or find APXV in your application menu
 **AppImage:**
 
 ```bash
-chmod +x APXV_1.4.0_amd64.AppImage
-./APXV_1.4.0_amd64.AppImage
+chmod +x APXV_1.5.0_amd64.AppImage
+./APXV_1.5.0_amd64.AppImage
 ```
 
 Then follow the same first-launch bootstrap wizard as Windows.

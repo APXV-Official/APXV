@@ -46,6 +46,13 @@ import {
   restartApxvServer,
   type ServerStatus,
 } from "../lib/tauri";
+import {
+  loadModelsPrefs,
+  modeLabel,
+  saveModelsPrefs,
+  type LlmMode,
+  type ModelsPrefs,
+} from "../lib/models-prefs";
 
 export function SettingsPage() {
   const navigate = useNavigate();
@@ -61,6 +68,10 @@ export function SettingsPage() {
   const [repairMessage, setRepairMessage] = useState<string | null>(null);
   const [repairError, setRepairError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [modelsPrefs, setModelsPrefs] = useState<ModelsPrefs>(() =>
+    loadModelsPrefs(),
+  );
+  const [modelsSaved, setModelsSaved] = useState(false);
 
   const keysQuery = useQuery({
     queryKey: ["keys"],
@@ -186,6 +197,13 @@ export function SettingsPage() {
   }
 
   async function handleReset() {
+    if (
+      !window.confirm(
+        "Reset onboarding on this operator console? This does not delete pipelines, jobs, or artifacts stored under managed/ on disk.",
+      )
+    ) {
+      return;
+    }
     await resetOnboarding();
     router.update({ context: { onboarded: false, sovereignReady } });
     await router.invalidate();
@@ -318,13 +336,39 @@ export function SettingsPage() {
       </section>
 
       <section className="space-y-6 border-t border-[hsl(var(--divider))] pt-8">
-        <SectionHeader title="Integrations" />
+        <SectionHeader title="Models" />
         <p className="text-sm text-[hsl(var(--muted-foreground))]">
-          Local Ollama (AI Governance pack) and Vosk voice model. Repair re-runs bootstrap
-          integration steps and updates install.json when present.
+          How agentic steps think. Prefer local Ollama. Cloud is optional, explicit,
+          and never required. API keys stay on this operator machine — never written
+          into pipeline Spec files.
         </p>
-        <div className="divide-y divide-[hsl(var(--divider-subtle))] text-sm">
-          <div className="flex items-center justify-between py-3">
+        <Alert>
+          <AlertDescription>
+            Settings and model preferences do <strong>not</strong> delete saved
+            pipelines, jobs, or artifacts under managed storage.
+          </AlertDescription>
+        </Alert>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="llm-mode">Mode</Label>
+            <select
+              id="llm-mode"
+              className="flex h-10 w-full rounded-md border border-[hsl(var(--divider-subtle))] bg-[hsl(var(--surface))] px-3 text-sm"
+              value={modelsPrefs.mode}
+              onChange={(e) => {
+                setModelsPrefs((p) => ({
+                  ...p,
+                  mode: e.target.value as LlmMode,
+                }));
+                setModelsSaved(false);
+              }}
+            >
+              <option value="local">{modeLabel("local")}</option>
+              <option value="cloud">{modeLabel("cloud")}</option>
+              <option value="demo">{modeLabel("demo")}</option>
+            </select>
+          </div>
+          <div className="flex items-center justify-between text-sm">
             <span className="text-[hsl(var(--muted-foreground))]">Ollama</span>
             <span className="inline-flex items-center gap-2">
               <StatusDot
@@ -340,30 +384,142 @@ export function SettingsPage() {
                 ? "Checking…"
                 : ollamaQuery.data?.reachable
                   ? `Reachable (${ollamaQuery.data.models?.length ?? 0} models)`
-                  : "Unreachable"}
+                  : "Unreachable — start Ollama locally"}
             </span>
           </div>
+          {modelsPrefs.mode === "local" && (
+            <div className="space-y-2">
+              <Label htmlFor="local-model">Local model</Label>
+              <select
+                id="local-model"
+                className="flex h-10 w-full rounded-md border border-[hsl(var(--divider-subtle))] bg-[hsl(var(--surface))] px-3 text-sm"
+                value={modelsPrefs.localModel}
+                onChange={(e) => {
+                  setModelsPrefs((p) => ({
+                    ...p,
+                    localModel: e.target.value,
+                  }));
+                  setModelsSaved(false);
+                }}
+              >
+                {(ollamaQuery.data?.models ?? []).length === 0 ? (
+                  <option value={modelsPrefs.localModel}>
+                    {modelsPrefs.localModel}
+                  </option>
+                ) : (
+                  (ollamaQuery.data?.models ?? []).map((m) => (
+                    <option key={m.name} value={m.name}>
+                      {m.name}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+          )}
+          {modelsPrefs.mode === "cloud" && (
+            <div className="space-y-3 rounded-lg border border-[hsl(var(--warning)/0.35)] bg-[hsl(var(--warning)/0.06)] p-4">
+              <p className="text-xs font-medium text-[hsl(var(--warning))]">
+                Leaves this machine — operator-configured only
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="cloud-base">OpenAI-compatible base URL</Label>
+                <Input
+                  id="cloud-base"
+                  value={modelsPrefs.cloudBaseUrl}
+                  onChange={(e) => {
+                    setModelsPrefs((p) => ({
+                      ...p,
+                      cloudBaseUrl: e.target.value,
+                    }));
+                    setModelsSaved(false);
+                  }}
+                  placeholder="https://api.openai.com/v1"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cloud-key">API key</Label>
+                <Input
+                  id="cloud-key"
+                  type="password"
+                  autoComplete="off"
+                  value={modelsPrefs.cloudApiKey}
+                  onChange={(e) => {
+                    setModelsPrefs((p) => ({
+                      ...p,
+                      cloudApiKey: e.target.value,
+                    }));
+                    setModelsSaved(false);
+                  }}
+                  placeholder="sk-… (stored locally only)"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cloud-model">Model</Label>
+                <Input
+                  id="cloud-model"
+                  value={modelsPrefs.cloudModel}
+                  onChange={(e) => {
+                    setModelsPrefs((p) => ({
+                      ...p,
+                      cloudModel: e.target.value,
+                    }));
+                    setModelsSaved(false);
+                  }}
+                  placeholder="gpt-4o-mini"
+                />
+              </div>
+              <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                Cloud keys are stored in this browser profile for the operator UI.
+                Workbench Run currently sends model name to the local runtime; full
+                cloud proxy in the runtime is a follow-on if you need server-side
+                calls.
+              </p>
+            </div>
+          )}
+          {modelsPrefs.mode === "demo" && (
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Demo mode uses a simulated backend — no external model. Labeled
+              honestly for testing without Ollama.
+            </p>
+          )}
+          <ActionGroup>
+            <Button
+              size="sm"
+              onClick={() => {
+                saveModelsPrefs(modelsPrefs);
+                setModelsSaved(true);
+              }}
+            >
+              Save model preferences
+            </Button>
+            <Button
+              variant="link"
+              size="sm"
+              disabled={repairIntegrationsMutation.isPending}
+              onClick={() => repairIntegrationsMutation.mutate()}
+            >
+              {repairIntegrationsMutation.isPending
+                ? "Repairing…"
+                : "Repair Ollama / voice integrations"}
+            </Button>
+          </ActionGroup>
+          {modelsSaved && (
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Model preferences saved. Workbench Run will use{" "}
+              {modeLabel(modelsPrefs.mode)}.
+            </p>
+          )}
+          {repairMessage && (
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              {repairMessage}
+            </p>
+          )}
+          {repairError && (
+            <Alert variant="destructive">
+              <AlertDescription>{repairError}</AlertDescription>
+            </Alert>
+          )}
         </div>
-        <ActionGroup>
-          <Button
-            variant="link"
-            size="sm"
-            disabled={repairIntegrationsMutation.isPending}
-            onClick={() => repairIntegrationsMutation.mutate()}
-          >
-            {repairIntegrationsMutation.isPending
-              ? "Repairing integrations…"
-              : "Repair integrations"}
-          </Button>
-        </ActionGroup>
-        {repairMessage && (
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">{repairMessage}</p>
-        )}
-        {repairError && (
-          <Alert variant="destructive">
-            <AlertDescription>{repairError}</AlertDescription>
-          </Alert>
-        )}
       </section>
 
       <section className="space-y-6 border-t border-[hsl(var(--divider))] pt-8">

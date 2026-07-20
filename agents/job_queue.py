@@ -110,6 +110,47 @@ class JobQueue:
             )
             conn.commit()
 
+    def pause_awaiting_approval(self, job_id: str, result: Dict[str, Any]) -> None:
+        """Human-in-the-loop pause (Workshop v1.7)."""
+        with self._connect() as conn:
+            conn.execute(
+                """
+                UPDATE jobs
+                SET status = 'awaiting_approval', result = ?, error = NULL,
+                    completed_at = NULL
+                WHERE id = ?
+                """,
+                (json.dumps(result), job_id),
+            )
+            conn.commit()
+
+    def resume_from_approval(
+        self, job_id: str, payload: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
+        """Re-queue a paused job with updated payload (includes resume_state)."""
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT * FROM jobs WHERE id = ? AND status = 'awaiting_approval'",
+                (job_id,),
+            ).fetchone()
+            if not row:
+                return None
+            conn.execute(
+                """
+                UPDATE jobs
+                SET status = 'queued', payload = ?, result = NULL, error = NULL,
+                    started_at = NULL, completed_at = NULL
+                WHERE id = ? AND status = 'awaiting_approval'
+                """,
+                (json.dumps(payload), job_id),
+            )
+            conn.commit()
+        return {
+            "job_id": job_id,
+            "status": "queued",
+            "message": "job re-queued after approval",
+        }
+
     def fail(self, job_id: str, error: str, retry: bool = False) -> None:
         with self._connect() as conn:
             if retry:

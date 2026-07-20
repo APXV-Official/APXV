@@ -2,6 +2,7 @@ import {
   createBackup,
   getOllamaStatus,
   getSystemDoctor,
+  getSystemHealth,
   getSystemStatus,
   listBackups,
   repairAuditLogs,
@@ -81,10 +82,13 @@ export function SystemPage() {
   const [checkLlm, setCheckLlm] = useState(false);
   const [selectedBackup, setSelectedBackup] = useState<string | null>(null);
   const [restoreResult, setRestoreResult] = useState<string | null>(null);
+  const [bootstrapCopied, setBootstrapCopied] = useState(false);
   const [actionMessage, setActionMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
+
+  const BOOTSTRAP_CMD = "python -m scripts.apxv_bootstrap";
 
   const doctorQuery = useQuery({
     queryKey: ["system", "doctor", checkLlm],
@@ -95,6 +99,12 @@ export function SystemPage() {
   const statusQuery = useQuery({
     queryKey: ["system", "status"],
     queryFn: () => getSystemStatus(),
+    enabled: activeTab === "health",
+  });
+
+  const healthQuery = useQuery({
+    queryKey: ["health"],
+    queryFn: () => getSystemHealth(),
     enabled: activeTab === "health",
   });
 
@@ -188,7 +198,81 @@ export function SystemPage() {
           <TabsTrigger value="integrations">Integrations</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="health" className="space-y-10 pt-6">
+        <TabsContent value="health" className="space-y-8 pt-6">
+          {(() => {
+            const integrity = healthQuery.data?.integrity;
+            const issues = integrity?.sovereign_issues ?? [];
+            const vendor =
+              integrity?.sovereign_status === "vendor_keys" ||
+              integrity?.sovereign_ok === false ||
+              issues.some((i) => /vendor_vk/i.test(String(i)));
+            if (!vendor && integrity?.healthy !== false) return null;
+            return (
+              <DataSurface className="space-y-3 border-[hsl(var(--warning)/0.35)] p-4">
+                <SectionHeader title="Proving keys (sovereign setup)" />
+                <p className="text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
+                  {vendor
+                    ? "Keys on disk match the shipped vendor set. Pipelines and proofs still work. For production-grade provenance, run bootstrap once in your install directory, then restart the API and re-check health."
+                    : "Integrity is not fully healthy. Use doctor checks below; integrity check / audit repair fix chain issues, not vendor key provenance."}
+                </p>
+                <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                  Status:{" "}
+                  <span className="font-mono text-[hsl(var(--foreground))]">
+                    {integrity?.sovereign_status ?? "—"}
+                  </span>
+                  {integrity?.sovereign_ok === false ? " · not sovereign" : null}
+                </p>
+                {issues[0] ? (
+                  <p className="break-all font-mono text-[10px] text-[hsl(var(--muted-foreground))]">
+                    {String(issues[0])}
+                  </p>
+                ) : null}
+                {vendor ? (
+                  <div className="flex flex-wrap items-center gap-2 rounded-md border border-[hsl(var(--divider-subtle))] bg-[hsl(var(--surface-elevated))] px-2.5 py-2">
+                    <code className="min-w-0 flex-1 break-all font-mono text-[11px]">
+                      {BOOTSTRAP_CMD}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        void navigator.clipboard
+                          .writeText(BOOTSTRAP_CMD)
+                          .then(() => {
+                            setBootstrapCopied(true);
+                            window.setTimeout(
+                              () => setBootstrapCopied(false),
+                              2000,
+                            );
+                          });
+                      }}
+                    >
+                      {bootstrapCopied ? "Copied" : "Copy command"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="link"
+                      onClick={() => {
+                        void healthQuery.refetch();
+                        void doctorQuery.refetch();
+                      }}
+                    >
+                      Re-check
+                    </Button>
+                  </div>
+                ) : null}
+                <p className="text-[10px] text-[hsl(var(--muted-foreground))]">
+                  Keys-only example:{" "}
+                  <code className="font-mono">
+                    python -m scripts.apxv_bootstrap --skip-ollama --skip-voice
+                  </code>
+                  . This is a CLI step (trusted setup can take several minutes);
+                  it is not run inside the browser.
+                </p>
+              </DataSurface>
+            );
+          })()}
+
           <div className="space-y-6 border-b border-[hsl(var(--divider-subtle))] pb-6">
             <PageToolbar className="border-0 pb-0">
               <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[hsl(var(--muted-foreground))]">

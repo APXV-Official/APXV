@@ -10,20 +10,23 @@ import { AppShell } from "./components/AppShell";
 import { useApp } from "./context/AppContext";
 import { ArtifactDetailPage } from "./pages/ArtifactDetailPage";
 import { ArtifactsPage } from "./pages/ArtifactsPage";
-import { DashboardPage } from "./pages/DashboardPage";
 import { JobsPage } from "./pages/JobsPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { BootstrapPage } from "./pages/BootstrapPage";
 import { SetupPage } from "./pages/SetupPage";
 import { getFirstRunPath, isTauri, usesSetupFlow } from "./lib/tauri";
 import { AuditPage } from "./pages/AuditPage";
-import { AgentsPage } from "./pages/AgentsPage";
 import { PacksPage } from "./pages/PacksPage";
-import { PipelinePage } from "./pages/PipelinePage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { SystemPage } from "./pages/SystemPage";
 import { GovernancePage } from "./pages/GovernancePage";
 import { VerifyPage } from "./pages/VerifyPage";
+import { TrustPage } from "./pages/TrustPage";
+import { WorkshopLibraryPage } from "./pages/WorkshopLibraryPage";
+import { WorkshopComposerPage } from "./pages/WorkshopComposerPage";
+import { WorkshopCanvasPage } from "./pages/WorkshopCanvasPage";
+import { WorkshopStudioPage } from "./pages/WorkshopStudioPage";
+import { StudioPage } from "./pages/StudioPage";
 import { readOnboardedSync } from "./lib/auth-storage";
 import {
   parseOnboardingRedirect,
@@ -162,10 +165,13 @@ const shellRoute = createRoute({
   },
 });
 
-const dashboardRoute = createRoute({
+/** Endgame home: Workshop (not Dashboard). */
+const indexRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/",
-  component: DashboardPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/workshop", search: { id: undefined, shelf: undefined } });
+  },
 });
 
 const packsRoute = createRoute({
@@ -176,18 +182,119 @@ const packsRoute = createRoute({
     wizard: parseWizardSearch(search.wizard),
     pack: normalizeSearchString(search.pack),
   }),
+  beforeLoad: ({ search }) => {
+    // Browse packs → Workshop shelf; wizard stays for authoring (U4 advanced)
+    if (search.wizard !== "1") {
+      throw redirect({
+        to: "/workshop",
+        search: { id: undefined, shelf: "packs" },
+      });
+    }
+  },
 });
 
 const agentsRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/agents",
-  component: AgentsPage,
+  component: () => null,
+  beforeLoad: () => {
+    throw redirect({
+      to: "/workshop",
+      search: { id: undefined, shelf: "agents" },
+    });
+  },
 });
 
 const pipelineRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/pipeline",
-  component: PipelinePage,
+  component: () => null,
+  beforeLoad: () => {
+    throw redirect({
+      to: "/workshop",
+      search: { id: undefined, shelf: "packs" },
+    });
+  },
+});
+
+const workshopStudioRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/workshop",
+  component: WorkshopStudioPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    id: typeof search.id === "string" ? search.id : undefined,
+    shelf:
+      search.shelf === "agents" ||
+      search.shelf === "packs" ||
+      search.shelf === "proofs" ||
+      search.shelf === "controls" ||
+      search.shelf === "library"
+        ? search.shelf
+        : undefined,
+  }),
+});
+
+const studioRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/studio",
+  component: StudioPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab:
+      search.tab === "agents" ||
+      search.tab === "packs" ||
+      search.tab === "proofs"
+        ? search.tab
+        : undefined,
+  }),
+});
+
+const workshopLibraryRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/workshop/library",
+  // Full pipeline library (import/export/examples) — not redirected away
+  component: WorkshopLibraryPage,
+});
+
+const workshopComposerRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/workshop/composer",
+  component: WorkshopComposerPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    id: typeof search.id === "string" ? search.id : undefined,
+  }),
+  beforeLoad: ({ search }) => {
+    // List composer is power mode only via direct URL; prefer board
+    if (!search.id) {
+      throw redirect({
+        to: "/workshop",
+        search: { id: undefined, shelf: undefined },
+      });
+    }
+  },
+});
+
+const workshopCanvasRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/workshop/canvas",
+  component: WorkshopCanvasPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    id: typeof search.id === "string" ? search.id : undefined,
+  }),
+  beforeLoad: ({ search }) => {
+    // Canvas is power mode for a saved pipeline
+    if (!search.id) {
+      throw redirect({
+        to: "/workshop",
+        search: { id: undefined, shelf: undefined },
+      });
+    }
+  },
+});
+
+const trustRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/trust",
+  component: TrustPage,
 });
 
 const jobsRoute = createRoute({
@@ -276,7 +383,9 @@ const bootstrapPreviewRoute = createRoute({
 const catchAllRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "$",
-  component: () => <Navigate to="/" />,
+  component: () => (
+    <Navigate to="/workshop" search={{ id: undefined, shelf: undefined }} />
+  ),
 });
 
 const routeTree = rootRoute.addChildren([
@@ -287,13 +396,19 @@ const routeTree = rootRoute.addChildren([
     ? [setupPreviewRoute, bootstrapPreviewRoute]
     : []),
   shellRoute.addChildren([
-    dashboardRoute,
+    indexRoute,
     packsRoute,
     agentsRoute,
+    studioRoute,
+    workshopStudioRoute,
+    workshopLibraryRoute,
+    workshopComposerRoute,
+    workshopCanvasRoute,
     pipelineRoute,
     jobsRoute,
     artifactDetailRoute,
     artifactsRoute,
+    trustRoute,
     verifyRoute,
     auditRoute,
     governanceRoute,

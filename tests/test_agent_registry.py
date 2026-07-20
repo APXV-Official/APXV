@@ -90,8 +90,20 @@ def test_get_agent_unknown_returns_none(registry_env):
     assert get_agent(base, "APXV-AGENT-DOES-NOT-EXIST", runtime=runtime) is None
 
 
-def test_custom_pack_agent_in_registry(registry_env):
+def test_scaffold_and_test_ui_packs_not_on_shelf(registry_env):
+    """Workbench must not surface scaffold leftovers or fake discovered agents."""
     base, runtime = registry_env
+    from agents.pack_catalog import list_packs
+
+    pack_ids = {p["id"] for p in list_packs(base)}
+    assert "apxv-pack-test-ui" not in pack_ids
+    assert "apxv-pack-my-agent-pack" not in pack_ids
+    # Fake module-derived agent ids must not appear as runnable shelf agents
     agent = get_agent(base, "APXV-AGENT-CUSTOM-001", runtime=runtime)
-    assert agent is not None
-    assert "apxv-pack-test-ui" in agent["packs"]
+    assert agent is None
+    agent = get_agent(base, "APXV-AGENT-DOCUMENT-AGENTS", runtime=runtime)
+    assert agent is None
+    agents = list_agents(base, runtime=runtime, runnable_only=True)
+    ids = {a["id"] for a in agents}
+    assert "APXV-AGENT-TOOL-001" not in ids
+    assert "APXV-AGENT-001" in ids

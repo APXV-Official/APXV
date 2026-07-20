@@ -216,8 +216,12 @@ def test_v2_agents_registry(api_server):
 
     status, page, _ = _request(f"{base}/api/v2/agents?limit=50", headers=headers)
     assert status == 200
-    assert page["total"] >= 5
-    assert any(item["id"] == "APXV-AGENT-001" for item in page["items"])
+    # Runnable shelf agents: 001–003 + LLM-001 (TOOL reserved/hidden)
+    assert page["total"] >= 4
+    ids = {item["id"] for item in page["items"]}
+    assert "APXV-AGENT-001" in ids
+    assert "APXV-AGENT-LLM-001" in ids
+    assert "APXV-AGENT-TOOL-001" not in ids
 
     status, agent, _ = _request(f"{base}/api/v2/agents/APXV-AGENT-002", headers=headers)
     assert status == 200

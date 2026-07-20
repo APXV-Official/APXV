@@ -85,7 +85,13 @@ class JobWorker:
                 continue
             try:
                 result = execute_job_payload(job["payload"], runtime=self.runtime)
-                self.queue.complete(job["id"], result)
+                if (
+                    isinstance(result, dict)
+                    and result.get("final_status") == "awaiting_approval"
+                ):
+                    self.queue.pause_awaiting_approval(job["id"], result)
+                else:
+                    self.queue.complete(job["id"], result)
             except Exception as exc:
                 retries = job.get("retry_count", 0)
                 if retries < self.max_retries:

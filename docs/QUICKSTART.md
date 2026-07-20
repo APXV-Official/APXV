@@ -1,6 +1,6 @@
 # APXV Quickstart (15 Minutes)
 
-**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3** added sovereign local trust and a desktop operator console; **v1.3.3** completed Windows server lifecycle on `:8741`. **v1.4** adds the Pack Studio **authoring wizard**, **Build your pipeline** on-ramp, removes pre-v1.3 shims, and trims unused entity circuits from default keygen.
+**APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform. **v1.3** added sovereign local trust and a desktop operator console; **v1.4** added the Pack Studio authoring wizard and legacy cleanup; **v1.5** ships **Studio** (Agents, Packs, Proof Profiles), **Workbench**, and the **Trust** hub. See [ui/docs/OPERATOR-GUIDE.md](../ui/docs/OPERATOR-GUIDE.md) and [PROOF-STUDIO.md](PROOF-STUDIO.md).
 
 ## Choose your path
 
@@ -158,7 +158,7 @@ python -m scripts.apxv_serve
 cd ui && pnpm install && pnpm dev
 ```
 
-Open http://localhost:5173 → paste operator API key. Or use the **desktop app** — [INSTALL-USER.md](INSTALL-USER.md).
+Open http://127.0.0.1:5173 → paste operator API key. Home is **Workbench**; author building blocks in **Studio**; inspect claims under **Runs** and **Trust**. Or use the **desktop app** — [INSTALL-USER.md](INSTALL-USER.md).
 
 Guide: [ui/docs/OPERATOR-GUIDE.md](../../ui/docs/OPERATOR-GUIDE.md)
 

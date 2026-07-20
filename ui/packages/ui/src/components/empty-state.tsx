@@ -26,7 +26,7 @@ export function EmptyState({
           {icon}
         </div>
       )}
-      <p className="text-base font-semibold text-[hsl(var(--foreground))]">{title}</p>
+      <p className="text-sm font-semibold text-[hsl(var(--foreground))]">{title}</p>
       {description && (
         <p className="mt-2 max-w-md text-[0.9375rem] leading-relaxed text-[hsl(var(--muted-foreground))]">
           {description}

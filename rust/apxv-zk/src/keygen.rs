@@ -28,6 +28,7 @@ use crate::circuits::{
     core_redaction::CoreRedactionCircuit,
     merkle_inclusion::MerkleInclusionCircuit,
     redaction_v1::RedactionProofV1Circuit,
+    universal_predicate::UniversalPredicateCircuit,
     voice_redaction::VoiceRedactionCircuit,
 };
 use crate::poseidon::Poseidon;
@@ -189,7 +190,31 @@ pub fn apx_generate_all_keys(output_dir: &str) -> Result<(), Box<dyn std::error:
         &format!("{}/batch-merkle.vk", output_dir),
     )?;
 
-    println!("\nAll 6 default circuit keys generated successfully!");
+    println!("\n[7/7] Universal Predicate Circuit v1");
+    let up_mask = (1u64 << 0)
+        | (1u64 << 1)
+        | (1u64 << 3)
+        | (1u64 << 4)
+        | (1u64 << 5)
+        | (1u64 << 6);
+    let universal = UniversalPredicateCircuit {
+        predicate_mask: Fr::from(up_mask),
+        entity_count: Fr::from(3u64),
+        min_entity_count: Fr::from(1u64),
+        category_required: Fr::from(0u64),
+        category_present: Fr::from(0u64),
+        flags: Fr::from(up_mask),
+        policy_commitment: Fr::from(42u64),
+        original_hash: Fr::from(111u64),
+        redacted_hash: Fr::from(222u64),
+    };
+    generate_keys(
+        universal,
+        &format!("{}/universal-predicate-v1.pk", output_dir),
+        &format!("{}/universal-predicate-v1.vk", output_dir),
+    )?;
+
+    println!("\nAll default circuit keys (incl. universal-predicate-v1) generated successfully!");
     println!("Keys saved to: {}/", output_dir);
 
     Ok(())

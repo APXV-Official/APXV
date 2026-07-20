@@ -69,18 +69,32 @@ export function JobsPage() {
     mutationFn: async (job: Job) => {
       const payload = job.payload as Record<string, unknown> | undefined;
       if (!payload) throw new Error("Job has no payload to retry.");
+      const pipelineId =
+        typeof payload.pipeline_id === "string" && payload.pipeline_id.trim()
+          ? payload.pipeline_id
+          : undefined;
       const pack =
         typeof payload.pack === "string" && payload.pack.trim()
           ? payload.pack
-          : "apxv-pack-reference-redaction";
+          : pipelineId
+            ? undefined
+            : "apxv-pack-reference-redaction";
+      const proofProfile =
+        typeof payload.proof_profile === "string"
+          ? payload.proof_profile
+          : typeof payload.proof_profile_id === "string"
+            ? payload.proof_profile_id
+            : undefined;
       return runPipeline({
         pack,
+        pipeline_id: pipelineId,
         input_text: payload.input_text as string | undefined,
         input_files: payload.upload_id
           ? [String(payload.upload_id)]
           : undefined,
         attest: Boolean(payload.attest),
         llm: payload.llm as PipelineRunRequest["llm"],
+        proof_profile: proofProfile,
         async: true,
       });
     },
@@ -126,6 +140,7 @@ export function JobsPage() {
             <option value="">All statuses</option>
             <option value="queued">Queued</option>
             <option value="running">Running</option>
+            <option value="awaiting_approval">Awaiting approval</option>
             <option value="completed">Completed</option>
             <option value="failed">Failed</option>
           </Select>
@@ -141,7 +156,7 @@ export function JobsPage() {
 
       <div className="grid min-w-0 gap-8 xl:grid-cols-5 xl:gap-10">
         <section className="min-w-0 space-y-4 xl:col-span-3">
-          <SectionHeader title="Job queue" />
+          <SectionHeader title="Run queue" />
           {retryError && (
             <Alert variant="destructive">
               <AlertTitle>Retry failed</AlertTitle>
@@ -166,7 +181,12 @@ export function JobsPage() {
               emptyAction={
                 <ActionGroup>
                   <Button size="sm" asChild>
-                    <Link to="/pipeline">Run a pipeline</Link>
+                    <Link
+                      to="/workshop"
+                      search={{ id: undefined, shelf: undefined }}
+                    >
+                      Open Workbench
+                    </Link>
                   </Button>
                   <Button variant="link" size="sm" asChild>
                     <a
@@ -189,7 +209,7 @@ export function JobsPage() {
 
         <section className="min-w-0 space-y-4 border-t border-[hsl(var(--divider))] pt-6 xl:col-span-2 xl:border-l xl:border-t-0 xl:pl-10 xl:pt-0">
           <SectionHeader
-            title="Job detail"
+            title="Run detail"
             action={
               selectedId ? (
                 <span

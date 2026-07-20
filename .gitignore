@@ -91,3 +91,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.log
+# Playwright storage (generated; may contain API keys)
+ui/apps/web/e2e/.auth/
+

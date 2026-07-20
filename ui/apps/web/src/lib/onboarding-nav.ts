@@ -1,16 +1,19 @@
 /** Shell paths valid for post-onboarding redirect (must match router). */
 export const ONBOARDING_SHELL_PATHS = [
   "/",
-  "/packs",
-  "/agents",
-  "/pipeline",
+  "/workshop",
+  "/studio",
   "/jobs",
   "/artifacts",
+  "/trust",
   "/verify",
   "/audit",
   "/governance",
   "/system",
   "/settings",
+  "/packs",
+  "/agents",
+  "/pipeline",
 ] as const;
 
 export type OnboardingShellPath = (typeof ONBOARDING_SHELL_PATHS)[number];
@@ -38,20 +41,33 @@ export function shellRedirectTarget(
 export function parseOnboardingRedirect(
   redirectTo: string | undefined,
 ): OnboardingRedirect {
-  if (!redirectTo) return { to: "/", search: {} };
+  if (!redirectTo) return { to: "/workshop", search: { id: undefined } };
 
   const qIndex = redirectTo.indexOf("?");
   const path = qIndex >= 0 ? redirectTo.slice(0, qIndex) : redirectTo;
   const query = qIndex >= 0 ? redirectTo.slice(qIndex + 1) : "";
 
+  // Legacy home → Workshop
+  if (path === "/" || path === "") {
+    return { to: "/workshop", search: { id: undefined } };
+  }
+
   if (!(ONBOARDING_SHELL_PATHS as readonly string[]).includes(path)) {
-    return { to: "/", search: {} };
+    return { to: "/workshop", search: { id: undefined } };
   }
 
   const params = new URLSearchParams(query);
   const to = path as OnboardingShellPath;
 
   switch (to) {
+    case "/workshop":
+      return {
+        to,
+        search: {
+          id: params.get("id") ?? undefined,
+          shelf: params.get("shelf") ?? undefined,
+        },
+      };
     case "/packs":
       return {
         to,

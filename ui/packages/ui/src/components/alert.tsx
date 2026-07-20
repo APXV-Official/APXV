@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "../lib/utils";
 
 const alertVariants = cva(
-  "relative w-full rounded-xl px-6 py-5 text-base ring-1 [&>p]:leading-relaxed",
+  "relative w-full rounded-lg px-4 py-3 text-sm ring-1 [&>p]:leading-relaxed",
   {
     variants: {
       variant: {
@@ -12,7 +12,7 @@ const alertVariants = cva(
         destructive:
           "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--foreground))] ring-[hsl(var(--destructive)/0.28)]",
         warning:
-          "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--foreground))] ring-[hsl(var(--warning)/0.28)]",
+          "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--foreground))] ring-[hsl(var(--warning)/0.28)] [&>svg]:text-[hsl(var(--warning))]",
         success:
           "bg-[hsl(var(--success)/0.1)] text-[hsl(var(--foreground))] ring-[hsl(var(--success)/0.28)]",
       },
@@ -43,7 +43,7 @@ export function AlertTitle({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("mb-1.5 text-base font-semibold leading-snug tracking-tight", className)}
+      className={cn("mb-1 text-sm font-semibold leading-snug tracking-tight", className)}
       {...props}
     />
   );

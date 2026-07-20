@@ -258,10 +258,20 @@ export function PacksPage() {
             {showCreate ? "Cancel" : "Create pack"}
           </Button>
           <Button variant="link" size="sm" asChild>
-            <Link to="/agents">Agent registry</Link>
+            <Link
+              to="/workshop"
+              search={{ id: undefined, shelf: "agents" }}
+            >
+              Workbench · Agents
+            </Link>
           </Button>
           <Button variant="link" size="sm" asChild>
-            <Link to="/pipeline">Pipeline runner</Link>
+            <Link
+              to="/workshop"
+              search={{ id: undefined, shelf: undefined }}
+            >
+              Workbench
+            </Link>
           </Button>
         </ActionGroup>
       </PageToolbar>
@@ -523,10 +533,13 @@ export function PacksPage() {
                   variant="link"
                   onClick={() => {
                     sessionStorage.setItem("apxv.selectedPackId", activePack.id);
-                    void navigate({ to: "/pipeline" });
+                    void navigate({
+                      to: "/workshop",
+                      search: { id: undefined, shelf: "packs" },
+                    });
                   }}
                 >
-                  Configure in pipeline
+                  Use on Workbench
                 </Button>
                 <Button variant="link" asChild>
                   <Link

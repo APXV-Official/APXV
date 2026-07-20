@@ -31,8 +31,9 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
 import {
+  auditChainBroken,
   formatDoctorCheckSummary,
-  integrityCheckFailed,
+  sovereignVendorKeysOnly,
 } from "../lib/doctor-format";
 import { BrandLogo } from "../components/BrandLogo";
 import { OperatorKeyPanel } from "../components/OperatorKeyPanel";
@@ -201,12 +202,20 @@ export function OnboardingPage() {
       const result = await getSystemDoctor(false);
       setDoctorChecks(result.checks);
       if (!result.healthy) {
-        if (integrityCheckFailed(result.checks)) {
+        if (auditChainBroken(result.checks)) {
           setError(
             "Audit log chain is broken (often from heavy API use). Click Repair audit chain, then re-run doctor.",
           );
+        } else if (sovereignVendorKeysOnly(result.checks)) {
+          // Safe to operate: vendor proving keys until apxv_bootstrap
+          setError(null);
+          setRepairMessage(
+            "Runtime is operable. Proving keys are vendor defaults — run python -m scripts.apxv_bootstrap once for operator-sovereign keys, or Continue anyway.",
+          );
         } else {
-          setError("Doctor reported issues — review checks below before continuing.");
+          setError(
+            "Doctor reported issues — review checks below. You can Continue anyway if the runtime is reachable.",
+          );
         }
       } else {
         setStep("complete");
@@ -432,18 +441,34 @@ export function OnboardingPage() {
           {step === "doctor" && (
             <>
               <p className="text-[0.9375rem] text-[hsl(var(--muted-foreground))]">
-                Run a full system doctor check before entering the dashboard.
+                Run a full system doctor check before opening Workbench.
               </p>
-              {integrityCheckFailed(doctorChecks) && (
+              {auditChainBroken(doctorChecks) && (
                 <Alert variant="warning">
                   <AlertTitle>Audit chain needs repair</AlertTitle>
                   <AlertDescription>
                     The system audit log chain broke — usually from concurrent API
-                    requests before a recent fix. This is repairable in one click and
-                    does not delete your artifacts or jobs.
+                    requests. This is repairable in one click and does not delete
+                    your artifacts or jobs.
                   </AlertDescription>
                 </Alert>
               )}
+              {sovereignVendorKeysOnly(doctorChecks) &&
+                !auditChainBroken(doctorChecks) && (
+                  <Alert variant="warning">
+                    <AlertTitle>
+                      Proving keys: vendor defaults (safe to operate)
+                    </AlertTitle>
+                    <AlertDescription>
+                      Store and audit are fine. Keys match the shipped vendor set
+                      until you run{" "}
+                      <code className="rounded bg-[hsl(var(--overlay-muted))] px-1 font-mono text-[11px]">
+                        python -m scripts.apxv_bootstrap
+                      </code>{" "}
+                      once from the install root. You can continue into the app now.
+                    </AlertDescription>
+                  </Alert>
+                )}
               {repairMessage && (
                 <Alert variant="success">
                   <AlertDescription>{repairMessage}</AlertDescription>
@@ -490,7 +515,7 @@ export function OnboardingPage() {
                 <Button onClick={() => void handleRunDoctor()} disabled={busy}>
                   {busy ? "Running…" : doctorChecks ? "Re-run doctor" : "Run doctor"}
                 </Button>
-                {integrityCheckFailed(doctorChecks) && (
+                {auditChainBroken(doctorChecks) && (
                   <Button
                     variant="default"
                     onClick={() => void handleRepairAudit()}
@@ -500,8 +525,19 @@ export function OnboardingPage() {
                   </Button>
                 )}
                 {doctorChecks && (
-                  <Button variant="link" onClick={() => setStep("complete")}>
-                    Continue anyway
+                  <Button
+                    variant={
+                      sovereignVendorKeysOnly(doctorChecks) &&
+                      !auditChainBroken(doctorChecks)
+                        ? "default"
+                        : "link"
+                    }
+                    onClick={() => setStep("complete")}
+                  >
+                    {sovereignVendorKeysOnly(doctorChecks) &&
+                    !auditChainBroken(doctorChecks)
+                      ? "Continue"
+                      : "Continue anyway"}
                   </Button>
                 )}
               </ActionGroup>
@@ -511,11 +547,10 @@ export function OnboardingPage() {
           {step === "complete" && (
             <>
               <p className="text-[0.9375rem] text-[hsl(var(--muted-foreground))]">
-                Setup complete. The dashboard will show live health and integrity
-                status.
+                Setup complete. Workbench and System show live health and integrity.
               </p>
               <ActionGroup>
-                <Button onClick={() => void handleFinish()}>Open dashboard</Button>
+                <Button onClick={() => void handleFinish()}>Open Workbench</Button>
               </ActionGroup>
             </>
           )}

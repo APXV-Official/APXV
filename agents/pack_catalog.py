@@ -16,6 +16,20 @@ OFFICIAL_PACK_IDS = frozenset(
     }
 )
 
+# Scaffold leftovers / ephemeral packs — never show on Workbench shelf
+HIDDEN_PACK_IDS = frozenset(
+    {
+        "apxv-pack-test-ui",
+        "apxv-pack-my-agent-pack",
+        "apxv-pack-release-smoke",
+    }
+)
+
+HIDDEN_PACK_NAME_HINTS = (
+    "test ui",
+    "my agent pack",
+)
+
 GOVERNANCE_LIST_KEYS = {
     "rules": "rule",
     "workflows": "workflow",
@@ -56,23 +70,44 @@ def parse_pack_manifest(pack_dir: Path) -> Dict[str, Any]:
             manifest["agents"].append(agent_entry)
             agent_entry = None
 
+    pending_key: Optional[str] = None
+    pending_parts: List[str] = []
+
+    def _flush_pending() -> None:
+        nonlocal pending_key, pending_parts
+        if pending_key is not None:
+            manifest[pending_key] = " ".join(pending_parts).strip()
+            pending_key = None
+            pending_parts = []
+
     for line in pack_yaml.read_text(encoding="utf-8").splitlines():
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
 
+        # Folded/literal block continuation for top-level scalars (description: >-).
+        if pending_key is not None:
+            if ":" in stripped and not line[:1].isspace() and not stripped.startswith("-"):
+                _flush_pending()
+            else:
+                pending_parts.append(stripped)
+                continue
+
         if stripped == "governance:":
             _flush_agent_entry()
+            _flush_pending()
             section = "governance"
             gov_sub = None
             continue
         if stripped == "capabilities:":
             _flush_agent_entry()
+            _flush_pending()
             section = "capabilities"
             gov_sub = None
             continue
         if stripped == "agents:":
             _flush_agent_entry()
+            _flush_pending()
             section = "agents"
             gov_sub = None
             continue
@@ -108,8 +143,16 @@ def parse_pack_manifest(pack_dir: Path) -> Dict[str, Any]:
 
         if ":" in stripped and section is None:
             key, value = stripped.split(":", 1)
-            manifest[key.strip()] = value.strip().strip('"').strip("'")
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            # YAML folded/literal markers — capture following indented lines.
+            if value in (">", ">-", "|", "|-"):
+                pending_key = key
+                pending_parts = []
+            else:
+                manifest[key] = value
 
+    _flush_pending()
     _flush_agent_entry()
 
     if "pack_id" in manifest and isinstance(manifest["pack_id"], str):
@@ -137,7 +180,18 @@ def _parse_pack_yaml(text: str) -> Dict[str, str]:
     return data
 
 
-def list_packs(base_path: Path) -> List[Dict[str, Any]]:
+def _is_hidden_pack(pack_id: str, name: str = "") -> bool:
+    if pack_id in HIDDEN_PACK_IDS:
+        return True
+    low = f"{pack_id} {name}".lower()
+    return any(h in low for h in HIDDEN_PACK_NAME_HINTS)
+
+
+def list_packs(
+    base_path: Path,
+    *,
+    include_hidden: bool = False,
+) -> List[Dict[str, Any]]:
     root = resolve_apxv_root(base_path) / "governance-libraries"
     packs: List[Dict[str, Any]] = []
     if not root.is_dir():
@@ -147,14 +201,19 @@ def list_packs(base_path: Path) -> List[Dict[str, Any]]:
         parsed = _parse_pack_yaml(pack_yaml.read_text(encoding="utf-8"))
         pack_dir = pack_yaml.parent
         pack_id = parsed.get("pack_id") or pack_dir.name
+        name = parsed.get("name", pack_dir.name)
+        if not include_hidden and _is_hidden_pack(pack_id, name):
+            continue
+        maturity = "official" if is_official_pack(pack_id) else "example"
         packs.append(
             {
                 "id": pack_id,
-                "name": parsed.get("name", pack_dir.name),
+                "name": name,
                 "version": parsed.get("version", "0.0.0"),
                 "description": parsed.get("description", ""),
                 "requires_apxv1": parsed.get("requires_apxv1", ""),
                 "official": is_official_pack(pack_id),
+                "maturity": maturity,
                 "path": str(pack_dir.relative_to(resolve_apxv_root(base_path))).replace("\\", "/"),
                 "demo": str(
                     (pack_dir / "examples" / "run_pack_demo.py").relative_to(resolve_apxv_root(base_path))

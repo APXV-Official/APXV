@@ -1,6 +1,7 @@
 import { getSystemHealth } from "@apxv/api-client";
 import { StatusDot } from "@apxv/ui";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 
 function integrityTone(
   healthy: boolean | undefined,
@@ -13,6 +14,7 @@ function integrityTone(
 }
 
 export function IntegrityBadge() {
+  const navigate = useNavigate();
   const healthQuery = useQuery({
     queryKey: ["health"],
     queryFn: () => getSystemHealth(),
@@ -33,19 +35,26 @@ export function IntegrityBadge() {
         ? "Sovereign integrity verified"
         : "Integrity verified";
     } else if (healthy === false) {
-      label = sovereignOk === false ? "Sovereign setup required" : "Integrity issues";
+      label =
+        sovereignOk === false
+          ? "Keys: setup recommended"
+          : "Integrity check issues";
     } else {
       label = "Unknown";
     }
   }
 
   return (
-    <div
-      className="flex items-center gap-2.5 px-2 py-2 text-xs text-[hsl(var(--caption))]"
-      title="Store, audit chains, and sovereign key provenance"
+    <button
+      type="button"
+      className="flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left text-xs text-[hsl(var(--caption))] transition-colors hover:bg-[hsl(var(--overlay-subtle))] hover:text-[hsl(var(--foreground))]"
+      title="Open System health — store, audit, and proving-key status"
+      onClick={() => {
+        void navigate({ to: "/system", search: { tab: "health" } });
+      }}
     >
       <StatusDot tone={integrityTone(healthy && sovereignOk !== false, reachable)} />
       <span className="truncate leading-snug">{label}</span>
-    </div>
+    </button>
   );
 }

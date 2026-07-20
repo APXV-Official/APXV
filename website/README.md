@@ -2,7 +2,7 @@
 
 Static landing page for [apxv-official.github.io/APXV](https://apxv-official.github.io/APXV/).
 
-**Current story:** v1.4.0 — local governed agents, Pack Studio wizard, sovereign bootstrap, proof receipts.
+**Current story:** v1.5.0 — Studio, Workbench, Proof Profiles, Trust hub, sovereign bootstrap, dual-track attestation and catalog claim proofs. Keep claims aligned with [CHANGELOG.md](../CHANGELOG.md).
 
 ## What’s included
 

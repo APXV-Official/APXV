@@ -9,9 +9,14 @@ import type {
 
 export type { PipelineRunResponse, JobQueued };
 
-/** Pack may be built-in alias or full apxv-pack-* id. */
+/** Pack may be built-in alias or full apxv-pack-* id; composition uses pipeline_id. */
 export type PipelineRunRequest = Omit<GeneratedPipelineRunRequest, "pack"> & {
   pack?: string;
+  pipeline_id?: string;
+  pipeline?: string;
+  pipeline_document?: Record<string, unknown>;
+  /** Promoted Proof Studio profile id (APXV-PROOF-*). */
+  proof_profile?: string;
 };
 
 export type PipelineRunResult =

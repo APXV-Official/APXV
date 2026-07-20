@@ -26,6 +26,18 @@ from agents.backup_restore import BackupRestoreError, BackupManager
 from agents.pack_install import PackInstallError, activate_pack, clone_pack, install_pack
 from agents.pack_catalog import list_packs
 from agents.pipeline_service import run_pipeline_quiet
+from agents.pipeline_spec import PipelineSpecError, validate_and_load_file, validate_pipeline_document, dump_pipeline
+from agents.pipeline_store import (
+    PipelineStoreError,
+    export_pipeline,
+    import_pipeline_text,
+    list_pipelines,
+    load_pipeline,
+    save_pipeline,
+)
+from agents.pipeline_runner import run_stored_pipeline
+from agents.catalog_quality import lint_catalog, smoke_pipeline
+from agents.swarm import list_swarms, run_swarm
 
 
 def cmd_status(_args: argparse.Namespace) -> int:
@@ -222,6 +234,132 @@ def cmd_pack_list(_args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_pipeline_list(_args: argparse.Namespace) -> int:
+    print(json.dumps({"pipelines": list_pipelines(ROOT)}, indent=2))
+    return 0
+
+
+def cmd_pipeline_validate(args: argparse.Namespace) -> int:
+    path = Path(args.file)
+    result = validate_and_load_file(path)
+    print(
+        json.dumps(
+            {
+                "ok": result.ok,
+                "errors": result.errors,
+                "warnings": result.warnings,
+                "pipeline": result.document,
+            },
+            indent=2,
+        )
+    )
+    return 0 if result.ok else 1
+
+
+def cmd_pipeline_show(args: argparse.Namespace) -> int:
+    try:
+        doc = load_pipeline(ROOT, args.pipeline_id)
+        print(json.dumps(doc, indent=2))
+        return 0
+    except (PipelineStoreError, PipelineSpecError) as exc:
+        print(json.dumps({"error": str(exc)}), file=sys.stderr)
+        return 1
+
+
+def cmd_pipeline_export(args: argparse.Namespace) -> int:
+    try:
+        content = export_pipeline(ROOT, args.pipeline_id, fmt=args.format)
+        if args.output:
+            Path(args.output).write_text(content, encoding="utf-8")
+            print(json.dumps({"written": args.output, "format": args.format}))
+        else:
+            sys.stdout.write(content)
+        return 0
+    except (PipelineStoreError, PipelineSpecError) as exc:
+        print(json.dumps({"error": str(exc)}), file=sys.stderr)
+        return 1
+
+
+def cmd_pipeline_import(args: argparse.Namespace) -> int:
+    path = Path(args.file)
+    text = path.read_text(encoding="utf-8")
+    fmt = "json" if path.suffix.lower() == ".json" else "yaml"
+    try:
+        imported = import_pipeline_text(ROOT, text, fmt=fmt, overwrite=not args.no_overwrite)
+        print(json.dumps({"message": "imported", **{k: v for k, v in imported.items() if k != "document"}, "pipeline": imported["document"]}, indent=2))
+        return 0
+    except (PipelineStoreError, PipelineSpecError) as exc:
+        print(json.dumps({"error": str(exc)}), file=sys.stderr)
+        return 1
+
+
+def cmd_pipeline_run(args: argparse.Namespace) -> int:
+    try:
+        result = run_stored_pipeline(
+            args.pipeline_id,
+            runtime=APXVRuntime(ROOT),
+            input_text=args.input_text,
+            attest=True if args.attest else None,
+            auto_approve=bool(getattr(args, "auto_approve", False)),
+        )
+        # Drop large attested blob from default CLI unless --full
+        if not args.full:
+            result = {
+                k: v
+                for k, v in result.items()
+                if k not in ("attested_result", "pause")
+                or args.full
+            }
+            if result.get("pause"):
+                result["pause"] = {
+                    "step_id": result["pause"].get("step_id"),
+                    "message": result["pause"].get("message"),
+                }
+        print(json.dumps(result, indent=2, default=str))
+        status = result.get("final_status")
+        return 0 if status in ("succeeded", "awaiting_approval") else 1
+    except (PipelineStoreError, PipelineSpecError, PermissionError) as exc:
+        print(json.dumps({"error": str(exc), "final_status": "failed"}), file=sys.stderr)
+        return 1
+    except Exception as exc:
+        print(json.dumps({"error": str(exc), "final_status": "failed"}), file=sys.stderr)
+        return 1
+
+
+def cmd_catalog_lint(_args: argparse.Namespace) -> int:
+    report = lint_catalog(ROOT)
+    print(json.dumps(report, indent=2))
+    return 0 if report.get("ok") else 1
+
+
+def cmd_catalog_smoke(args: argparse.Namespace) -> int:
+    report = smoke_pipeline(ROOT, args.pipeline_id)
+    print(json.dumps(report, indent=2))
+    return 0 if report.get("ok") else 1
+
+
+def cmd_swarm_list(_args: argparse.Namespace) -> int:
+    print(json.dumps({"swarms": list_swarms(ROOT)}, indent=2))
+    return 0
+
+
+def cmd_swarm_run(args: argparse.Namespace) -> int:
+    ids = [p.strip() for p in args.pipeline_ids.split(",") if p.strip()]
+    try:
+        record = run_swarm(
+            runtime=APXVRuntime(ROOT),
+            name=args.name,
+            pipeline_ids=ids,
+            input_text=args.input_text,
+            attest_each=bool(args.attest_each),
+        )
+        print(json.dumps(record, indent=2, default=str))
+        return 0 if record.get("final_status") == "succeeded" else 1
+    except Exception as exc:
+        print(json.dumps({"error": str(exc)}), file=sys.stderr)
+        return 1
+
+
 def cmd_pack_install(args: argparse.Namespace) -> int:
     try:
         result = install_pack(ROOT, args.pack_id)
@@ -410,6 +548,54 @@ def main() -> int:
         help="APX project root (default: package root)",
     )
 
+    pipeline = sub.add_parser("pipeline", help="Workshop composition pipelines (v1.5)")
+    pipeline_sub = pipeline.add_subparsers(dest="pipeline_command", required=True)
+    pipeline_sub.add_parser("list", help="List stored pipelines under managed/pipelines")
+    pipeline_validate = pipeline_sub.add_parser("validate", help="Validate a pipeline file")
+    pipeline_validate.add_argument("file", help="Path to .yaml or .json pipeline document")
+    pipeline_show = pipeline_sub.add_parser("show", help="Show a stored pipeline document")
+    pipeline_show.add_argument("pipeline_id")
+    pipeline_export = pipeline_sub.add_parser("export", help="Export pipeline YAML/JSON")
+    pipeline_export.add_argument("pipeline_id")
+    pipeline_export.add_argument("--format", default="yaml", choices=["yaml", "json"])
+    pipeline_export.add_argument("--output", help="Write to file instead of stdout")
+    pipeline_import = pipeline_sub.add_parser("import", help="Import pipeline file into managed/pipelines")
+    pipeline_import.add_argument("file")
+    pipeline_import.add_argument(
+        "--no-overwrite",
+        action="store_true",
+        help="Fail if pipeline id already exists",
+    )
+    pipeline_run = pipeline_sub.add_parser("run", help="Run a stored pipeline")
+    pipeline_run.add_argument("pipeline_id")
+    pipeline_run.add_argument("--input-text", default=None)
+    pipeline_run.add_argument("--attest", action="store_true", help="End-of-pipeline attest")
+    pipeline_run.add_argument(
+        "--auto-approve",
+        action="store_true",
+        help="Auto-pass apxv:approve steps (CI / unattended)",
+    )
+    pipeline_run.add_argument("--full", action="store_true", help="Include full attested_result in output")
+
+    catalog = sub.add_parser("catalog", help="Catalog lint and smoke (v1.7)")
+    catalog_sub = catalog.add_subparsers(dest="catalog_command", required=True)
+    catalog_sub.add_parser("lint", help="Lint packs and example/local pipelines")
+    catalog_smoke = catalog_sub.add_parser("smoke", help="Smoke-run a pipeline id")
+    catalog_smoke.add_argument("pipeline_id")
+
+    swarm = sub.add_parser("swarm", help="Swarm v0 multi-pipeline runs (v1.8)")
+    swarm_sub = swarm.add_subparsers(dest="swarm_command", required=True)
+    swarm_sub.add_parser("list", help="List recent swarm runs")
+    swarm_run = swarm_sub.add_parser("run", help="Run pipelines in sequence under one swarm")
+    swarm_run.add_argument(
+        "--pipeline-ids",
+        required=True,
+        help="Comma-separated pipeline ids",
+    )
+    swarm_run.add_argument("--name", default="swarm")
+    swarm_run.add_argument("--input-text", default=None)
+    swarm_run.add_argument("--attest-each", action="store_true")
+
     pack = sub.add_parser("pack", help="Agent pack catalog and activation")
     pack_sub = pack.add_subparsers(dest="pack_command", required=True)
     pack_sub.add_parser("list", help="List installed packs")
@@ -469,6 +655,28 @@ def main() -> int:
         "backup-restore": cmd_backup_restore,
         "integrity": cmd_integrity,
     }
+    if args.command == "pipeline":
+        pipeline_handlers = {
+            "list": cmd_pipeline_list,
+            "validate": cmd_pipeline_validate,
+            "show": cmd_pipeline_show,
+            "export": cmd_pipeline_export,
+            "import": cmd_pipeline_import,
+            "run": cmd_pipeline_run,
+        }
+        return pipeline_handlers[args.pipeline_command](args)
+    if args.command == "catalog":
+        catalog_handlers = {
+            "lint": cmd_catalog_lint,
+            "smoke": cmd_catalog_smoke,
+        }
+        return catalog_handlers[args.catalog_command](args)
+    if args.command == "swarm":
+        swarm_handlers = {
+            "list": cmd_swarm_list,
+            "run": cmd_swarm_run,
+        }
+        return swarm_handlers[args.swarm_command](args)
     if args.command == "pack":
         pack_handlers = {
             "list": cmd_pack_list,

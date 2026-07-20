@@ -375,7 +375,12 @@ export function PackAuthoringWizard({
                   : "Run test job (sample input)"}
               </Button>
               <Button variant="link" asChild>
-                <Link to="/pipeline">Open pipeline runner</Link>
+                <Link
+                  to="/workshop"
+                  search={{ id: undefined, shelf: "packs" }}
+                >
+                  Open Workbench
+                </Link>
               </Button>
             </ActionGroup>
           </div>

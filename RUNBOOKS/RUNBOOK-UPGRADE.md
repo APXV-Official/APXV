@@ -133,6 +133,7 @@ If the upgrade causes issues:
 - APXV uses file-based storage under `managed/`
 - Most upgrades should not require data migration
 - **v1.3.x → v1.4.0:** install latest desktop; see [docs/MIGRATION-v1.4.md](../docs/MIGRATION-v1.4.md). Default entity keygen no longer includes `normalization` / `threat` — migrate `install.json` if doctor reports VK mismatches. Use tray **Quit** before upgrading.
+- **v1.4.x → v1.5.0:** see [docs/MIGRATION-v1.5.md](../docs/MIGRATION-v1.5.md). UI IA is Studio + Workbench + Trust; no forced data migration. Optional `setup_universal_zk` for Proof Profile Groth16 claims.
 - **v1.3.2 → v1.3.3:** hotfix — same `managed/` and ZK keys; Windows start/stop/restart on `:8741`.
 - **v1.3.1 → v1.3.2:** patch upgrade — no sovereign re-bootstrap required; same `managed/` and ZK keys.
 - **v1.2.5 → v1.3.0:** full rename and API v2 — see [docs/MIGRATION-v1.3.md](../docs/MIGRATION-v1.3.md)

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "apxv"
-version = "1.4.0"
-description = "APXV — air-gapped governed agent platform (Attested Proof Execution Verified): Groth16 proofs, Pack Studio, local API v2"
+version = "1.5.0"
+description = "APXV — air-gapped governed agent platform (Attested Proof Execution Verified): Studio, Workbench, Proof Profiles, Groth16, local API v2"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "Apache-2.0"}

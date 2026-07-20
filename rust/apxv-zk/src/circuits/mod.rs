@@ -22,3 +22,4 @@ pub mod voice_redaction;
 pub mod redaction_v1;
 pub mod merkle_inclusion;
 pub mod batch_merkle;
+pub mod universal_predicate;

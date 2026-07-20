@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="APXV™ — local governed agent runtime with Pack Studio, sovereign bootstrap, and verifiable Groth16 proofs. Open source. No telemetry.">
+  <meta name="description" content="APXV™ — local governed agents: Studio, Workbench, Proof Profiles, sovereign bootstrap, and Groth16 proofs. Open source. No telemetry.">
   <meta name="theme-color" content="#07090e">
   <meta name="format-detection" content="telephone=no">
   <meta property="og:title" content="APXV™ — Governed local agents">
-  <meta property="og:description" content="Build packs, run governed pipelines, and verify proof receipts on your machine. Air-gapped. Apache 2.0.">
+  <meta property="og:description" content="Author in Studio, assemble on Workbench, prove runs, verify locally. Air-gapped. Apache 2.0.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://apxv-official.github.io/APXV/">
   <title>APXV™ — Attested Proof Execution Verified</title>
@@ -61,23 +61,23 @@
       <div class="wrap hero-inner">
         <div class="hero-copy reveal">
           <p class="eyebrow">
-            <span class="badge"><span class="badge-dot" aria-hidden="true"></span>v1.4.0</span>
+            <span class="badge"><span class="badge-dot" aria-hidden="true"></span>v1.5.0</span>
             Apache 2.0 · Local · No telemetry
           </p>
           <h1>Governed agents you run and prove locally</h1>
           <p class="lead">
-            APXV™ is an air-gapped runtime for agent workflows: living markdown rules,
-            signed capabilities, chained audit, and Groth16 proof receipts —
-            on infrastructure you control.
+            APXV™ is an air-gapped runtime: author Agents, Packs, and Proof Profiles in
+            <strong>Studio</strong>, assemble pipelines on the <strong>Workbench</strong>,
+            then verify claims and dual-track Groth16 receipts on infrastructure you control.
           </p>
           <div class="cta-row">
             <a class="btn btn-primary btn-glow" href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">Download desktop</a>
             <a class="btn btn-secondary" href="https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md" rel="noopener noreferrer">Quickstart</a>
           </div>
           <ul class="trust-chips" role="list">
+            <li>Studio + Workbench</li>
+            <li>Proof Profiles</li>
             <li>Sovereign bootstrap</li>
-            <li>Pack Studio wizard</li>
-            <li>Windows &amp; Linux</li>
             <li>API on <code>127.0.0.1:8741</code></li>
           </ul>
         </div>
@@ -138,15 +138,15 @@
           <li class="pillar interactive-card">
             <h3>Proof receipts</h3>
             <p>
-              Dual-track Groth16 (governance + entity) over BN254.
-              Verify independently without re-running the pipeline.
+              Dual-track Groth16 (governance + entity) over BN254, plus optional
+              Proof Profile claims (catalog predicates — not free-form circuits).
             </p>
           </li>
           <li class="pillar interactive-card">
-            <h3>Pack Studio</h3>
+            <h3>Studio + Workbench</h3>
             <p>
-              Author packs in the operator UI — template, governance,
-              activate, and test run — without editing repository files.
+              Author Agents, Packs, and Proof Profiles; promote to the board;
+              run governed pipelines without editing repository files.
             </p>
           </li>
         </ul>
@@ -170,22 +170,22 @@
           <li class="interactive-card">
             <span class="step-num">02</span>
             <div>
-              <h3>Govern</h3>
-              <p>Install or author a pack. Rules and workflows stay as living markdown under signed capabilities.</p>
+              <h3>Author</h3>
+              <p>Studio: Save → Test → Promote Agents, Packs, and Proof Profiles. Rules stay living markdown under signed capabilities.</p>
             </div>
           </li>
           <li class="interactive-card">
             <span class="step-num">03</span>
             <div>
               <h3>Run</h3>
-              <p>Reference pipeline: redact → orchestrate → attest. Artifacts land in SQLite + content-addressable storage.</p>
+              <p>Workbench: assemble from the shelf, bind a proof profile if you want a claim, Run. Artifacts land in SQLite + CAS.</p>
             </div>
           </li>
           <li class="interactive-card">
             <span class="step-num">04</span>
             <div>
               <h3>Verify</h3>
-              <p>Check dual-track proofs with your verifier keys. Export a verifier bundle for third parties.</p>
+              <p>Trust hub: check claims and dual-track proofs with your keys. Export a verifier bundle for third parties.</p>
             </div>
           </li>
         </ol>
@@ -193,11 +193,11 @@
           <div class="pipeline-track">
             <span class="pipeline-node">bootstrap</span>
             <span class="pipeline-seg"><span class="pipeline-flow"></span></span>
-            <span class="pipeline-node">govern</span>
+            <span class="pipeline-node">studio</span>
             <span class="pipeline-seg"><span class="pipeline-flow"></span></span>
-            <span class="pipeline-node">run</span>
+            <span class="pipeline-node">workbench</span>
             <span class="pipeline-seg"><span class="pipeline-flow"></span></span>
-            <span class="pipeline-node">attest</span>
+            <span class="pipeline-node">claim</span>
             <span class="pipeline-seg"><span class="pipeline-flow"></span></span>
             <span class="pipeline-node pipeline-node--end">verify</span>
           </div>
@@ -214,7 +214,7 @@
         <ul class="feature-grid reveal stagger" role="list">
           <li class="interactive-card">
             <h3>Desktop + operator UI</h3>
-            <p>Windows and Linux installers. Dashboard, jobs, artifacts, verify, governance, settings.</p>
+            <p>Windows and Linux installers. Studio, Workbench, Runs, Artifacts, Trust, System, Settings.</p>
           </li>
           <li class="interactive-card">
             <h3>Local API v2</h3>
@@ -243,7 +243,7 @@
             <h3>Includes</h3>
             <ul>
               <li>Sovereign bootstrap (desktop, Docker, native)</li>
-              <li>Pack Studio authoring wizard</li>
+              <li>Studio (Agents, Packs, Proof Profiles) + Workbench</li>
               <li>Three official agent packs</li>
               <li>Doctor, integrity checks, install scripts</li>
             </ul>
@@ -255,6 +255,7 @@
               <li>Enterprise DLP-grade redaction</li>
               <li>Cloud SaaS or multi-tenant hosting</li>
               <li>Proof that an LLM answer was “correct”</li>
+              <li>Arbitrary browser-authored ZK circuits</li>
             </ul>
             <p class="scope-link">
               <a href="https://github.com/APXV-Official/APXV/blob/main/SECURITY.md" rel="noopener noreferrer">Threat model</a>
@@ -291,9 +292,9 @@
           </li>
         </ul>
         <p class="section-cta reveal">
-          Author a pack in Pack Studio, or follow
+          Author in <strong>Studio</strong> (or the advanced pack wizard), assemble on the
+          <strong>Workbench</strong>, or follow
           <a href="https://github.com/APXV-Official/APXV/blob/main/docs/BUILD-YOUR-FIRST-PACK.md" rel="noopener noreferrer">Build your first pack</a>.
-          Full agent/step composition is planned for v1.5+.
         </p>
       </div>
     </section>
@@ -308,12 +309,12 @@
           <article class="download-card interactive-card">
             <h3>Windows</h3>
             <p>MSI or NSIS setup · Python 3.10+ for server spawn</p>
-            <code>APXV_1.4.0_x64-setup.exe</code>
+            <code>APXV_1.5.0_x64-setup.exe</code>
           </article>
           <article class="download-card interactive-card">
             <h3>Linux</h3>
             <p>amd64 .deb or AppImage</p>
-            <code>APXV_1.4.0_amd64.deb</code>
+            <code>APXV_1.5.0_amd64.deb</code>
           </article>
           <article class="download-card download-card--muted interactive-card">
             <h3>macOS</h3>
@@ -324,7 +325,7 @@
         <div class="cta-row">
           <a class="btn btn-primary btn-glow" href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">GitHub Releases</a>
           <a class="btn btn-secondary" href="https://github.com/APXV-Official/APXV/blob/main/docs/INSTALL-USER.md" rel="noopener noreferrer">Install guide</a>
-          <a class="btn btn-ghost" href="https://github.com/APXV-Official/APXV/blob/main/docs/MIGRATION-v1.4.md" rel="noopener noreferrer">Upgrade from v1.3.x</a>
+          <a class="btn btn-ghost" href="https://github.com/APXV-Official/APXV/blob/main/docs/MIGRATION-v1.5.md" rel="noopener noreferrer">Upgrade from v1.4.x</a>
         </div>
       </div>
     </section>
@@ -337,6 +338,8 @@
         </div>
         <ul class="doc-grid reveal stagger" role="list">
           <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md" rel="noopener noreferrer"><strong>Quickstart</strong><span>Install and first run</span></a></li>
+          <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/ui/docs/OPERATOR-GUIDE.md" rel="noopener noreferrer"><strong>Operator guide</strong><span>Studio · Workbench · Trust</span></a></li>
+          <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/docs/PROOF-STUDIO.md" rel="noopener noreferrer"><strong>Proof Studio</strong><span>Profiles and claims</span></a></li>
           <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/docs/SOVEREIGN-SETUP.md" rel="noopener noreferrer"><strong>Sovereign setup</strong><span>Trust model and keys</span></a></li>
           <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/docs/INSTALL-USER.md" rel="noopener noreferrer"><strong>Desktop install</strong><span>MSI, NSIS, deb, AppImage</span></a></li>
           <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/docs/BUILD-YOUR-FIRST-PACK.md" rel="noopener noreferrer"><strong>First pack</strong><span>Authoring tutorial</span></a></li>

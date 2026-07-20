@@ -90,7 +90,12 @@ export function ArtifactsPage() {
           emptyDescription="Run a governed pipeline to generate attested outputs."
           emptyAction={
             <Button size="sm" asChild>
-              <Link to="/pipeline">Run pipeline</Link>
+              <Link
+                to="/workshop"
+                search={{ id: undefined, shelf: undefined }}
+              >
+                Open Workbench
+              </Link>
             </Button>
           }
         >

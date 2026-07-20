@@ -1,0 +1,15 @@
+apiVersion: apxv.pipeline/v0.1
+kind: Pipeline
+id: apxv-pipeline-run-reference-pack
+name: Run reference pack entry
+version: 0.1.0
+description: >
+  Example pipeline that invokes the reference redaction pack entry as a single step.
+  Workshop v1.5 — maturity Example.
+defaults:
+  attest: false
+  on_step_failure: stop
+steps:
+  - id: pack_main
+    name: Reference pack pipeline
+    uses: pack:apxv-pack-reference-redaction

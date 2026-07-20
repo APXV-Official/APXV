@@ -42,6 +42,28 @@ export type {
 } from "./pipeline";
 
 export {
+  listPipelines,
+  getPipeline,
+  savePipeline,
+  validatePipeline,
+  importPipeline,
+  exportPipeline,
+  deletePipeline,
+  listPipelineTemplates,
+  getPipelineTemplate,
+  runCompositionPipeline,
+} from "./pipelines";
+export type {
+  PipelineDocument,
+  PipelineStep,
+  PipelineEdge,
+  PipelineListItem,
+  PipelineTemplateInfo,
+  PipelineRunTrace,
+  RunTraceStep,
+} from "./pipelines";
+
+export {
   listArtifacts,
   getArtifact,
   getArtifactSummary,
@@ -51,6 +73,39 @@ export type {
   ArtifactListPage,
   ArtifactSummary,
 } from "./artifacts";
+
+export {
+  listStudioAgents,
+  saveStudioAgent,
+  getStudioAgent,
+  testStudioAgent,
+  promoteStudioAgent,
+  listStudioPacks,
+  saveStudioPack,
+  getStudioPack,
+  testStudioPack,
+  promoteStudioPack,
+  getStudioShelf,
+  listStudioProofs,
+  listProofCatalog,
+  listProofTemplates,
+  saveStudioProof,
+  saveStudioProofFromTemplate,
+  getStudioProof,
+  testStudioProof,
+  promoteStudioProof,
+  getProofStudioStatus,
+  compileProofIntent,
+  saveStudioProofFromIntent,
+  exportProofClaim,
+} from "./studio";
+export type {
+  StudioAgent,
+  StudioPack,
+  StudioProof,
+  ProofPredicate,
+  ProofTemplate,
+} from "./studio";
 
 export {
   activatePack,

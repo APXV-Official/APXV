@@ -4,7 +4,7 @@
 
 **APXV** (*Attested Proof Execution Verified*) is an air-gapped governed agent platform: markdown rules, signed capabilities, chained audit, Groth16 proofs, and a local API — bring your own LLMs. This repository ships **APXV**, the first open-source implementation.
 
-> **Version 1.4.0** — Pack Studio authoring wizard, **Build your pipeline** on-ramp, legacy surface cleanup, entity circuit trim. [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/) · [Downloads](docs/DOWNLOADS.md) · [Migration from v1.3.x](docs/MIGRATION-v1.4.md)
+> **Version 1.5.0** — **Studio** (Agents, Packs, Proof Profiles), **Workbench**, **Trust** hub, and optional catalog claim proofs. [CHANGELOG](CHANGELOG.md) · [Site](https://apxv-official.github.io/APXV/) · [Downloads](docs/DOWNLOADS.md) · [Migration from v1.4.x](docs/MIGRATION-v1.5.md)
 
 ## Downloads
 
@@ -73,11 +73,18 @@ python -m scripts.apxv_serve
 cd ui && pnpm install && pnpm dev
 ```
 
-Open http://localhost:5173 → paste operator API key → **Dashboard**, **Agent packs**, **Pipeline**, **Jobs**, **Verify**.
+Open http://127.0.0.1:5173 → paste operator API key. The console is organized as:
 
-Use **Build your pipeline** or Pack Studio (`/packs?wizard=1`) to author packs without editing repository files.
+| Area | Purpose |
+|------|---------|
+| **Workbench** | Assemble pipelines from the shelf, bind a proof profile, run |
+| **Studio** | Author Agents, Packs, and Proof Profiles (Save → Test → Promote) |
+| **Runs** | Job queue (route remains `/jobs`) |
+| **Trust** | Verify, Audit, and Governance in one hub |
+| **Pack wizard** | Advanced pack authoring still at `/packs?wizard=1` |
 
-Docs: [ui/docs/OPERATOR-GUIDE.md](ui/docs/OPERATOR-GUIDE.md) · Pack index: [docs/PACK-CATALOG.md](docs/PACK-CATALOG.md) · Tutorial: [docs/BUILD-YOUR-FIRST-PACK.md](docs/BUILD-YOUR-FIRST-PACK.md)
+Docs: [ui/docs/OPERATOR-GUIDE.md](ui/docs/OPERATOR-GUIDE.md) · Proofs: [docs/PROOF-STUDIO.md](docs/PROOF-STUDIO.md) · Pack index: [docs/PACK-CATALOG.md](docs/PACK-CATALOG.md)
+
 
 **Fresh machine, Docker only** (~5 minutes after the first image build):
 
@@ -124,14 +131,14 @@ A **pack** is a vertical bundle on top of APXV: governance specs, install steps,
 
 | Goal | Start here |
 |------|------------|
-| Pack Studio wizard (desktop / UI) | Dashboard **Build your pipeline** or `/packs?wizard=1` |
+| Studio (Agents, Packs, Proof Profiles) | `/studio` — Save → Test → Promote |
 | Tutorial | [docs/BUILD-YOUR-FIRST-PACK.md](docs/BUILD-YOUR-FIRST-PACK.md) |
 | Custom agent on the runtime | [docs/BUILDING.md](docs/BUILDING.md) |
 | Minimal worked example | [examples/hello-agent/](examples/hello-agent/) |
 | API integration | [examples/api-client/](examples/api-client/) |
 | Local LLM (Ollama) | [examples/llm-ollama/](examples/llm-ollama/) |
 
-**Direction:** [ROADMAP.md](ROADMAP.md) — v1.4 ships the authoring wizard; v1.5+ adds workflow composition and ecosystem tools.
+**Direction:** [ROADMAP.md](ROADMAP.md) — v1.5 ships Studio + Workbench + Trust; registry / community path is later.
 
 ## What it does not do
 
@@ -159,7 +166,7 @@ See [docs/SOVEREIGN-SETUP.md](docs/SOVEREIGN-SETUP.md) and [docs/cryptography/CE
 
 ## Status
 
-**v1.4.0 (current)** — Pack Studio authoring wizard, Build your pipeline on-ramp, removal of pre-v1.3 compatibility shims, default entity keygen without unused `normalization` / `threat` circuits, operator UI polish. Upgrade: [docs/MIGRATION-v1.4.md](docs/MIGRATION-v1.4.md). Full history: [CHANGELOG.md](CHANGELOG.md).
+**v1.5.0 (current)** — Studio, Workbench, Trust hub, Proof Profiles (catalog claims + optional universal-predicate-v1), dual-track attestation, operator console polish. Upgrade: [docs/MIGRATION-v1.5.md](docs/MIGRATION-v1.5.md). Full history: [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 
@@ -216,7 +223,9 @@ See [PROJECT-OVERVIEW.md](PROJECT-OVERVIEW.md) for repository layout and compone
 | [docs/DOWNLOADS.md](docs/DOWNLOADS.md) | Canonical download hub |
 | [docs/INSTALL-USER.md](docs/INSTALL-USER.md) | Desktop MSI / Linux installers |
 | [docs/QUICKSTART.md](docs/QUICKSTART.md) | Install, troubleshoot, re-run onboarding |
+| [docs/MIGRATION-v1.5.md](docs/MIGRATION-v1.5.md) | Upgrade from v1.4.x |
 | [docs/MIGRATION-v1.4.md](docs/MIGRATION-v1.4.md) | Upgrade from v1.3.x |
+| [docs/PROOF-STUDIO.md](docs/PROOF-STUDIO.md) | Proof Profiles and claim proofs |
 | [docs/MIGRATION-v1.3.md](docs/MIGRATION-v1.3.md) | Upgrade from v1.2.x |
 | [docs/BUILDING.md](docs/BUILDING.md) | Custom agents, API, LLMs, deployment |
 | [docs/BUILD-YOUR-FIRST-PACK.md](docs/BUILD-YOUR-FIRST-PACK.md) | Pack authoring tutorial |

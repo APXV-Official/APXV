@@ -66,8 +66,39 @@ export function formatDoctorCheckSummary(
   return formatDisplayValue(detail);
 }
 
-export function integrityCheckFailed(
-  checks: Array<{ name?: string; ok?: boolean }> | null | undefined,
+/** True only when an audit log chain is broken (repairable). Not vendor-key degradation. */
+export function auditChainBroken(
+  checks: Array<{ name?: string; ok?: boolean; detail?: unknown }> | null | undefined,
 ): boolean {
-  return Boolean(checks?.some((c) => c.name === "integrity" && !c.ok));
+  const integrity = checks?.find((c) => c.name === "integrity");
+  if (!integrity || integrity.ok) return false;
+  const detail = integrity.detail;
+  if (!detail || typeof detail !== "object") return false;
+  const d = detail as Record<string, unknown>;
+  if (d.all_audit_valid === false) return true;
+  const audit = d.audit_logs as Record<string, boolean> | undefined;
+  if (audit && Object.values(audit).some((v) => v === false)) return true;
+  return false;
+}
+
+/** @deprecated use auditChainBroken — integrity can fail for sovereign/vendor keys too */
+export function integrityCheckFailed(
+  checks: Array<{ name?: string; ok?: boolean; detail?: unknown }> | null | undefined,
+): boolean {
+  return auditChainBroken(checks);
+}
+
+/** Vendor/default proving keys (safe to operate; bootstrap for operator-sovereign keys). */
+export function sovereignVendorKeysOnly(
+  checks: Array<{ name?: string; ok?: boolean; detail?: unknown }> | null | undefined,
+): boolean {
+  const s = checks?.find((c) => c.name === "sovereign_setup");
+  if (!s || s.ok) return false;
+  const detail = s.detail;
+  if (!detail || typeof detail !== "object") return true;
+  const d = detail as { status?: string; vendor_circuits?: string[] };
+  return (
+    d.status === "vendor_keys" ||
+    (Array.isArray(d.vendor_circuits) && d.vendor_circuits.length > 0)
+  );
 }

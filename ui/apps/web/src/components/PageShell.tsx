@@ -14,7 +14,7 @@ export function PageShell({
   return (
     <div
       className={cn(
-        "mx-auto w-full min-w-0 space-y-8",
+        "mx-auto w-full min-w-0 space-y-6",
         wide ? "max-w-[90rem]" : "max-w-6xl",
         className,
       )}

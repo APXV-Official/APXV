@@ -52,14 +52,14 @@
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
 
-  /* Layout rhythm */
-  --inset-xs: 0.625rem;
-  --inset-sm: 0.875rem;
-  --inset-md: 1.125rem;
-  --inset-lg: 1.5rem;
-  --inset-xl: 2rem;
-  --page-x: 2rem;
-  --page-y: 2rem;
+  /* Layout rhythm — denser operator console */
+  --inset-xs: 0.5rem;
+  --inset-sm: 0.75rem;
+  --inset-md: 1rem;
+  --inset-lg: 1.25rem;
+  --inset-xl: 1.75rem;
+  --page-x: 1.5rem;
+  --page-y: 1.5rem;
 }
 
 .light {

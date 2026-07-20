@@ -69,11 +69,11 @@ export function JobsTable({
     return (
       <EmptyState
         icon={<Clock className="h-5 w-5" />}
-        title={filtered ? `No ${statusLabel.toLowerCase()} jobs` : "No jobs yet"}
+        title={filtered ? `No ${statusLabel.toLowerCase()} runs` : "No runs yet"}
         description={
           filtered
-            ? `No jobs match the ${statusLabel.toLowerCase()} filter. Try another status or clear the filter.`
-            : "Run a pipeline to queue your first governed job."
+            ? `No runs match the ${statusLabel.toLowerCase()} filter. Try another status or clear the filter.`
+            : "Open Workbench, add building blocks from the shelf, and Run to create your first governed run."
         }
         action={
           filtered && onClearFilter ? (
@@ -101,8 +101,17 @@ export function JobsTable({
       </TableHeader>
       <TableBody>
         {jobs.map((job) => {
+          const payload = job.payload as
+            | { pack?: string; pipeline_id?: string }
+            | undefined;
+          const result = job.result as
+            | { final_status?: string; pipeline_id?: string }
+            | undefined;
           const pack =
-            (job.payload as { pack?: string } | undefined)?.pack ?? "—";
+            payload?.pipeline_id ||
+            result?.pipeline_id ||
+            payload?.pack ||
+            "—";
           const isSelected = selectedId === job.id;
           return (
             <TableRow
@@ -127,9 +136,14 @@ export function JobsTable({
                 </span>
               </TableCell>
               <TableCell>
-                <JobStatusBadge status={job.status} />
+                <JobStatusBadge
+                  status={job.status}
+                  pipelineFinal={result?.final_status}
+                />
               </TableCell>
-              <TableCell className="text-sm capitalize">{pack}</TableCell>
+              <TableCell className="max-w-[10rem] truncate text-sm font-mono text-xs" title={pack}>
+                {pack}
+              </TableCell>
               <TableCell className="text-xs text-[hsl(var(--muted-foreground))]">
                 {formatRelativeTime(job.updated_at ?? job.created_at)}
               </TableCell>

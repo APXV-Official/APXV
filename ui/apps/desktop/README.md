@@ -30,7 +30,7 @@ pnpm dev
 
 ## Production build
 
-v1.4.0 ships **Windows MSI/NSIS** and **Linux deb/AppImage**. macOS DMG is planned for a follow-up release (build requires a Mac). On Windows, install **Python 3.10+** from [python.org](https://www.python.org/downloads/) so the desktop app can spawn `apxv_serve`.
+v1.5.0 targets **Windows MSI/NSIS** and **Linux deb/AppImage** (built from this app when a release is cut). macOS DMG remains a follow-up (requires a Mac). On Windows, install **Python 3.10+** from [python.org](https://www.python.org/downloads/) so the desktop app can spawn `apxv_serve`.
 
 ### Windows
 
@@ -43,8 +43,8 @@ From the repo root:
 Outputs:
 
 - `ui\apps\desktop\src-tauri\target\release\apxv.exe`
-- `ui\apps\desktop\src-tauri\target\release\bundle\msi\APXV_1.4.0_x64_en-US.msi`
-- `ui\apps\desktop\src-tauri\target\release\bundle\nsis\APXV_1.4.0_x64-setup.exe`
+- `ui\apps\desktop\src-tauri\target\release\bundle\msi\APXV_1.5.0_x64_en-US.msi`
+- `ui\apps\desktop\src-tauri\target\release\bundle\nsis\APXV_1.5.0_x64-setup.exe`
 
 Use `pnpm exec -- tauri build` (or `.\scripts\build-desktop.ps1`) — not `cargo build --release` alone — so the UI is embedded in the release binary.
 

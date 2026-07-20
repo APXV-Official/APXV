@@ -31,7 +31,7 @@ import {
   Textarea,
 } from "@apxv/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "../components/PageShell";
 import {
@@ -200,6 +200,9 @@ export function GovernancePage() {
             </span>
           )}
         </span>
+        <Button variant="link" size="sm" asChild>
+          <Link to="/trust">← Trust hub</Link>
+        </Button>
       </PageToolbar>
 
       <Tabs
@@ -207,7 +210,7 @@ export function GovernancePage() {
         onValueChange={(v) => changeTab(v as GovernanceTab)}
       >
         <TabsList>
-          <TabsTrigger value="specs">Governance studio</TabsTrigger>
+          <TabsTrigger value="specs">Rule books</TabsTrigger>
           <TabsTrigger value="proposals">
             Proposals ({proposals.length})
           </TabsTrigger>

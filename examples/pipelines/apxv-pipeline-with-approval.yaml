@@ -1,0 +1,26 @@
+apiVersion: apxv.pipeline/v0.1
+kind: Pipeline
+id: apxv-pipeline-with-approval
+name: Linear with human approval
+version: 0.1.0
+description: >
+  Example composition with HITL gate (apxv:approve) before attestation coordination.
+  Maturity Example — Workshop v1.7.
+defaults:
+  attest: false
+  on_step_failure: stop
+steps:
+  - id: redact
+    name: Rule-governed redaction
+    uses: agent:APXV-AGENT-001
+  - id: approve
+    name: Operator approval
+    uses: apxv:approve
+    config:
+      message: Review redaction before orchestration continues
+  - id: orchestrate
+    name: Workflow orchestration
+    uses: agent:APXV-AGENT-002
+  - id: decide
+    name: Attestation coordination
+    uses: agent:APXV-AGENT-003

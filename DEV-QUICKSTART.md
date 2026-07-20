@@ -1,23 +1,30 @@
-# Developer quickstart
+# Local development quickstart
 
-Contributor loop for a local monorepo checkout of APXV. For operator install paths, see [docs/QUICKSTART.md](docs/QUICKSTART.md) and [docs/INSTALL-USER.md](docs/INSTALL-USER.md).
+Contributor loop for a full monorepo checkout (Windows, Linux, and macOS hosts).  
+Operators should prefer desktop installers or [docs/QUICKSTART.md](docs/QUICKSTART.md).
+
+Desktop packaging targets **Windows** (MSI/NSIS) and **Linux** (deb/AppImage); **macOS** DMG is a follow-up. See [ui/apps/desktop/README.md](ui/apps/desktop/README.md) and `scripts/build-desktop.sh` / release workflows.
 
 ---
 
-## First-time runtime (sovereign bootstrap)
-
-From the repository root:
+## First-time runtime
 
 ```powershell
-# Native sovereign path (20–60 min first run)
-.\scripts\install-full.ps1
+# Lighter (fast) — vendor ZK keys until sovereign bootstrap
+py -3 -m scripts.setup_first_run --skip-zk
+
+# Full sovereign (20–60 min first run)
+# py -3 -m scripts.apxv_bootstrap --skip-ollama --skip-voice
+
+python -m scripts.apxv_doctor
 ```
 
-Prefer a fresh bootstrap when changing entity circuit sets. Upgrading an existing install: [docs/MIGRATION-v1.4.md](docs/MIGRATION-v1.4.md).
+On Linux / macOS, use `python3` if `py` is not available.
+
+Optional Proof Profile Groth16 keys:
 
 ```powershell
-python -m scripts.apxv_doctor
-python -m scripts.apxv_ctl integrity
+py -3 -m scripts.setup_universal_zk
 ```
 
 ---
@@ -38,46 +45,29 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:5173 — operator key from `managed/config/OPERATOR-KEY-*.txt`.
+Open http://127.0.0.1:5173 — paste operator key from `managed/config/OPERATOR-KEY-*.txt`.
+
+| Area | Route (typical) |
+|------|-----------------|
+| Workbench | `/workshop` |
+| Studio | `/studio` |
+| Trust | `/trust` |
+| Pack wizard (advanced) | `/packs?wizard=1` |
 
 ---
 
-## Tests
+## Smoke
 
 ```powershell
-python -m pytest
-cd ui
-pnpm --filter @apxv/web test:e2e
-```
-
-**Desktop** (Windows / Linux / macOS — see `ui/apps/desktop/README.md`):
-
-```powershell
-# Windows
-.\scripts\build-desktop.ps1
-# or: .\scripts\tauri-smoke.ps1
-
-# Linux / macOS
-./scripts/build-desktop.sh
-```
-
----
-
-## Useful checks
-
-```powershell
+python -m scripts.smoke_operator_flow
 python -m scripts.apxv_demo --pack reference
-python -m scripts.verify_attestation --real-zk <path-to-latest-artifact.json>
-python -m pytest tests/ -k "api" -q
 ```
 
 ---
 
-## Website preview
+## Docs
 
-```powershell
-cd website
-.\preview.ps1
-```
-
-Opens http://127.0.0.1:5500/
+- [ui/docs/OPERATOR-GUIDE.md](ui/docs/OPERATOR-GUIDE.md)
+- [docs/PROOF-STUDIO.md](docs/PROOF-STUDIO.md)
+- [docs/MIGRATION-v1.5.md](docs/MIGRATION-v1.5.md)
+- [CHANGELOG.md](CHANGELOG.md)

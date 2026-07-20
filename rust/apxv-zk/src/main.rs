@@ -33,6 +33,7 @@ use apxv_zk::circuits::{
     core_redaction::CoreRedactionCircuit,
     merkle_inclusion::MerkleInclusionCircuit,
     redaction_v1::RedactionProofV1Circuit,
+    universal_predicate::UniversalPredicateCircuit,
     voice_redaction::VoiceRedactionCircuit,
 };
 use apxv_zk::keygen::{load_proving_key, load_verification_key};
@@ -45,6 +46,7 @@ const CIRCUITS: &[&str] = &[
     "redaction-v1",
     "merkle-inclusion",
     "batch-merkle",
+    "universal-predicate-v1",
 ];
 
 fn usage() -> ! {
@@ -190,6 +192,7 @@ enum BuiltCircuit {
     RedactionV1(RedactionProofV1Circuit, Vec<Fr>),
     MerkleInclusion(MerkleInclusionCircuit, Vec<Fr>),
     BatchMerkle(BatchMerkleCircuit, Vec<Fr>),
+    UniversalPredicate(UniversalPredicateCircuit, Vec<Fr>),
 }
 
 impl BuiltCircuit {
@@ -226,6 +229,11 @@ impl BuiltCircuit {
                 let valid = Groth16::<Bn254>::verify(vk, &pi, &proof).unwrap_or(false);
                 (proof, valid)
             }
+            BuiltCircuit::UniversalPredicate(c, pi) => {
+                let proof = Groth16::<Bn254>::prove(pk, c, &mut rng).expect("prove failed");
+                let valid = Groth16::<Bn254>::verify(vk, &pi, &proof).unwrap_or(false);
+                (proof, valid)
+            }
         }
     }
 
@@ -237,6 +245,7 @@ impl BuiltCircuit {
             BuiltCircuit::RedactionV1(_, pi) => pi.clone(),
             BuiltCircuit::MerkleInclusion(_, pi) => pi.clone(),
             BuiltCircuit::BatchMerkle(_, pi) => pi.clone(),
+            BuiltCircuit::UniversalPredicate(_, pi) => pi.clone(),
         }
     }
 }
@@ -327,6 +336,21 @@ fn build_circuit(name: &str, v: &Value) -> BuiltCircuit {
             let pi = vec![merkle_root, entity_count];
             BuiltCircuit::BatchMerkle(circuit, pi)
         }
+        "universal-predicate-v1" => {
+            let circuit = UniversalPredicateCircuit {
+                predicate_mask: json_fr(v, "predicate_mask"),
+                entity_count: json_fr(v, "entity_count"),
+                min_entity_count: json_fr(v, "min_entity_count"),
+                category_required: json_fr(v, "category_required"),
+                category_present: json_fr(v, "category_present"),
+                flags: json_fr(v, "flags"),
+                policy_commitment: json_fr(v, "policy_commitment"),
+                original_hash: json_fr(v, "original_hash"),
+                redacted_hash: json_fr(v, "redacted_hash"),
+            };
+            let pi = circuit.public_inputs();
+            BuiltCircuit::UniversalPredicate(circuit, pi)
+        }
         _ => unreachable!(),
     }
 }
@@ -411,6 +435,29 @@ fn run_setup(circuit: &str) {
             },
             &mut rng,
         ),
+        "universal-predicate-v1" => {
+            // Setup witness must satisfy constraints (same shape as prove path).
+            let mask = (1u64 << 0)
+                | (1u64 << 1)
+                | (1u64 << 3)
+                | (1u64 << 4)
+                | (1u64 << 5)
+                | (1u64 << 6);
+            Groth16::<Bn254>::circuit_specific_setup(
+                UniversalPredicateCircuit {
+                    predicate_mask: Fr::from(mask),
+                    entity_count: Fr::from(3u64),
+                    min_entity_count: Fr::from(1u64),
+                    category_required: Fr::from(0u64),
+                    category_present: Fr::from(0u64),
+                    flags: Fr::from(mask),
+                    policy_commitment: Fr::from(42u64),
+                    original_hash: Fr::from(111u64),
+                    redacted_hash: Fr::from(222u64),
+                },
+                &mut rng,
+            )
+        }
         _ => unreachable!(),
     }
     .unwrap_or_else(|e| {

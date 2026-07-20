@@ -4,6 +4,40 @@ All notable changes to APXV are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-07-20
+
+### Added
+
+- **Studio** (`/studio`) — author **Agents**, **Packs**, and **Proof Profiles**; Save → Test → Promote
+- **Proof Studio** — catalog predicates, intent compile, templates, promote to Workbench **Proofs** shelf
+- **universal-predicate-v1** Groth16 track — real prove/verify via `apxv-zk` when keys exist (`scripts.setup_universal_zk`)
+- **Workbench** polish — freeform board, pan, resizable shelf/inspector, proof profile bind chip, linear order without wires
+- **Trust hub** (`/trust`) — single entry to Verify, Audit, Governance
+- Operator smoke: `python -m scripts.smoke_operator_flow` (Studio → promote → run + claim + fail-closed)
+- UI e2e: `e2e/endgame-full.spec.ts` (nav, Studio, Workbench run, claim, Trust, Settings)
+- Session restore banner on Workbench; Promote gate after successful Test (Force promote on error)
+- Health banner: vendor-key degradation with copy-bootstrap + System health deep link
+- [docs/PROOF-STUDIO.md](docs/PROOF-STUDIO.md), [docs/MIGRATION-v1.5.md](docs/MIGRATION-v1.5.md), updated [ui/docs/OPERATOR-GUIDE.md](ui/docs/OPERATOR-GUIDE.md)
+
+### Changed
+
+- **Product IA** — Studio + Workbench + Runs + Artifacts + Trust + System + Settings (home redirects to Workbench)
+- Pack wizard remains advanced at `/packs?wizard=1`; day-to-day authoring is Studio
+- Jobs UI labeled **Runs**; empty states and CTAs point to Workbench
+- Version strings and publish defaults updated to **1.5.0**
+
+### Fixed
+
+- Wrong “Open Studio” destinations (wizard vs Studio packs)
+- Library CTAs that bounced without a pipeline id
+- Shell page titles for Artifacts / nested Trust pages
+- Workbench Run blocked by sticky status banner overlap
+- Canvas freeform edges and kind-colored paths
+
+### Ship artifacts
+
+- `APXV_1.5.0_x64_en-US.msi`, `APXV_1.5.0_x64-setup.exe`, `APXV_1.5.0_amd64.deb`, `APXV_1.5.0_amd64.AppImage`
+
 ## [1.4.0] - 2026-07-17
 
 ### Removed
@@ -413,6 +447,7 @@ First public open-source release of **APXV1** (*Attested Proof Execution Verifie
 - Runtime secrets (API keys, signing keys, E2EE keypair, ceremony transcript) excluded from version control via `.gitignore`
 - Reference ZK `.pk`/`.vk` committed for out-of-box attest; re-run setup to use your own keys
 
+[1.5.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.5.0
 [1.4.0]: https://github.com/APXV-Official/APXV/releases/tag/v1.4.0
 [1.3.3]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.3
 [1.3.2]: https://github.com/APXV-Official/APXV/releases/tag/v1.3.2

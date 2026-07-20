@@ -270,6 +270,54 @@ def run_pipeline_quiet(
 
 
 def execute_job_payload(payload: Dict[str, Any], runtime: Optional[APXRuntime] = None) -> Dict[str, Any]:
+    """Dispatch pack runs or Workshop composition pipelines (v1.5)."""
+    runtime = runtime or APXRuntime()
+    pipeline_id = payload.get("pipeline_id") or payload.get("pipeline")
+    pipeline_doc = payload.get("pipeline_document")
+    resume_state = payload.get("resume_state")
+    if pipeline_id or pipeline_doc or resume_state:
+        from .pipeline_runner import (
+            resume_pipeline_approval,
+            run_pipeline_document,
+            run_stored_pipeline,
+        )
+
+        if resume_state and payload.get("resume_approval"):
+            return resume_pipeline_approval(
+                runtime=runtime,
+                resume_state=resume_state,
+                approved=bool(payload.get("approved", True)),
+                note=str(payload.get("note") or ""),
+            )
+        proof_profile_id = payload.get("proof_profile") or payload.get(
+            "proof_profile_id"
+        )
+        if pipeline_doc:
+            return run_pipeline_document(
+                pipeline_doc,
+                runtime=runtime,
+                input_text=payload.get("input_text"),
+                upload_id=payload.get("upload_id"),
+                attest=payload.get("attest"),
+                llm=payload.get("llm"),
+                resume_state=resume_state,
+                auto_approve=bool(payload.get("auto_approve", False)),
+                parent_run=payload.get("parent_run"),
+                proof_profile_id=proof_profile_id,
+            )
+        return run_stored_pipeline(
+            str(pipeline_id),
+            runtime=runtime,
+            input_text=payload.get("input_text"),
+            upload_id=payload.get("upload_id"),
+            attest=payload.get("attest"),
+            llm=payload.get("llm"),
+            resume_state=resume_state,
+            auto_approve=bool(payload.get("auto_approve", False)),
+            parent_run=payload.get("parent_run"),
+            proof_profile_id=proof_profile_id,
+        )
+
     return run_pipeline_quiet(
         input_text=payload.get("input_text"),
         attest=bool(payload.get("attest", False)),

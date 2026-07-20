@@ -105,6 +105,23 @@ export function ArtifactDetailPage() {
         </Alert>
       )}
 
+      {!artifactQuery.isLoading &&
+        !summaryQuery.isLoading &&
+        !artifactQuery.isError &&
+        !hasArtifact && (
+          <Alert>
+            <AlertDescription className="space-y-3">
+              <p>
+                No artifact payload found for this hash. It may have been
+                pruned or the hash may be wrong.
+              </p>
+              <Button variant="link" size="sm" className="h-auto p-0" asChild>
+                <Link to="/artifacts">Back to artifact library</Link>
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
       {hasArtifact && (
         <Tabs defaultValue={summary ? "summary" : "report"}>
           <TabsList>

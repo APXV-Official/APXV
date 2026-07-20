@@ -1,0 +1,10 @@
+apiVersion: apxv.pipeline/v0.1
+kind: Pipeline
+id: apxv-pipeline-swarm-stage-b
+name: Swarm stage B (pack)
+version: 0.1.0
+description: Second stage for swarm v0 demos — pack entry.
+steps:
+  - id: pack_main
+    name: Reference pack
+    uses: pack:apxv-pack-reference-redaction

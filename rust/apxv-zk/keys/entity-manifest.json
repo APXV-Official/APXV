@@ -49,7 +49,15 @@
       "pk_path": "rust/apxv-zk/keys/batch-merkle.pk",
       "vk_path": "rust/apxv-zk/keys/batch-merkle.vk",
       "setup_at": "2026-06-20T18:05:52.746928+00:00"
+    },
+    "universal-predicate-v1": {
+      "circuit_version": "1.0.0",
+      "pk_hash": "d29b7163d161957be044894ffc8149cac2a95447e37bc6055d8b9cd9874fabd5",
+      "vk_hash": "f0b7a9df8fc16c4cc2935963f2a939fb1499cc85fe88892fa1a436b04df580b8",
+      "pk_path": "rust/apxv-zk/keys/universal-predicate-v1.pk",
+      "vk_path": "rust/apxv-zk/keys/universal-predicate-v1.vk",
+      "setup_at": "2026-07-20T19:15:07.328598+00:00"
     }
   },
-  "updated_at": "2026-07-16T12:00:00+00:00"
+  "updated_at": "2026-07-20T19:15:07.328617+00:00"
 }

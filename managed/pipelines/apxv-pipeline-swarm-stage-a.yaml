@@ -1,0 +1,25 @@
+apiVersion: apxv.pipeline/v0.1
+kind: Pipeline
+id: apxv-pipeline-swarm-stage-a
+name: "Swarm stage A (redact)"
+version: 0.1.0
+steps:
+  - id: redact
+    name: Redact
+    uses: "agent:APXV-AGENT-001"
+    layout:
+      x: 37
+      y: 35
+  - id: orchestrate
+    name: Orchestrate
+    uses: "agent:APXV-AGENT-002"
+    layout:
+      x: 281
+      y: 35
+  - id: decide
+    name: Decide
+    uses: "agent:APXV-AGENT-003"
+    layout:
+      x: 516
+      y: 34
+description: "First stage for swarm v0 demos."
