@@ -2,11 +2,11 @@
 
 Static landing page for [apxv-official.github.io/APXV](https://apxv-official.github.io/APXV/).
 
-**Current story:** v1.5.0 — Studio, Workbench, Proof Profiles, Trust hub, sovereign bootstrap, dual-track attestation and catalog claim proofs. Keep claims aligned with [CHANGELOG.md](../CHANGELOG.md).
+**Current story:** v1.5.0 workshop (Studio, Workbench, Trust, Proof Profiles) + clear **direction** ladder: atoms → pipeline → composition → swarms → optional ecosystem. Keep claims aligned with [CHANGELOG.md](../CHANGELOG.md) and [ROADMAP.md](../ROADMAP.md).
 
 ## What’s included
 
-- Professional landing (hero, pillars, how it works, packs, download, docs)
+- Professional landing (hero, pillars, how it works, **direction**, packs, download, docs)
 - Motion: ambient orbs/grid, cursor spotlight (desktop), stagger reveals, card hover, pipeline bar
 - Mobile: hamburger menu, full-width CTAs, safe-area insets, lighter ambient on small screens
 - Honest scope (includes / does not include)

@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="APXV™ — local governed agents: Studio, Workbench, Proof Profiles, sovereign bootstrap, and Groth16 proofs. Open source. No telemetry.">
+  <meta name="description" content="APXV™ — local workshop: agents, packs, and proofs into pipelines; compose toward swarms. Studio, Workbench, sovereign bootstrap, Groth16. Open source. No telemetry.">
   <meta name="theme-color" content="#07090e">
   <meta name="format-detection" content="telephone=no">
   <meta property="og:title" content="APXV™ — Governed local agents">
-  <meta property="og:description" content="Author in Studio, assemble on Workbench, prove runs, verify locally. Air-gapped. Apache 2.0.">
+  <meta property="og:description" content="Build agents, packs, and proofs into pipelines — and compose pipelines into swarms — on infrastructure you control. Air-gapped. Apache 2.0.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://apxv-official.github.io/APXV/">
   <title>APXV™ — Attested Proof Execution Verified</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=mobile1">
+  <link rel="stylesheet" href="styles.css?v=direction1">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -37,6 +37,7 @@
       <nav class="nav" id="site-nav" aria-label="Primary">
         <a href="#product" data-nav>Product</a>
         <a href="#how" data-nav>How it works</a>
+        <a href="#direction" data-nav>Direction</a>
         <a href="#packs" data-nav>Packs</a>
         <a href="#download" data-nav>Download</a>
         <a href="#docs" data-nav>Docs</a>
@@ -66,17 +67,18 @@
           </p>
           <h1>Governed agents you run and prove locally</h1>
           <p class="lead">
-            APXV™ is an air-gapped runtime: author Agents, Packs, and Proof Profiles in
-            <strong>Studio</strong>, assemble pipelines on the <strong>Workbench</strong>,
-            then verify claims and dual-track Groth16 receipts on infrastructure you control.
+            APXV™ is a <strong>local workshop</strong>: build <strong>agents</strong>, <strong>packs</strong>,
+            and <strong>proofs</strong> into <strong>pipelines</strong> — and compose those pipelines into
+            <strong>swarms</strong> — with attestations you verify without re-running.
+            Today: <strong>Studio</strong> + <strong>Workbench</strong> + <strong>Trust</strong> on infrastructure you control.
           </p>
           <div class="cta-row">
             <a class="btn btn-primary btn-glow" href="https://github.com/APXV-Official/APXV/releases/latest" rel="noopener noreferrer">Download desktop</a>
             <a class="btn btn-secondary" href="https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md" rel="noopener noreferrer">Quickstart</a>
           </div>
           <ul class="trust-chips" role="list">
+            <li>Atoms → pipeline → swarm</li>
             <li>Studio + Workbench</li>
-            <li>Proof Profiles</li>
             <li>Sovereign bootstrap</li>
             <li>API on <code>127.0.0.1:8741</code></li>
           </ul>
@@ -116,8 +118,8 @@
         <div class="section-head reveal">
           <h2>Built for local control</h2>
           <p>
-            Not a chatbot. A foundation for privacy-sensitive agent pipelines
-            with policy, audit, and cryptographic receipts.
+            Not a chatbot. A foundation for privacy-sensitive agent <em>systems</em> —
+            pipelines and, over time, swarms — with policy, audit, and cryptographic receipts.
           </p>
         </div>
         <ul class="pillar-grid reveal stagger" role="list">
@@ -205,11 +207,55 @@
       </div>
     </section>
 
-    <section id="platform" class="section">
+    <section id="direction" class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <h2>Where APXV is going</h2>
+          <p>
+            One composition ladder — atoms to swarms — all local.
+            Detail and honesty live in the
+            <a href="https://github.com/APXV-Official/APXV/blob/main/ROADMAP.md" rel="noopener noreferrer">public roadmap</a>.
+          </p>
+        </div>
+        <ol class="ladder reveal stagger" role="list">
+          <li class="ladder-item ladder-item--done interactive-card">
+            <span class="ladder-badge">Shipped</span>
+            <h3>Atoms</h3>
+            <p>Agents, packs, and proof profiles — install official packs, attest, verify.</p>
+          </li>
+          <li class="ladder-item ladder-item--done interactive-card">
+            <span class="ladder-badge">Shipped · v1.5</span>
+            <h3>Workshop</h3>
+            <p>Studio authoring + Workbench pipelines + Trust. Build a governed run without editing core Python.</p>
+          </li>
+          <li class="ladder-item ladder-item--next interactive-card">
+            <span class="ladder-badge">Next</span>
+            <h3>Composition</h3>
+            <p>Pipeline→pipeline wiring and multi-pack jobs as a first-class operator path.</p>
+          </li>
+          <li class="ladder-item interactive-card">
+            <span class="ladder-badge">Later</span>
+            <h3>Swarms</h3>
+            <p>Systems of linked pipelines: define, run, monitor, and audit as one unit.</p>
+          </li>
+          <li class="ladder-item interactive-card">
+            <span class="ladder-badge">Later</span>
+            <h3>Ecosystem</h3>
+            <p>Optional share/import and community registry — not required for the local endgame.</p>
+          </li>
+        </ol>
+        <p class="section-cta reveal">
+          Desktop first launch runs <strong>sovereign bootstrap</strong> (operator-owned keys).
+          We are not building cloud SaaS, certification claims, or free-form ungoverned agent graphs.
+        </p>
+      </div>
+    </section>
+
+    <section id="platform" class="section section-alt">
       <div class="wrap">
         <div class="section-head reveal">
           <h2>Platform surface</h2>
-          <p>What ships in the open-source runtime today.</p>
+          <p>What ships in the open-source runtime today (v1.5 workshop layer).</p>
         </div>
         <ul class="feature-grid reveal stagger" role="list">
           <li class="interactive-card">
@@ -246,6 +292,7 @@
               <li>Studio (Agents, Packs, Proof Profiles) + Workbench</li>
               <li>Three official agent packs</li>
               <li>Doctor, integrity checks, install scripts</li>
+              <li>Path toward pipeline composition and swarms (roadmap)</li>
             </ul>
           </div>
           <div class="scope-card scope-card--muted interactive-card">
@@ -256,6 +303,7 @@
               <li>Cloud SaaS or multi-tenant hosting</li>
               <li>Proof that an LLM answer was “correct”</li>
               <li>Arbitrary browser-authored ZK circuits</li>
+              <li>First-class swarm UX yet (direction, not done)</li>
             </ul>
             <p class="scope-link">
               <a href="https://github.com/APXV-Official/APXV/blob/main/SECURITY.md" rel="noopener noreferrer">Threat model</a>
@@ -338,6 +386,7 @@
         </div>
         <ul class="doc-grid reveal stagger" role="list">
           <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/docs/QUICKSTART.md" rel="noopener noreferrer"><strong>Quickstart</strong><span>Install and first run</span></a></li>
+          <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/ROADMAP.md" rel="noopener noreferrer"><strong>Roadmap</strong><span>Atoms → pipeline → swarm</span></a></li>
           <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/ui/docs/OPERATOR-GUIDE.md" rel="noopener noreferrer"><strong>Operator guide</strong><span>Studio · Workbench · Trust</span></a></li>
           <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/docs/PROOF-STUDIO.md" rel="noopener noreferrer"><strong>Proof Studio</strong><span>Profiles and claims</span></a></li>
           <li><a class="interactive-card" href="https://github.com/APXV-Official/APXV/blob/main/docs/SOVEREIGN-SETUP.md" rel="noopener noreferrer"><strong>Sovereign setup</strong><span>Trust model and keys</span></a></li>
